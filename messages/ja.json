@@ -13,6 +13,11 @@
     "zh": "中文",
     "en": "EN"
   },
+  "nav": {
+    "players": "選手",
+    "competitions": "大会",
+    "organizations": "組織"
+  },
   "common": {
     "search": "検索",
     "searchPlaceholder": "選手名、大学名、高校名で検索",
@@ -27,23 +32,27 @@
   },
   "home": {
     "recentPlayers": "最近更新された選手",
+    "confirmedPlayers": "確認済みの選手",
     "viewPlayers": "選手一覧を見る",
     "viewAll": "すべて見る",
+    "viewProfile": "選手詳細を見る",
     "updateQueue": "近期補完予定",
-    "updateQueueTag": "Data queue",
+    "updateQueueTag": "データキュー",
     "updateStatus": {
       "inProgress": "整備中",
       "pending": "待機中"
     },
     "updateScope": {
-      "race": "レース結果"
+      "race": "レース結果",
+      "source": "出典整理"
     },
     "updateDetails": {
-      "asahiKuroda": "深掘りサンプルとして、PB・所属履歴・主要レースを整理中。",
-      "hakone102Leg5": "黒田朝日から広がる同一区間の結果を補完予定。",
-      "shinsakuKudo": "第102回箱根駅伝 5区から次に確認したい選手。",
+      "shinsakuKudo": "5区結果から作成した基礎ページを、PB・所属履歴・過去箱根まで確認中。",
       "kiyotoHirabayashi": "基礎ページのみ。PB・出場歴・出典を再確認予定。",
-      "shunkyoYoshii": "基礎ページのみ。PB・出場歴・出典を再確認予定。"
+      "shunkyoYoshii": "基礎ページのみ。PB・出場歴・出典を再確認予定。",
+      "hakone102Leg5Sources": "NTV 由来の区間結果と持ちタイム摘要を、公式結果・出典表示へ整理予定。",
+      "hakone101Leg2": "黒田朝日の過去出場から広がる同一区間の結果を補完予定。",
+      "kudoHakoneTimes": "第100回・第101回の5区タイムを公式結果で確認予定。"
     }
   },
   "players": {
@@ -51,13 +60,16 @@
     "backToList": "選手一覧へ",
     "listDescription": "V0.1 は青山学院大学、國學院大學、中央大学のサンプルデータから開始しています。",
     "resultCount": "{count}件",
+    "pageSummary": "{current} / {total} ページ",
+    "previousPage": "前へ",
+    "nextPage": "次へ",
     "emptyTitle": "条件に一致する選手はまだありません。",
     "emptyDescription": "検索語や絞り込み条件を変更してください。",
     "organizationTypeFilter": "組織種別",
     "organizationFilter": "所属",
     "statusFilter": "状態",
     "name": "氏名",
-    "profile": "Athlete Profile",
+    "profile": "選手プロフィール",
     "affiliation": "所属と出身",
     "currentAffiliation": "現在の所属",
     "careerTimeline": "所属履歴",
@@ -83,9 +95,52 @@
     "raceNotes": "備考",
     "relatedPlayers": "関連選手",
     "relatedPlayersEmpty": "関連選手はまだ収録されていません。",
+    "relationshipTags": {
+      "sameUniversity": "同大学",
+      "sameHighSchool": "同高校",
+      "sameCorporateTeam": "同実業団",
+      "overlap": "同時期",
+      "notOverlap": "時期違い",
+      "unknownOverlap": "時期未確認",
+      "sameRace": "同レース出場 {count}回"
+    },
     "dataSource": "データソース",
     "source": "出典",
     "status": "状態"
+  },
+  "competitions": {
+    "listTitle": "大会一覧",
+    "listDescription": "収録済みの大会届次と結果を確認できます。",
+    "resultCount": "{count}件",
+    "backToList": "大会一覧へ",
+    "edition": "届次",
+    "date": "日付",
+    "raceUnits": "競技単位",
+    "raceCount": "{count}件",
+    "resultCountLabel": "結果数",
+    "results": "結果",
+    "athlete": "選手",
+    "organization": "所属",
+    "mark": "記録",
+    "rank": "順位",
+    "notes": "備考",
+    "source": "出典",
+    "emptyResults": "この競技単位の結果はまだ収録されていません。"
+  },
+  "organizations": {
+    "listTitle": "組織一覧",
+    "listDescription": "高校、大学、実業団などの組織と関連選手を確認できます。",
+    "resultCount": "{count}件",
+    "backToList": "組織一覧へ",
+    "affiliatedPlayers": "関連選手",
+    "currentPlayers": "現在の所属選手",
+    "formerPlayers": "過去の所属選手",
+    "raceResults": "関連レース結果",
+    "location": "所在地",
+    "type": "組織種別",
+    "website": "公式サイト",
+    "emptyPlayers": "この組織に関連する選手はまだ収録されていません。",
+    "emptyResults": "この組織に関連するレース結果はまだ収録されていません。"
   },
   "status": {
     "verified": "確認済み",

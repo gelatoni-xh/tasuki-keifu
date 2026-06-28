@@ -6,6 +6,8 @@ type MembershipWithOrganization = Membership & {
   organization: Organization;
 };
 
+export type MembershipOverlap = "overlap" | "not_overlap" | "unknown";
+
 export function sortMembershipsByStartDate(memberships: MembershipWithOrganization[]) {
   return [...memberships].sort((a, b) => {
     const aTime = a.startDate?.getTime() ?? 0;
@@ -57,4 +59,30 @@ export function formatMembershipPeriod(membership: MembershipWithOrganization, l
   }
 
   return `${start || "?"} - ${end}`;
+}
+
+export function getMembershipOverlap(
+  first: Pick<Membership, "startDate" | "endDate" | "startYear" | "endYear">,
+  second: Pick<Membership, "startDate" | "endDate" | "startYear" | "endYear">,
+  now = new Date(),
+): MembershipOverlap {
+  if (first.startDate || first.endDate || second.startDate || second.endDate) {
+    if (!first.startDate || !second.startDate) {
+      return "unknown";
+    }
+
+    const firstEnd = first.endDate ?? now;
+    const secondEnd = second.endDate ?? now;
+
+    return first.startDate <= secondEnd && second.startDate <= firstEnd ? "overlap" : "not_overlap";
+  }
+
+  if (first.startYear && second.startYear) {
+    const firstEndYear = first.endYear ?? now.getFullYear();
+    const secondEndYear = second.endYear ?? now.getFullYear();
+
+    return first.startYear <= secondEndYear && second.startYear <= firstEndYear ? "overlap" : "not_overlap";
+  }
+
+  return "unknown";
 }

@@ -60,12 +60,31 @@ type SeedPlayer = {
   universityStart: Date;
   universityEnd: Date;
   currentTeamStart: Date | null;
+  profileStatus?: DataStatus;
+  faculty?: string;
+  department?: string;
   pbs: SeedPersonalBest[];
   hakoneRace?: Race;
   hakoneMark?: string | null;
   hakoneRank?: number | null;
   hakoneNotes?: string | null;
   raceResults?: SeedRaceResult[];
+};
+
+type SeedRaceEntry = {
+  slug: string;
+  displayNameJa: string;
+  displayNameRoman: string;
+  universitySlug: string;
+  highSchoolSlug: string;
+  grade: number;
+  mark: string;
+  rank: number | null;
+  notes: string | null;
+  pbs: Array<{
+    discipline: EventDiscipline;
+    mark: string;
+  }>;
 };
 
 function academicDatesForGrade(grade: number) {
@@ -280,6 +299,86 @@ async function main() {
     reliability: 4,
     notes: "第102回箱根駅伝 5区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。",
   });
+  const ntvHakone102Leg1Source = await upsertSourceById({
+    id: "source-ntv-hakone-102-leg-1",
+    name: "日本テレビ 第102回箱根駅伝 1区区間成績",
+    url: "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/1.html",
+    type: SourceType.ntv,
+    reliability: 4,
+    notes: "第102回箱根駅伝 1区の区間順位、区間タイム、学年、出身校の参照元。",
+  });
+  const ntvHakone102Leg2Source = await upsertSourceById({
+    id: "source-ntv-hakone-102-leg-2",
+    name: "日本テレビ 第102回箱根駅伝 2区区間成績",
+    url: "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html",
+    type: SourceType.ntv,
+    reliability: 4,
+    notes: "第102回箱根駅伝 2区の区間順位、区間タイム、学年、出身校の参照元。",
+  });
+  const ntvHakone101Leg2Source = await upsertSourceById({
+    id: "source-ntv-hakone-101-leg-2",
+    name: "日本テレビ 第101回箱根駅伝 2区区間成績",
+    url: "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/2.html",
+    type: SourceType.ntv,
+    reliability: 4,
+    notes: "第101回箱根駅伝 2区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。",
+  });
+  const wasedaKudoSource = await upsertSourceById({
+    id: "source-waseda-kudo-profile",
+    name: "早稲田大学競走部 選手プロフィール 工藤慎作",
+    url: "https://waseda-ac.jp/player/kudo-shinsaku/",
+    type: SourceType.university_official,
+    reliability: 5,
+    notes: "工藤慎作の所属、出身校、主要記録の優先ソース。",
+  });
+  const hakoneOfficialKudoSource = await upsertSourceById({
+    id: "source-hakone-official-kudo-record",
+    name: "箱根駅伝公式 過去の記録・選手詳細 工藤慎作",
+    url: "https://www.hakone-ekiden.jp/record/record06.php?rid=7472",
+    type: SourceType.hakone_official,
+    reliability: 5,
+    notes: "工藤慎作の箱根正赛結果の優先ソース。",
+  });
+  const wasedaMarugame2025Source = await upsertSourceById({
+    id: "source-waseda-marugame-half-2025",
+    name: "早稲田大学競走部 第77回香川丸亀国際ハーフマラソン",
+    url: "https://waseda-ac.jp/competition/detail/464",
+    type: SourceType.university_official,
+    reliability: 5,
+    notes: "工藤慎作のハーフ 1:00:06、総合5位、日本学生選手権1位、早稲田新記録の参照元。",
+  });
+  const wasedaTokyoMarathon2026Source = await upsertSourceById({
+    id: "source-waseda-tokyo-marathon-2026",
+    name: "早稲田大学競走部 東京マラソン2026",
+    url: "https://waseda-ac.jp/competition/detail/777",
+    type: SourceType.university_official,
+    reliability: 5,
+    notes: "工藤慎作のマラソン 2:07:34、PB、早稲田新記録の参照元。",
+  });
+  const wasedaFisu2025Source = await upsertSourceById({
+    id: "source-waseda-fisu-2025",
+    name: "早稲田大学競走部 FISUワールドユニバーシティゲームズ",
+    url: "https://waseda-ac.jp/competition/detail/643",
+    type: SourceType.university_official,
+    reliability: 5,
+    notes: "工藤慎作のFISUハーフマラソン 1:02:29、1位、大会新記録の参照元。",
+  });
+  const wasedaKantoIntercollegiate2026Source = await upsertSourceById({
+    id: "source-waseda-kanto-intercollegiate-2026",
+    name: "早稲田大学競走部 第105回関東学生陸上競技対校選手権大会",
+    url: "https://waseda-ac.jp/competition/detail/869",
+    type: SourceType.university_official,
+    reliability: 5,
+    notes: "工藤慎作の5000m 13:38.67、PB、5位の参照元。",
+  });
+  const nittaidai20230422Source = await upsertSourceById({
+    id: "source-nittaidai-2023-04-22",
+    name: "第304回日本体育大学長距離競技会 結果PDF",
+    url: "https://ld.nssu-athletic.com/uploads/2023/2023-04-22_result.pdf",
+    type: SourceType.pdf,
+    reliability: 4,
+    notes: "工藤慎作の10000m 28:31.87 の参照元。",
+  });
   const rikujokyogiMarchSource = await upsertSourceById({
     id: "source-rikujokyogi-march-2025",
     name: "月陸 Online MARCH対抗戦2025",
@@ -311,6 +410,46 @@ async function main() {
     type: SourceType.data_site,
     reliability: 5,
     notes: "第35回出雲駅伝 2区の公式区間記録。",
+  });
+  const izumoOfficial36Leg6Source = await upsertSourceById({
+    id: "source-izumo-ekiden-36-leg-6",
+    name: "出雲駅伝公式 第36回 6区区間記録",
+    url: "https://www.izumo-ekiden.jp/36/record/6b.html",
+    type: SourceType.data_site,
+    reliability: 5,
+    notes: "第36回出雲駅伝 6区の公式区間記録。",
+  });
+  const izumoOfficial37Leg6Source = await upsertSourceById({
+    id: "source-izumo-ekiden-37-leg-6",
+    name: "出雲駅伝公式 第37回 6区区間記録",
+    url: "https://www.izumo-ekiden.jp/37/record/6b.html",
+    type: SourceType.data_site,
+    reliability: 5,
+    notes: "第37回出雲駅伝 6区の公式区間記録。",
+  });
+  const allJapanEkiden57Source = await upsertSourceById({
+    id: "source-all-japan-university-ekiden-57",
+    name: "全日本大学駅伝公式 第57回大会成績PDF",
+    url: "https://daigaku-ekiden.com/wp-content/uploads/2025/11/57_kiroku.pdf",
+    type: SourceType.pdf,
+    reliability: 5,
+    notes: "第57回全日本大学駅伝 8区、工藤慎作 56:54、区間1位の参照元。",
+  });
+  const allJapanEkiden55Source = await upsertSourceById({
+    id: "source-all-japan-university-ekiden-55",
+    name: "全日本大学駅伝公式 第55回大会成績PDF",
+    url: "https://daigaku-ekiden.com/result/result.pdf",
+    type: SourceType.pdf,
+    reliability: 5,
+    notes: "第55回全日本大学駅伝 4区、工藤慎作 35:36、区間13位の公式PDF参照元。",
+  });
+  const allJapanEkiden56Source = await upsertSourceById({
+    id: "source-all-japan-university-ekiden-56",
+    name: "全日本大学駅伝公式 第56回大会成績PDF",
+    url: "https://daigaku-ekiden.com/datafile/files/2024result.pdf",
+    type: SourceType.pdf,
+    reliability: 5,
+    notes: "第56回全日本大学駅伝 8区、工藤慎作 58:12、区間3位の公式PDF参照元。",
   });
 
   const aogaku = await upsertOrganization({
@@ -457,6 +596,20 @@ async function main() {
     type: OrganizationType.university,
     prefecture: "東京都",
   });
+  const hosei = await upsertOrganization({
+    slug: "hosei-university",
+    nameJa: "法政大学",
+    shortName: "法大",
+    type: OrganizationType.university,
+    prefecture: "東京都",
+  });
+  const senshu = await upsertOrganization({
+    slug: "senshu-university",
+    nameJa: "専修大学",
+    shortName: "専大",
+    type: OrganizationType.university,
+    prefecture: "東京都",
+  });
   const kantoStudentUnion = await upsertOrganization({
     slug: "kanto-student-union",
     nameJa: "関東学生連合",
@@ -593,6 +746,252 @@ async function main() {
     type: OrganizationType.high_school,
     prefecture: "埼玉県",
   });
+  const tomisato = await upsertOrganization({
+    slug: "tomisato-high-school",
+    nameJa: "富里高校",
+    type: OrganizationType.high_school,
+    prefecture: "千葉県",
+  });
+  const mauHigh = await upsertOrganization({
+    slug: "mau-high-school",
+    nameJa: "マウ高校",
+    type: OrganizationType.high_school,
+    prefecture: "ケニア",
+  });
+  const ichiritsuFunabashi = await upsertOrganization({
+    slug: "ichiritsu-funabashi-high-school",
+    nameJa: "市船橋高校",
+    type: OrganizationType.high_school,
+    prefecture: "千葉県",
+  });
+  const kokugakuinKugayama = await upsertOrganization({
+    slug: "kokugakuin-kugayama-high-school",
+    nameJa: "國學院久我山高校",
+    type: OrganizationType.high_school,
+    prefecture: "東京都",
+  });
+  const gakuhoIshikawa = await upsertOrganization({
+    slug: "gakuho-ishikawa-high-school",
+    nameJa: "学法石川高校",
+    type: OrganizationType.high_school,
+    prefecture: "福島県",
+  });
+  const tokaiUniversityShoyo = await upsertOrganization({
+    slug: "tokai-university-shoyo-high-school",
+    nameJa: "東海大翔洋高校",
+    type: OrganizationType.high_school,
+    prefecture: "静岡県",
+  });
+  const kusatsuHigashi = await upsertOrganization({
+    slug: "kusatsu-higashi-high-school",
+    nameJa: "草津東高校",
+    type: OrganizationType.high_school,
+    prefecture: "滋賀県",
+  });
+  const hirosakiJitsugyo = await upsertOrganization({
+    slug: "hirosaki-jitsugyo-high-school",
+    nameJa: "弘前実業高校",
+    type: OrganizationType.high_school,
+    prefecture: "青森県",
+  });
+  const omuta = await upsertOrganization({
+    slug: "omuta-high-school",
+    nameJa: "大牟田高校",
+    type: OrganizationType.high_school,
+    prefecture: "福岡県",
+  });
+  const senshuUniversityKumamoto = await upsertOrganization({
+    slug: "senshu-university-kumamoto-high-school",
+    nameJa: "専大熊本高校",
+    type: OrganizationType.high_school,
+    prefecture: "熊本県",
+  });
+  const ngongHigh = await upsertOrganization({
+    slug: "ngong-high-school",
+    nameJa: "ンゴニ高校",
+    type: OrganizationType.high_school,
+    prefecture: "ケニア",
+  });
+  const takudaiKoryo = await upsertOrganization({
+    slug: "takudai-koryo-high-school",
+    nameJa: "拓大紅陵高校",
+    type: OrganizationType.high_school,
+    prefecture: "千葉県",
+  });
+  const irigitatiHigh = await upsertOrganization({
+    slug: "irigitati-high-school",
+    nameJa: "イリギタティ高校",
+    type: OrganizationType.high_school,
+    prefecture: "ケニア",
+  });
+  const silHigh = await upsertOrganization({
+    slug: "sil-high-school",
+    nameJa: "シル高校",
+    type: OrganizationType.high_school,
+    prefecture: "ケニア",
+  });
+  const izumiChuo = await upsertOrganization({
+    slug: "izumi-chuo-high-school",
+    nameJa: "出水中央高校",
+    type: OrganizationType.high_school,
+    prefecture: "鹿児島県",
+  });
+  const kojokan = await upsertOrganization({
+    slug: "kojokan-high-school",
+    nameJa: "興譲館高校",
+    type: OrganizationType.high_school,
+    prefecture: "岡山県",
+  });
+  const kurashiki = await upsertOrganization({
+    slug: "kurashiki-high-school",
+    nameJa: "倉敷高校",
+    type: OrganizationType.high_school,
+    prefecture: "岡山県",
+  });
+  const saitamaSakae = await upsertOrganization({
+    slug: "saitama-sakae-high-school",
+    nameJa: "埼玉栄高校",
+    type: OrganizationType.high_school,
+    prefecture: "埼玉県",
+  });
+  const kentaTakasaki = await upsertOrganization({
+    slug: "kenta-takasaki-high-school",
+    nameJa: "健大高崎高校",
+    type: OrganizationType.high_school,
+    prefecture: "群馬県",
+  });
+  const wasedaJitsugyo = await upsertOrganization({
+    slug: "waseda-jitsugyo-high-school",
+    nameJa: "早稲田実業学校高等部",
+    type: OrganizationType.high_school,
+    prefecture: "東京都",
+  });
+  const suijo = await upsertOrganization({
+    slug: "suijo-high-school",
+    nameJa: "水城高校",
+    type: OrganizationType.high_school,
+    prefecture: "茨城県",
+  });
+  const osakaHigh = await upsertOrganization({
+    slug: "osaka-high-school",
+    nameJa: "大阪高校",
+    type: OrganizationType.high_school,
+    prefecture: "大阪府",
+  });
+  const toyokawa = await upsertOrganization({
+    slug: "toyokawa-high-school",
+    nameJa: "豊川高校",
+    type: OrganizationType.high_school,
+    prefecture: "愛知県",
+  });
+  const kobayashi = await upsertOrganization({
+    slug: "kobayashi-high-school",
+    nameJa: "小林高校",
+    type: OrganizationType.high_school,
+    prefecture: "宮崎県",
+  });
+  const kagoshimaJitsugyo = await upsertOrganization({
+    slug: "kagoshima-jitsugyo-high-school",
+    nameJa: "鹿児島実業高校",
+    type: OrganizationType.high_school,
+    prefecture: "鹿児島県",
+  });
+  const sanoNichidai = await upsertOrganization({
+    slug: "sano-nichidai-high-school",
+    nameJa: "佐野日本大学高校",
+    type: OrganizationType.high_school,
+    prefecture: "栃木県",
+  });
+  const gifuShotoku = await upsertOrganization({
+    slug: "gifu-shotoku-high-school",
+    nameJa: "県岐阜商業高校",
+    type: OrganizationType.high_school,
+    prefecture: "岐阜県",
+  });
+  const aichiHigh = await upsertOrganization({
+    slug: "aichi-high-school",
+    nameJa: "愛知高校",
+    type: OrganizationType.high_school,
+    prefecture: "愛知県",
+  });
+  const hiroshimaKokusaiGakuin = await upsertOrganization({
+    slug: "hiroshima-kokusai-gakuin-high-school",
+    nameJa: "広島国際学院高校",
+    type: OrganizationType.high_school,
+    prefecture: "広島県",
+  });
+  const tokaiUniversityOsakaGyosei = await upsertOrganization({
+    slug: "tokai-university-osaka-gyosei-high-school",
+    nameJa: "東海大大阪仰星高校",
+    type: OrganizationType.high_school,
+    prefecture: "大阪府",
+  });
+  const kapkatet = await upsertOrganization({
+    slug: "kapkatet-high-school",
+    nameJa: "カプカテット高校",
+    type: OrganizationType.high_school,
+    prefecture: "ケニア",
+  });
+  const mikuyuni = await upsertOrganization({
+    slug: "mikuyuni-high-school",
+    nameJa: "ミクユニ高校",
+    type: OrganizationType.high_school,
+    prefecture: "ケニア",
+  });
+  const uedaNishi = await upsertOrganization({
+    slug: "ueda-nishi-high-school",
+    nameJa: "上田西高校",
+    type: OrganizationType.high_school,
+    prefecture: "長野県",
+  });
+  const igaHakuho = await upsertOrganization({
+    slug: "iga-hakuho-high-school",
+    nameJa: "伊賀白鳳高校",
+    type: OrganizationType.high_school,
+    prefecture: "三重県",
+  });
+  const sakuChosei = await upsertOrganization({
+    slug: "saku-chosei-high-school",
+    nameJa: "佐久長聖高校",
+    type: OrganizationType.high_school,
+    prefecture: "長野県",
+  });
+  const hokuzan = await upsertOrganization({
+    slug: "hokuzan-high-school",
+    nameJa: "北山高校",
+    type: OrganizationType.high_school,
+    prefecture: "沖縄県",
+  });
+  const hotokuGakuen = await upsertOrganization({
+    slug: "hotoku-gakuen-high-school",
+    nameJa: "報徳学園高校",
+    type: OrganizationType.high_school,
+    prefecture: "兵庫県",
+  });
+  const koma = await upsertOrganization({
+    slug: "koma-high-school",
+    nameJa: "巨摩高校",
+    type: OrganizationType.high_school,
+    prefecture: "山梨県",
+  });
+  const keisei = await upsertOrganization({
+    slug: "keisei-high-school",
+    nameJa: "慶誠高校",
+    type: OrganizationType.high_school,
+    prefecture: "熊本県",
+  });
+  const asahino = await upsertOrganization({
+    slug: "asahino-high-school",
+    nameJa: "旭野高校",
+    type: OrganizationType.high_school,
+    prefecture: "愛知県",
+  });
+  const jiyugaoka = await upsertOrganization({
+    slug: "jiyugaoka-high-school",
+    nameJa: "自由ケ丘高校",
+    type: OrganizationType.high_school,
+    prefecture: "福岡県",
+  });
 
   const hakone = await upsertCompetition({
     slug: "hakone-ekiden",
@@ -646,6 +1045,14 @@ async function main() {
     leg: 2,
     sourceId: hakoneOfficialSource.id,
   });
+  const hakone100Leg5 = await upsertRace({
+    slug: "hakone-ekiden-100-leg-5",
+    competitionEditionId: hakone100.id,
+    name: "5区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 5,
+    sourceId: hakoneOfficialKudoSource.id,
+  });
   const hakone101Leg1 = await upsertRace({
     slug: "hakone-ekiden-101-leg-1",
     competitionEditionId: hakone101.id,
@@ -661,6 +1068,30 @@ async function main() {
     discipline: EventDiscipline.ekiden_leg,
     leg: 2,
     sourceId: hakoneOfficialSource.id,
+  });
+  const hakone101Leg5 = await upsertRace({
+    slug: "hakone-ekiden-101-leg-5",
+    competitionEditionId: hakone101.id,
+    name: "5区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 5,
+    sourceId: hakoneOfficialKudoSource.id,
+  });
+  const hakone102Leg1 = await upsertRace({
+    slug: "hakone-ekiden-102-leg-1",
+    competitionEditionId: hakone102.id,
+    name: "1区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 1,
+    sourceId: ntvHakone102Leg1Source.id,
+  });
+  const hakone102Leg2 = await upsertRace({
+    slug: "hakone-ekiden-102-leg-2",
+    competitionEditionId: hakone102.id,
+    name: "2区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 2,
+    sourceId: ntvHakone102Leg2Source.id,
   });
   const hakone102Leg5 = await upsertRace({
     slug: "hakone-ekiden-102-leg-5",
@@ -697,6 +1128,106 @@ async function main() {
     discipline: EventDiscipline.ekiden_leg,
     leg: 2,
     sourceId: izumoOfficialSource.id,
+  });
+  const izumo36 = await upsertCompetitionEdition({
+    slug: "izumo-ekiden-36",
+    competitionId: izumo.id,
+    editionNumber: 36,
+    year: 2024,
+    officialName: "第36回出雲全日本大学選抜駅伝競走",
+    shortName: "第36回出雲駅伝",
+    startsOn: new Date("2024-10-14"),
+    sourceId: izumoOfficial36Leg6Source.id,
+  });
+  const izumo36Leg6 = await upsertRace({
+    slug: "izumo-ekiden-36-leg-6",
+    competitionEditionId: izumo36.id,
+    name: "6区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 6,
+    sourceId: izumoOfficial36Leg6Source.id,
+  });
+  const izumo37 = await upsertCompetitionEdition({
+    slug: "izumo-ekiden-37",
+    competitionId: izumo.id,
+    editionNumber: 37,
+    year: 2025,
+    officialName: "第37回出雲全日本大学選抜駅伝競走",
+    shortName: "第37回出雲駅伝",
+    startsOn: new Date("2025-10-13"),
+    sourceId: izumoOfficial37Leg6Source.id,
+  });
+  const izumo37Leg6 = await upsertRace({
+    slug: "izumo-ekiden-37-leg-6",
+    competitionEditionId: izumo37.id,
+    name: "6区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 6,
+    sourceId: izumoOfficial37Leg6Source.id,
+  });
+
+  const allJapanUniversityEkiden = await upsertCompetition({
+    slug: "all-japan-university-ekiden",
+    nameJa: "全日本大学駅伝対校選手権大会",
+    nameRoman: "All Japan University Ekiden",
+    nameZh: "全日本大学驿传",
+    type: "university_ekiden",
+    region: "東海",
+    websiteUrl: "https://daigaku-ekiden.com/",
+  });
+  const allJapanUniversityEkiden55 = await upsertCompetitionEdition({
+    slug: "all-japan-university-ekiden-55",
+    competitionId: allJapanUniversityEkiden.id,
+    editionNumber: 55,
+    year: 2023,
+    officialName: "秩父宮賜杯 第55回全日本大学駅伝対校選手権大会",
+    shortName: "第55回全日本大学駅伝",
+    startsOn: new Date("2023-11-05"),
+    sourceId: allJapanEkiden55Source.id,
+  });
+  const allJapanUniversityEkiden55Leg4 = await upsertRace({
+    slug: "all-japan-university-ekiden-55-leg-4",
+    competitionEditionId: allJapanUniversityEkiden55.id,
+    name: "4区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 4,
+    sourceId: allJapanEkiden55Source.id,
+  });
+  const allJapanUniversityEkiden56 = await upsertCompetitionEdition({
+    slug: "all-japan-university-ekiden-56",
+    competitionId: allJapanUniversityEkiden.id,
+    editionNumber: 56,
+    year: 2024,
+    officialName: "秩父宮賜杯 第56回全日本大学駅伝対校選手権大会",
+    shortName: "第56回全日本大学駅伝",
+    startsOn: new Date("2024-11-03"),
+    sourceId: allJapanEkiden56Source.id,
+  });
+  const allJapanUniversityEkiden56Leg8 = await upsertRace({
+    slug: "all-japan-university-ekiden-56-leg-8",
+    competitionEditionId: allJapanUniversityEkiden56.id,
+    name: "8区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 8,
+    sourceId: allJapanEkiden56Source.id,
+  });
+  const allJapanUniversityEkiden57 = await upsertCompetitionEdition({
+    slug: "all-japan-university-ekiden-57",
+    competitionId: allJapanUniversityEkiden.id,
+    editionNumber: 57,
+    year: 2025,
+    officialName: "秩父宮賜杯 第57回全日本大学駅伝対校選手権大会",
+    shortName: "第57回全日本大学駅伝",
+    startsOn: new Date("2025-11-02"),
+    sourceId: allJapanEkiden57Source.id,
+  });
+  const allJapanUniversityEkiden57Leg8 = await upsertRace({
+    slug: "all-japan-university-ekiden-57-leg-8",
+    competitionEditionId: allJapanUniversityEkiden57.id,
+    name: "8区",
+    discipline: EventDiscipline.ekiden_leg,
+    leg: 8,
+    sourceId: allJapanEkiden57Source.id,
   });
 
   const march = await upsertCompetition({
@@ -783,6 +1314,142 @@ async function main() {
     sourceId: osakaMarathonSource.id,
   });
 
+  const marugameHalf = await upsertCompetition({
+    slug: "marugame-half-marathon",
+    nameJa: "香川丸亀国際ハーフマラソン",
+    nameRoman: "Kagawa Marugame International Half Marathon",
+    type: "road_half_marathon",
+    region: "香川県",
+    websiteUrl: "https://www.marugame-half.jp/",
+  });
+  const marugameHalf77 = await upsertCompetitionEdition({
+    slug: "marugame-half-marathon-77",
+    competitionId: marugameHalf.id,
+    editionNumber: 77,
+    year: 2025,
+    officialName: "第77回香川丸亀国際ハーフマラソン",
+    shortName: "第77回丸亀ハーフ",
+    startsOn: new Date("2025-02-02"),
+    sourceId: wasedaMarugame2025Source.id,
+  });
+  const marugameHalf77Men = await upsertRace({
+    slug: "marugame-half-marathon-77-men",
+    competitionEditionId: marugameHalf77.id,
+    name: "男子ハーフマラソン",
+    discipline: EventDiscipline.half_marathon,
+    distanceMeters: 21097,
+    startsAt: new Date("2025-02-02"),
+    sourceId: wasedaMarugame2025Source.id,
+  });
+
+  const tokyoMarathon = await upsertCompetition({
+    slug: "tokyo-marathon",
+    nameJa: "東京マラソン",
+    nameRoman: "Tokyo Marathon",
+    type: "road_marathon",
+    region: "東京都",
+    websiteUrl: "https://www.marathon.tokyo/",
+  });
+  const tokyoMarathon2026 = await upsertCompetitionEdition({
+    slug: "tokyo-marathon-2026",
+    competitionId: tokyoMarathon.id,
+    year: 2026,
+    officialName: "東京マラソン2026",
+    shortName: "東京マラソン2026",
+    startsOn: new Date("2026-03-01"),
+    sourceId: wasedaTokyoMarathon2026Source.id,
+  });
+  const tokyoMarathon2026Men = await upsertRace({
+    slug: "tokyo-marathon-2026-men",
+    competitionEditionId: tokyoMarathon2026.id,
+    name: "男子マラソン",
+    discipline: EventDiscipline.marathon,
+    distanceMeters: 42195,
+    startsAt: new Date("2026-03-01"),
+    sourceId: wasedaTokyoMarathon2026Source.id,
+  });
+
+  const fisuWorldUniversityGames = await upsertCompetition({
+    slug: "fisu-world-university-games",
+    nameJa: "FISUワールドユニバーシティゲームズ",
+    nameRoman: "FISU World University Games",
+    type: "international_multi_sport",
+    region: "国際",
+  });
+  const fisuWorldUniversityGames2025 = await upsertCompetitionEdition({
+    slug: "fisu-world-university-games-2025",
+    competitionId: fisuWorldUniversityGames.id,
+    year: 2025,
+    officialName: "FISUワールドユニバーシティゲームズ2025",
+    shortName: "FISU WUG 2025",
+    startsOn: new Date("2025-07-16"),
+    sourceId: wasedaFisu2025Source.id,
+  });
+  const fisu2025HalfMen = await upsertRace({
+    slug: "fisu-world-university-games-2025-men-half-marathon",
+    competitionEditionId: fisuWorldUniversityGames2025.id,
+    name: "男子ハーフマラソン",
+    discipline: EventDiscipline.half_marathon,
+    distanceMeters: 21097,
+    startsAt: new Date("2025-07-24"),
+    sourceId: wasedaFisu2025Source.id,
+  });
+
+  const kantoIntercollegiate = await upsertCompetition({
+    slug: "kanto-intercollegiate",
+    nameJa: "関東学生陸上競技対校選手権大会",
+    nameRoman: "Kanto Intercollegiate Track & Field Championships",
+    type: "track_meet",
+    region: "関東",
+  });
+  const kantoIntercollegiate105 = await upsertCompetitionEdition({
+    slug: "kanto-intercollegiate-105",
+    competitionId: kantoIntercollegiate.id,
+    editionNumber: 105,
+    year: 2026,
+    officialName: "第105回関東学生陸上競技対校選手権大会",
+    shortName: "第105回関東インカレ",
+    startsOn: new Date("2026-05-14"),
+    sourceId: wasedaKantoIntercollegiate2026Source.id,
+  });
+  const kantoIntercollegiate105Men5000m = await upsertRace({
+    slug: "kanto-intercollegiate-105-men-5000m",
+    competitionEditionId: kantoIntercollegiate105.id,
+    name: "男子5000m",
+    discipline: EventDiscipline.m5000,
+    distanceMeters: 5000,
+    startsAt: new Date("2026-05-17"),
+    sourceId: wasedaKantoIntercollegiate2026Source.id,
+  });
+
+  const nittaidaiLongDistance = await upsertCompetition({
+    slug: "nittaidai-long-distance-meet",
+    nameJa: "日本体育大学長距離競技会",
+    nameRoman: "Nittaidai Long Distance Meet",
+    type: "track_meet",
+    region: "神奈川県",
+    websiteUrl: "https://ld.nssu-athletic.com/",
+  });
+  const nittaidaiLongDistance304 = await upsertCompetitionEdition({
+    slug: "nittaidai-long-distance-meet-304",
+    competitionId: nittaidaiLongDistance.id,
+    editionNumber: 304,
+    year: 2023,
+    officialName: "第304回日本体育大学長距離競技会",
+    shortName: "第304回日体大長距離競技会",
+    startsOn: new Date("2023-04-22"),
+    sourceId: nittaidai20230422Source.id,
+  });
+  const nittaidaiLongDistance304Men10000m = await upsertRace({
+    slug: "nittaidai-long-distance-meet-304-men-10000m",
+    competitionEditionId: nittaidaiLongDistance304.id,
+    name: "男子10000m",
+    discipline: EventDiscipline.m10000,
+    distanceMeters: 10000,
+    startsAt: new Date("2023-04-22"),
+    sourceId: nittaidai20230422Source.id,
+  });
+
   const universityBySlug = new Map(
     [
       aogaku,
@@ -805,12 +1472,16 @@ async function main() {
       daitoBunka,
       nipponSportScience,
       rikkyo,
+      hosei,
+      senshu,
       kantoStudentUnion,
     ].map((organization) => [organization.slug, organization]),
   );
   const highSchoolBySlug = new Map(
     [
       tamano,
+      mikata,
+      sendaiIkuei,
       shigaGakuen,
       kochiTechnical,
       yachiyoShoin,
@@ -828,6 +1499,47 @@ async function main() {
       nishiwakiTechnical,
       soyo,
       matsuyama,
+      tomisato,
+      mauHigh,
+      ichiritsuFunabashi,
+      kokugakuinKugayama,
+      gakuhoIshikawa,
+      tokaiUniversityShoyo,
+      kusatsuHigashi,
+      hirosakiJitsugyo,
+      omuta,
+      senshuUniversityKumamoto,
+      ngongHigh,
+      takudaiKoryo,
+      irigitatiHigh,
+      silHigh,
+      izumiChuo,
+      kojokan,
+      kurashiki,
+      saitamaSakae,
+      kentaTakasaki,
+      wasedaJitsugyo,
+      suijo,
+      osakaHigh,
+      toyokawa,
+      kobayashi,
+      kagoshimaJitsugyo,
+      sanoNichidai,
+      gifuShotoku,
+      aichiHigh,
+      hiroshimaKokusaiGakuin,
+      tokaiUniversityOsakaGyosei,
+      kapkatet,
+      mikuyuni,
+      uedaNishi,
+      igaHakuho,
+      sakuChosei,
+      hokuzan,
+      hotokuGakuen,
+      koma,
+      keisei,
+      asahino,
+      jiyugaoka,
     ].map((organization) => [organization.slug, organization]),
   );
 
@@ -851,6 +1563,7 @@ async function main() {
       universityStart: new Date("2022-04-01"),
       universityEnd: new Date("2026-03-31"),
       currentTeamStart: new Date("2026-04-01"),
+      profileStatus: DataStatus.verified,
       pbs: [
         {
           discipline: EventDiscipline.m3000sc,
@@ -989,6 +1702,175 @@ async function main() {
       hakoneNotes: null,
     },
     {
+      slug: "kudo-shinsaku",
+      displayNameJa: "工藤 慎作",
+      displayNameKana: "くどう しんさく",
+      displayNameRoman: "Shinsaku Kudo",
+      birthDate: new Date("2004-11-10"),
+      hometown: "千葉県",
+      nationality: null,
+      registeredPrefecture: null,
+      university: waseda,
+      highSchool: yachiyoShoin,
+      currentTeam: null,
+      grade: 4,
+      highSchoolStart: new Date("2020-04-01"),
+      highSchoolEnd: new Date("2023-03-31"),
+      universityStart: new Date("2023-04-01"),
+      universityEnd: new Date("2027-03-31"),
+      currentTeamStart: null,
+      faculty: "スポーツ科学",
+      pbs: [
+        { discipline: EventDiscipline.m1500, mark: "3:55.08", sourceId: wasedaKudoSource.id },
+        {
+          discipline: EventDiscipline.m5000,
+          mark: "13:38.67",
+          achievedOn: new Date("2026-05-17"),
+          competitionName: "第105回関東学生陸上競技対校選手権大会",
+          venue: "相模原ギオンスタジアム",
+          sourceId: wasedaKantoIntercollegiate2026Source.id,
+        },
+        {
+          discipline: EventDiscipline.m10000,
+          mark: "28:31.87",
+          achievedOn: new Date("2023-04-22"),
+          competitionName: "第304回日本体育大学長距離競技会",
+          venue: "日本体育大学健志台キャンパス陸上競技場",
+          sourceId: nittaidai20230422Source.id,
+        },
+        {
+          discipline: EventDiscipline.half_marathon,
+          mark: "1:00:06",
+          achievedOn: new Date("2025-02-02"),
+          competitionName: "第77回香川丸亀国際ハーフマラソン",
+          venue: "香川県丸亀市",
+          sourceId: wasedaMarugame2025Source.id,
+          notes: "早稲田新記録。",
+        },
+        {
+          discipline: EventDiscipline.marathon,
+          mark: "2:07:34",
+          achievedOn: new Date("2026-03-01"),
+          competitionName: "東京マラソン2026",
+          venue: "東京",
+          sourceId: wasedaTokyoMarathon2026Source.id,
+          notes: "早稲田新記録。",
+        },
+      ],
+      raceResults: [
+        {
+          race: nittaidaiLongDistance304Men10000m,
+          organization: waseda,
+          mark: "28:31.87",
+          rank: null,
+          gradeAtRace: 1,
+          notes: "PB",
+          sourceId: nittaidai20230422Source.id,
+        },
+        {
+          race: hakone100Leg5,
+          organization: waseda,
+          mark: "1:12:12",
+          rank: 6,
+          gradeAtRace: 1,
+          sourceId: hakoneOfficialKudoSource.id,
+        },
+        {
+          race: allJapanUniversityEkiden55Leg4,
+          organization: waseda,
+          mark: "35:36",
+          rank: 13,
+          gradeAtRace: 1,
+          sourceId: allJapanEkiden55Source.id,
+        },
+        {
+          race: hakone101Leg5,
+          organization: waseda,
+          mark: "1:09:31",
+          rank: 2,
+          gradeAtRace: 2,
+          sourceId: hakoneOfficialKudoSource.id,
+        },
+        {
+          race: allJapanUniversityEkiden56Leg8,
+          organization: waseda,
+          mark: "58:12",
+          rank: 3,
+          gradeAtRace: 2,
+          sourceId: allJapanEkiden56Source.id,
+        },
+        {
+          race: hakone102Leg5,
+          organization: waseda,
+          mark: "1:09:46",
+          rank: 3,
+          gradeAtRace: 3,
+          sourceId: hakoneOfficialKudoSource.id,
+        },
+        {
+          race: marugameHalf77Men,
+          organization: waseda,
+          mark: "1:00:06",
+          rank: 5,
+          gradeAtRace: 2,
+          notes: "日本学生選手権1位 / 早稲田新記録 / PB",
+          sourceId: wasedaMarugame2025Source.id,
+        },
+        {
+          race: fisu2025HalfMen,
+          organization: waseda,
+          mark: "1:02:29",
+          rank: 1,
+          gradeAtRace: 3,
+          notes: "大会新記録",
+          sourceId: wasedaFisu2025Source.id,
+        },
+        {
+          race: izumo36Leg6,
+          organization: waseda,
+          mark: "29:35",
+          rank: 2,
+          gradeAtRace: 2,
+          sourceId: izumoOfficial36Leg6Source.id,
+        },
+        {
+          race: izumo37Leg6,
+          organization: waseda,
+          mark: "29:48",
+          rank: 3,
+          gradeAtRace: 3,
+          sourceId: izumoOfficial37Leg6Source.id,
+        },
+        {
+          race: allJapanUniversityEkiden57Leg8,
+          organization: waseda,
+          mark: "56:54",
+          rank: 1,
+          gradeAtRace: 3,
+          notes: "区間賞",
+          sourceId: allJapanEkiden57Source.id,
+        },
+        {
+          race: tokyoMarathon2026Men,
+          organization: waseda,
+          mark: "2:07:34",
+          rank: null,
+          gradeAtRace: 3,
+          notes: "日本人5位 / 早稲田新記録 / PB",
+          sourceId: wasedaTokyoMarathon2026Source.id,
+        },
+        {
+          race: kantoIntercollegiate105Men5000m,
+          organization: waseda,
+          mark: "13:38.67",
+          rank: 5,
+          gradeAtRace: 4,
+          notes: "PB",
+          sourceId: wasedaKantoIntercollegiate2026Source.id,
+        },
+      ],
+    },
+    {
       slug: "shunkyo-yoshii",
       displayNameJa: "吉居 駿恭",
       displayNameKana: "よしい しゅんきょう",
@@ -1041,6 +1923,80 @@ async function main() {
     { slug: "kijima-riku", displayNameJa: "木島 陸", displayNameRoman: "Riku Kijima", universitySlug: "rikkyo-university", highSchoolSlug: "soyo-high-school", grade: 3, mark: "1:14:30", rank: 17, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "14:18.66" }, { discipline: EventDiscipline.m10000, mark: "29:12.71" }, { discipline: EventDiscipline.half_marathon, mark: "1:03:42" }] },
     { slug: "takahashi-ayumu", displayNameJa: "髙橋 歩夢", displayNameRoman: "Ayumu Takahashi", universitySlug: "kanto-student-union", highSchoolSlug: "matsuyama-high-school", grade: 3, mark: "1:16:39", rank: null, notes: "OP", pbs: [{ discipline: EventDiscipline.m5000, mark: "14:16.99" }, { discipline: EventDiscipline.m10000, mark: "29:26.67" }, { discipline: EventDiscipline.half_marathon, mark: "1:03:19" }] },
   ];
+  const hakone102Leg1Entries = [
+    { slug: "hikaru-ogawara", displayNameJa: "小河原 陽琉", displayNameRoman: "Ogawara Hikaru", universitySlug: "aoyama-gakuin-university", highSchoolSlug: "yachiyo-shoin-high-school", grade: 2, mark: "1:01:47", rank: 16, notes: null, pbs: [] },
+    { slug: "shoya-koyama", displayNameJa: "小山 翔也", displayNameRoman: "Koyama Shoya", universitySlug: "komazawa-university", highSchoolSlug: "saitama-sakae-high-school", grade: 3, mark: "1:00:48", rank: 5, notes: null, pbs: [] },
+    { slug: "rui-aoki", displayNameJa: "青木 瑠郁", displayNameRoman: "Aoki Rui", universitySlug: "kokugakuin-university", highSchoolSlug: "kenta-takasaki-high-school", grade: 4, mark: "1:00:28", rank: 1, notes: null, pbs: [] },
+    { slug: "nayabnaoki-yoshikura", displayNameJa: "吉倉 ナヤブ直希", displayNameRoman: "Yoshikura Nayabnaoki", universitySlug: "waseda-university", highSchoolSlug: "waseda-jitsugyo-high-school", grade: 2, mark: "1:00:58", rank: 7, notes: null, pbs: [] },
+    { slug: "daichi-fujita", displayNameJa: "藤田 大智", displayNameRoman: "Fujita Daichi", universitySlug: "chuo-university", highSchoolSlug: "nishiwaki-technical-high-school", grade: 3, mark: "1:00:37", rank: 2, notes: null, pbs: [] },
+    { slug: "yu-shibata", displayNameJa: "柴田 侑", displayNameRoman: "Shibata Yu", universitySlug: "josai-university", highSchoolSlug: "shiga-gakuen-high-school", grade: 3, mark: "1:00:51", rank: 6, notes: null, pbs: [] },
+    { slug: "hinata-kuroki", displayNameJa: "黒木 陽向", displayNameRoman: "Kuroki Hinata", universitySlug: "soka-university", highSchoolSlug: "kyushu-gakuin-high-school", grade: 4, mark: "1:01:43", rank: 14, notes: null, pbs: [] },
+    { slug: "yujiro-koshiba", displayNameJa: "小柴 裕士郎", displayNameRoman: "Koshiba Yujiro", universitySlug: "tokyo-international-university", highSchoolSlug: "suijo-high-school", grade: 2, mark: "1:03:02", rank: 18, notes: null, pbs: [] },
+    { slug: "kaito-matsui", displayNameJa: "松井 海斗", displayNameRoman: "Matsui Kaito", universitySlug: "toyo-university", highSchoolSlug: "saitama-sakae-high-school", grade: 2, mark: "1:00:43", rank: 3, notes: null, pbs: [] },
+    { slug: "yudai-hara", displayNameJa: "原 悠太", displayNameRoman: "Hara Yudai", universitySlug: "teikyo-university", highSchoolSlug: "osaka-high-school", grade: 3, mark: "1:03:09", rank: 19, notes: null, pbs: [] },
+    { slug: "hiro-konda", displayNameJa: "近田 陽路", displayNameRoman: "Konda Hiro", universitySlug: "chuo-gakuin-university", highSchoolSlug: "toyokawa-high-school", grade: 4, mark: "1:00:45", rank: 4, notes: null, pbs: [] },
+    { slug: "riito-ikema", displayNameJa: "池間 凛斗", displayNameRoman: "Ikema Riito", universitySlug: "juntendo-university", highSchoolSlug: "kobayashi-high-school", grade: 2, mark: "1:01:20", rank: 9, notes: null, pbs: [] },
+    { slug: "mitsuki-hirayae", displayNameJa: "平八重 充希", displayNameRoman: "Hirayae Mitsuki", universitySlug: "yamanashi-gakuin-university", highSchoolSlug: "kagoshima-jitsugyo-high-school", grade: 4, mark: "1:01:33", rank: 12, notes: null, pbs: [] },
+    { slug: "shota-yamaguchi", displayNameJa: "山口 彰太", displayNameRoman: "Yamaguchi Shota", universitySlug: "nihon-university", highSchoolSlug: "sano-nichidai-high-school", grade: 3, mark: "1:02:08", rank: 17, notes: null, pbs: [] },
+    { slug: "juda-hyodo", displayNameJa: "兵藤 ジュダ", displayNameRoman: "Hyodo Juda", universitySlug: "tokai-university", highSchoolSlug: "tokai-university-shoyo-high-school", grade: 4, mark: "1:01:41", rank: 13, notes: null, pbs: [] },
+    { slug: "koki-kurimoto", displayNameJa: "栗本 航希", displayNameRoman: "Kurimoto Koki", universitySlug: "tokyo-university-of-agriculture", highSchoolSlug: "gifu-shotoku-high-school", grade: 3, mark: "1:01:21", rank: 10, notes: null, pbs: [] },
+    { slug: "kensei-sakai", displayNameJa: "酒井 健成", displayNameRoman: "Sakai Kensei", universitySlug: "kanagawa-university", highSchoolSlug: "aichi-high-school", grade: 4, mark: "1:01:21", rank: 11, notes: null, pbs: [] },
+    { slug: "takuma-ohama", displayNameJa: "大濱 逞真", displayNameRoman: "Ohama Takuma", universitySlug: "daito-bunka-university", highSchoolSlug: "sendai-ikuei-high-school", grade: 2, mark: "1:01:46", rank: 15, notes: null, pbs: [] },
+    { slug: "ryuto-hirashima", displayNameJa: "平島 龍斗", displayNameRoman: "Hirashima Ryuto", universitySlug: "nippon-sport-science-university", highSchoolSlug: "soyo-high-school", grade: 4, mark: "1:01:01", rank: 8, notes: null, pbs: [] },
+    { slug: "yusei-yoshiya", displayNameJa: "吉屋 佑晟", displayNameRoman: "Yoshiya Yusei", universitySlug: "rikkyo-university", highSchoolSlug: "hiroshima-kokusai-gakuin-high-school", grade: 4, mark: "1:03:27", rank: 20, notes: null, pbs: [] },
+    { slug: "so-kawasaki", displayNameJa: "川﨑 颯", displayNameRoman: "Kawasaki So", universitySlug: "kanto-student-union", highSchoolSlug: "tokai-university-osaka-gyosei-high-school", grade: 3, mark: "1:00:38", rank: null, notes: "OP", pbs: [] },
+  ];
+  const hakone102Leg2Entries = [
+    { slug: "kaito-iida", displayNameJa: "飯田 翔大", displayNameRoman: "Iida Kaito", universitySlug: "aoyama-gakuin-university", highSchoolSlug: "izumi-chuo-high-school", grade: 2, mark: "1:06:29", rank: 10, notes: null, pbs: [] },
+    { slug: "shunsuke-kuwata", displayNameJa: "桑田 駿介", displayNameRoman: "Kuwata Shunsuke", universitySlug: "komazawa-university", highSchoolSlug: "kurashiki-high-school", grade: 2, mark: "1:06:19", rank: 8, notes: null, pbs: [] },
+    { slug: "ryuto-uehara", displayNameJa: "上原 琉翔", displayNameRoman: "Uehara Ryuto", universitySlug: "kokugakuin-university", highSchoolSlug: "hokuzan-high-school", grade: 4, mark: "1:07:08", rank: 12, notes: null, pbs: [] },
+    { slug: "yamaguchi-tomonori", displayNameJa: "山口 智規", displayNameRoman: "Yamaguchi Tomonori", universitySlug: "waseda-university", highSchoolSlug: "gakuho-ishikawa-high-school", grade: 4, mark: "1:05:47", rank: 4, notes: null, pbs: [] },
+    { slug: "tameike-itta", displayNameJa: "溜池 一太", displayNameRoman: "Tameike Itta", universitySlug: "chuo-university", highSchoolSlug: "rakunan-high-school", grade: 4, mark: "1:06:06", rank: 6, notes: null, pbs: [] },
+    { slug: "victor-kimutai", displayNameJa: "Ｖ.キムタイ", displayNameRoman: "Victor Kimutai", universitySlug: "josai-university", highSchoolSlug: "mau-high-school", grade: 4, mark: "1:05:09", rank: 1, notes: null, pbs: [] },
+    { slug: "stephen-muthini", displayNameJa: "Ｓ.ムチーニ", displayNameRoman: "Stephen Muthini", universitySlug: "soka-university", highSchoolSlug: "mikuyuni-high-school", grade: 3, mark: "1:06:00", rank: 5, notes: null, pbs: [] },
+    { slug: "richard-etir", displayNameJa: "Ｒ.エティーリ", displayNameRoman: "Richard Etir", universitySlug: "tokyo-international-university", highSchoolSlug: "sil-high-school", grade: 3, mark: "1:06:14", rank: 7, notes: null, pbs: [] },
+    { slug: "mashu-nishimura", displayNameJa: "西村 真周", displayNameRoman: "Nishimura Mashu", universitySlug: "toyo-university", highSchoolSlug: "jiyugaoka-high-school", grade: 4, mark: "1:10:24", rank: 19, notes: null, pbs: [] },
+    { slug: "yoshihiro-kusuoka", displayNameJa: "楠岡 由浩", displayNameRoman: "Kusuoka Yoshihiro", universitySlug: "teikyo-university", highSchoolSlug: "keisei-high-school", grade: 3, mark: "1:11:50", rank: 20, notes: null, pbs: [] },
+    { slug: "taisei-ichikawa", displayNameJa: "市川 大世", displayNameRoman: "Ichikawa Taisei", universitySlug: "chuo-gakuin-university", highSchoolSlug: "koma-high-school", grade: 3, mark: "1:07:42", rank: 15, notes: null, pbs: [] },
+    { slug: "hiroto-yoshioka", displayNameJa: "吉岡 大翔", displayNameRoman: "Yoshioka Hiroto", universitySlug: "juntendo-university", highSchoolSlug: "saku-chosei-high-school", grade: 3, mark: "1:06:28", rank: 9, notes: null, pbs: [] },
+    { slug: "brian-kipyegon", displayNameJa: "Ｂ.キピエゴ", displayNameRoman: "Brian Kipyegon", universitySlug: "yamanashi-gakuin-university", highSchoolSlug: "kapkatet-high-school", grade: 3, mark: "1:05:43", rank: 3, notes: null, pbs: [] },
+    { slug: "shadrack-kipkemei", displayNameJa: "Ｓ.キップケメイ", displayNameRoman: "Shadrack Kipkemei", universitySlug: "nihon-university", highSchoolSlug: "irigitati-high-school", grade: 3, mark: "1:05:42", rank: 2, notes: null, pbs: [] },
+    { slug: "hisaya-hanaoka", displayNameJa: "花岡 寿哉", displayNameRoman: "Hanaoka Hisaya", universitySlug: "tokai-university", highSchoolSlug: "ueda-nishi-high-school", grade: 4, mark: "1:08:00", rank: 16, notes: null, pbs: [] },
+    { slug: "kazuma-maeda", displayNameJa: "前田 和摩", displayNameRoman: "Maeda Kazuma", universitySlug: "tokyo-university-of-agriculture", highSchoolSlug: "hotoku-gakuen-high-school", grade: 3, mark: "1:06:31", rank: 11, notes: null, pbs: [] },
+    { slug: "haruto-miyamoto", displayNameJa: "宮本 陽叶", displayNameRoman: "Miyamoto Haruto", universitySlug: "kanagawa-university", highSchoolSlug: "rakunan-high-school", grade: 4, mark: "1:07:26", rank: 13, notes: null, pbs: [] },
+    { slug: "kazura-munakata", displayNameJa: "棟方 一楽", displayNameRoman: "Munakata Kazura", universitySlug: "daito-bunka-university", highSchoolSlug: "hirosaki-jitsugyo-high-school", grade: 3, mark: "1:09:29", rank: 17, notes: null, pbs: [] },
+    { slug: "shunsuke-tajima", displayNameJa: "田島 駿介", displayNameRoman: "Tajima Shunsuke", universitySlug: "nippon-sport-science-university", highSchoolSlug: "asahino-high-school", grade: 4, mark: "1:07:41", rank: 14, notes: null, pbs: [] },
+    { slug: "kento-baba", displayNameJa: "馬場 賢人", displayNameRoman: "Baba Kento", universitySlug: "rikkyo-university", highSchoolSlug: "omuta-high-school", grade: 4, mark: "1:09:54", rank: 18, notes: null, pbs: [] },
+    { slug: "kio-furuhashi", displayNameJa: "古橋 希翁", displayNameRoman: "Furuhashi Kio", universitySlug: "kanto-student-union", highSchoolSlug: "iga-hakuho-high-school", grade: 3, mark: "1:07:59", rank: null, notes: "OP", pbs: [] },
+  ];
+  const hakone101Leg2Entries = [
+    { slug: "asahi-kuroda", displayNameJa: "黒田 朝日", displayNameRoman: "Asahi Kuroda", universitySlug: "aoyama-gakuin-university", highSchoolSlug: "tamano-konan-high-school", grade: 3, mark: "1:05:44", rank: 3, notes: "区間新", pbs: [{ discipline: EventDiscipline.m5000, mark: "13:29.56" }, { discipline: EventDiscipline.m10000, mark: "27:49.60" }, { discipline: EventDiscipline.half_marathon, mark: "1:01:39" }] },
+    { slug: "shinohara-kotaro", displayNameJa: "篠原 倖太朗", displayNameRoman: "Kotaro Shinohara", universitySlug: "komazawa-university", highSchoolSlug: "tomisato-high-school", grade: 4, mark: "1:06:14", rank: 4, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:15.70" }, { discipline: EventDiscipline.m10000, mark: "27:35.05" }, { discipline: EventDiscipline.half_marathon, mark: "1:00:11" }] },
+    { slug: "victor-kimutai", displayNameJa: "Ｖ.キムタイ", displayNameRoman: "Victor Kimutai", universitySlug: "josai-university", highSchoolSlug: "mau-high-school", grade: 3, mark: "1:06:55", rank: 10, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:23.60" }, { discipline: EventDiscipline.m10000, mark: "27:41.04" }, { discipline: EventDiscipline.half_marathon, mark: "1:02:21" }] },
+    { slug: "ogata-renato", displayNameJa: "緒方 澪那斗", displayNameRoman: "Renato Ogata", universitySlug: "toyo-university", highSchoolSlug: "ichiritsu-funabashi-high-school", grade: 3, mark: "1:08:50", rank: 20, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:54.45" }, { discipline: EventDiscipline.m10000, mark: "28:36.67" }, { discipline: EventDiscipline.half_marathon, mark: "1:01:42" }] },
+    { slug: "kiyoto-hirabayashi", displayNameJa: "平林 清澄", displayNameRoman: "Kiyoto Hirabayashi", universitySlug: "kokugakuin-university", highSchoolSlug: "mikata-high-school", grade: 4, mark: "1:06:38", rank: 8, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:55.30" }, { discipline: EventDiscipline.m10000, mark: "27:55.15" }, { discipline: EventDiscipline.half_marathon, mark: "1:01:23" }] },
+    { slug: "koizumi-itsuki", displayNameJa: "小泉 樹", displayNameRoman: "Itsuki Koizumi", universitySlug: "hosei-university", highSchoolSlug: "kokugakuin-kugayama-high-school", grade: 4, mark: "1:07:57", rank: 15, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:53.82" }, { discipline: EventDiscipline.m10000, mark: "28:50.64" }, { discipline: EventDiscipline.half_marathon, mark: "1:02:13" }] },
+    { slug: "yamaguchi-tomonori", displayNameJa: "山口 智規", displayNameRoman: "Tomonori Yamaguchi", universitySlug: "waseda-university", highSchoolSlug: "gakuho-ishikawa-high-school", grade: 3, mark: "1:07:01", rank: 12, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:30.19" }, { discipline: EventDiscipline.m10000, mark: "27:52.37" }, { discipline: EventDiscipline.half_marathon, mark: "1:01:16" }] },
+    { slug: "yoshida-hibiki", displayNameJa: "吉田 響", displayNameRoman: "Hibiki Yoshida", universitySlug: "soka-university", highSchoolSlug: "tokai-university-shoyo-high-school", grade: 4, mark: "1:05:43", rank: 2, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:39.94" }, { discipline: EventDiscipline.m10000, mark: "28:12.01" }, { discipline: EventDiscipline.half_marathon, mark: "1:01:45" }] },
+    { slug: "yamanaka-hiroki", displayNameJa: "山中 博生", displayNameRoman: "Hiroki Yamanaka", universitySlug: "teikyo-university", highSchoolSlug: "kusatsu-higashi-high-school", grade: 4, mark: "1:06:22", rank: 5, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "14:25.26" }, { discipline: EventDiscipline.m10000, mark: "28:04.54" }, { discipline: EventDiscipline.half_marathon, mark: "1:03:02" }] },
+    { slug: "munakata-kazura", displayNameJa: "棟方 一楽", displayNameRoman: "Kazura Munakata", universitySlug: "daito-bunka-university", highSchoolSlug: "hirosaki-jitsugyo-high-school", grade: 2, mark: "1:08:29", rank: 17, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "14:11.09" }, { discipline: EventDiscipline.m10000, mark: "28:32.36" }, { discipline: EventDiscipline.half_marathon, mark: "1:01:38" }] },
+    { slug: "baba-kento", displayNameJa: "馬場 賢人", displayNameRoman: "Kento Baba", universitySlug: "rikkyo-university", highSchoolSlug: "omuta-high-school", grade: 3, mark: "1:06:32", rank: 7, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:57.65" }, { discipline: EventDiscipline.m10000, mark: "28:40.67" }, { discipline: EventDiscipline.half_marathon, mark: "1:02:35" }] },
+    { slug: "dankan-maina", displayNameJa: "Ｄ.マイナ", displayNameRoman: "Dankan Maina", universitySlug: "senshu-university", highSchoolSlug: "senshu-university-kumamoto-high-school", grade: 1, mark: "1:07:29", rank: 13, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:31.54" }, { discipline: EventDiscipline.m10000, mark: "28:24.61" }, { discipline: EventDiscipline.half_marathon, mark: "1:01:47" }] },
+    { slug: "james-mutuku", displayNameJa: "Ｊ.ムトゥク", displayNameRoman: "James Mutuku", universitySlug: "yamanashi-gakuin-university", highSchoolSlug: "ngong-high-school", grade: 3, mark: "1:06:55", rank: 10, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:18.18" }, { discipline: EventDiscipline.m10000, mark: "27:23.09" }, { discipline: EventDiscipline.half_marathon, mark: "1:00:46" }] },
+    { slug: "yamazaki-tasuku", displayNameJa: "山崎 丞", displayNameRoman: "Tasuku Yamazaki", universitySlug: "nippon-sport-science-university", highSchoolSlug: "chuetsu-high-school", grade: 3, mark: "1:08:44", rank: 19, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:52.09" }, { discipline: EventDiscipline.m10000, mark: "28:19.33" }, { discipline: EventDiscipline.half_marathon, mark: "1:02:06" }] },
+    { slug: "yoshida-reishi", displayNameJa: "吉田 礼志", displayNameRoman: "Reishi Yoshida", universitySlug: "chuo-gakuin-university", highSchoolSlug: "takudai-koryo-high-school", grade: 4, mark: "1:06:24", rank: 6, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:30.30" }, { discipline: EventDiscipline.m10000, mark: "27:47.01" }, { discipline: EventDiscipline.half_marathon, mark: "1:00:31" }] },
+    { slug: "tameike-itta", displayNameJa: "溜池 一太", displayNameRoman: "Itta Tameike", universitySlug: "chuo-university", highSchoolSlug: "rakunan-high-school", grade: 3, mark: "1:06:39", rank: 9, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:28.29" }, { discipline: EventDiscipline.m10000, mark: "27:52.38" }, { discipline: EventDiscipline.half_marathon, mark: "1:03:18" }] },
+    { slug: "shadrack-kipkemei", displayNameJa: "Ｓ.キップケメイ", displayNameRoman: "Shadrack Kipkemei", universitySlug: "nihon-university", highSchoolSlug: "irigitati-high-school", grade: 2, mark: "1:07:31", rank: 14, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:20.86" }, { discipline: EventDiscipline.m10000, mark: "27:20.05" }, { discipline: EventDiscipline.half_marathon, mark: "1:00:16" }] },
+    { slug: "richard-etir", displayNameJa: "Ｒ.エティーリ", displayNameRoman: "Richard Etir", universitySlug: "tokyo-international-university", highSchoolSlug: "sil-high-school", grade: 2, mark: "1:05:31", rank: 1, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:00.17" }, { discipline: EventDiscipline.m10000, mark: "27:06.88" }, { discipline: EventDiscipline.half_marathon, mark: "0:59:32" }] },
+    { slug: "miyamoto-haruto", displayNameJa: "宮本 陽叶", displayNameRoman: "Haruto Miyamoto", universitySlug: "kanagawa-university", highSchoolSlug: "rakunan-high-school", grade: 3, mark: "1:08:29", rank: 17, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "14:06.75" }, { discipline: EventDiscipline.m10000, mark: "28:33.32" }, { discipline: EventDiscipline.half_marathon, mark: "1:02:14" }] },
+    { slug: "tamame-riku", displayNameJa: "玉目 陸", displayNameRoman: "Riku Tamame", universitySlug: "juntendo-university", highSchoolSlug: "izumi-chuo-high-school", grade: 1, mark: "1:08:22", rank: 16, notes: null, pbs: [{ discipline: EventDiscipline.m5000, mark: "13:57.45" }, { discipline: EventDiscipline.m10000, mark: "28:13.67" }] },
+    { slug: "morikawa-sota", displayNameJa: "森川 蒼太", displayNameRoman: "Sota Morikawa", universitySlug: "kanto-student-union", highSchoolSlug: "kojokan-high-school", grade: 4, mark: "1:08:58", rank: null, notes: "OP", pbs: [{ discipline: EventDiscipline.m5000, mark: "14:05.25" }, { discipline: EventDiscipline.m10000, mark: "28:37.79" }, { discipline: EventDiscipline.half_marathon, mark: "1:02:14" }] },
+  ];
+  const protectedProfileSlugs = new Set(["asahi-kuroda", "kudo-shinsaku", "kiyoto-hirabayashi"]);
+  const verifiedHakoneSourceBySlug = new Map([
+    ["asahi-kuroda", hakoneOfficialSource.id],
+    ["kudo-shinsaku", hakoneOfficialKudoSource.id],
+  ]);
 
   for (const player of players) {
     const person = await prisma.person.upsert({
@@ -1053,6 +2009,7 @@ async function main() {
         hometown: player.hometown,
         nationality: player.nationality,
         registeredPrefecture: player.registeredPrefecture,
+        status: player.profileStatus ?? DataStatus.pending,
       },
       create: {
         slug: player.slug,
@@ -1064,7 +2021,7 @@ async function main() {
         nationality: player.nationality,
         registeredPrefecture: player.registeredPrefecture,
         type: "athlete",
-        status: DataStatus.pending,
+        status: player.profileStatus ?? DataStatus.pending,
       },
     });
 
@@ -1080,6 +2037,8 @@ async function main() {
           startYear: player.universityStart.getFullYear(),
           endYear: player.universityEnd.getFullYear(),
           grade: player.grade,
+          faculty: player.faculty,
+          department: player.department,
           status: DataStatus.pending,
           sourceId: source.id,
         },
@@ -1162,48 +2121,73 @@ async function main() {
     }
   }
 
-  for (const entry of hakone102Leg5Entries) {
-    const university = universityBySlug.get(entry.universitySlug);
-    const highSchool = highSchoolBySlug.get(entry.highSchoolSlug);
+  async function upsertRaceEntries(input: {
+    entries: SeedRaceEntry[];
+    race: Race;
+    sourceId: string;
+    pbNotes: string;
+  }) {
+    for (const entry of input.entries) {
+      const isCompetitionOnlyTeam = entry.universitySlug === "kanto-student-union";
+      const university = universityBySlug.get(entry.universitySlug);
+      const highSchool = highSchoolBySlug.get(entry.highSchoolSlug);
 
-    if (!university || !highSchool) {
-      throw new Error(`Missing organization for ${entry.displayNameJa}`);
-    }
+      if (!university || !highSchool) {
+        throw new Error(`Missing organization for ${entry.displayNameJa}`);
+      }
 
-    const person = await prisma.person.upsert({
-      where: { slug: entry.slug },
-      update: {
-        displayNameJa: entry.displayNameJa,
-        displayNameRoman: entry.displayNameRoman,
-      },
-      create: {
-        slug: entry.slug,
-        displayNameJa: entry.displayNameJa,
-        displayNameRoman: entry.displayNameRoman,
-        type: "athlete",
-        status: DataStatus.pending,
-      },
-    });
+      const person = await prisma.person.upsert({
+        where: { slug: entry.slug },
+        update: {
+          displayNameJa: entry.displayNameJa,
+          displayNameRoman: entry.displayNameRoman,
+        },
+        create: {
+          slug: entry.slug,
+          displayNameJa: entry.displayNameJa,
+          displayNameRoman: entry.displayNameRoman,
+          type: "athlete",
+          status: DataStatus.pending,
+        },
+      });
 
-    if (entry.slug !== "asahi-kuroda") {
-      const dates = academicDatesForGrade(entry.grade);
+      if (!protectedProfileSlugs.has(entry.slug) && !isCompetitionOnlyTeam) {
+        const dates = academicDatesForGrade(entry.grade);
 
-      await prisma.membership.deleteMany({ where: { personId: person.id } });
-      await prisma.membership.createMany({
-        data: [
-          {
-            personId: person.id,
-            organizationId: university.id,
-            type: MembershipType.enrolled,
-            startDate: dates.universityStart,
-            endDate: dates.universityEnd,
-            startYear: dates.universityStart.getFullYear(),
-            endYear: dates.universityEnd.getFullYear(),
-            grade: entry.grade,
-            status: DataStatus.pending,
-            sourceId: ntvHakone102Leg5Source.id,
-          },
-          {
+        await prisma.membership.deleteMany({ where: { personId: person.id } });
+        await prisma.membership.createMany({
+          data: [
+            {
+              personId: person.id,
+              organizationId: university.id,
+              type: MembershipType.enrolled,
+              startDate: dates.universityStart,
+              endDate: dates.universityEnd,
+              startYear: dates.universityStart.getFullYear(),
+              endYear: dates.universityEnd.getFullYear(),
+              grade: entry.grade,
+              status: DataStatus.pending,
+              sourceId: input.sourceId,
+            },
+            {
+              personId: person.id,
+              organizationId: highSchool.id,
+              type: MembershipType.enrolled,
+              startDate: dates.highSchoolStart,
+              endDate: dates.highSchoolEnd,
+              startYear: dates.highSchoolStart.getFullYear(),
+              endYear: dates.highSchoolEnd.getFullYear(),
+              status: DataStatus.pending,
+              sourceId: input.sourceId,
+            },
+          ],
+        });
+      } else if (isCompetitionOnlyTeam) {
+        await prisma.membership.deleteMany({ where: { personId: person.id } });
+        const dates = academicDatesForGrade(entry.grade);
+
+        await prisma.membership.create({
+          data: {
             personId: person.id,
             organizationId: highSchool.id,
             type: MembershipType.enrolled,
@@ -1212,38 +2196,65 @@ async function main() {
             startYear: dates.highSchoolStart.getFullYear(),
             endYear: dates.highSchoolEnd.getFullYear(),
             status: DataStatus.pending,
-            sourceId: ntvHakone102Leg5Source.id,
-          },
-        ],
-      });
-
-      await prisma.personalBest.deleteMany({ where: { personId: person.id } });
-      for (const pb of entry.pbs) {
-        await prisma.personalBest.create({
-          data: {
-            personId: person.id,
-            discipline: pb.discipline,
-            mark: pb.mark,
-            status: DataStatus.pending,
-            notes: "第102回箱根駅伝 NTV ページの持ちタイム摘要。PB としての公式確認は後続タスクで再確認。",
-            sourceId: ntvHakone102Leg5Source.id,
+            sourceId: input.sourceId,
           },
         });
       }
-    }
 
-    await replaceRaceResult({
-      personId: person.id,
-      organizationId: university.id,
-      raceId: hakone102Leg5.id,
-      mark: entry.mark,
-      rank: entry.rank,
-      gradeAtRace: entry.grade,
-      status: DataStatus.pending,
-      notes: entry.notes,
-      sourceId: entry.slug === "asahi-kuroda" ? hakoneOfficialSource.id : ntvHakone102Leg5Source.id,
-    });
+      if (!protectedProfileSlugs.has(entry.slug)) {
+        await prisma.personalBest.deleteMany({ where: { personId: person.id } });
+        for (const pb of entry.pbs) {
+          await prisma.personalBest.create({
+            data: {
+              personId: person.id,
+              discipline: pb.discipline,
+              mark: pb.mark,
+              status: DataStatus.pending,
+              notes: input.pbNotes,
+              sourceId: input.sourceId,
+            },
+          });
+        }
+      }
+
+      await replaceRaceResult({
+        personId: person.id,
+        organizationId: university.id,
+        raceId: input.race.id,
+        mark: entry.mark,
+        rank: entry.rank,
+        gradeAtRace: entry.grade,
+        status: DataStatus.pending,
+        notes: entry.notes,
+        sourceId: verifiedHakoneSourceBySlug.get(entry.slug) ?? input.sourceId,
+      });
+    }
   }
+
+  await upsertRaceEntries({
+    entries: hakone102Leg1Entries,
+    race: hakone102Leg1,
+    sourceId: ntvHakone102Leg1Source.id,
+    pbNotes: "第102回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は後続タスクで再確認。",
+  });
+  await upsertRaceEntries({
+    entries: hakone102Leg2Entries,
+    race: hakone102Leg2,
+    sourceId: ntvHakone102Leg2Source.id,
+    pbNotes: "第102回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は後続タスクで再確認。",
+  });
+  await upsertRaceEntries({
+    entries: hakone102Leg5Entries,
+    race: hakone102Leg5,
+    sourceId: ntvHakone102Leg5Source.id,
+    pbNotes: "第102回箱根駅伝 NTV ページの持ちタイム摘要。PB としての公式確認は後続タスクで再確認。",
+  });
+  await upsertRaceEntries({
+    entries: hakone101Leg2Entries,
+    race: hakone101Leg2,
+    sourceId: ntvHakone101Leg2Source.id,
+    pbNotes: "第101回箱根駅伝 NTV ページの持ちタイム摘要。PB としての公式確認は後続タスクで再確認。",
+  });
 }
 
 main()

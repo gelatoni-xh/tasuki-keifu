@@ -19,21 +19,34 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
           </p>
           <h1 className="text-xl font-semibold">{dictionary.site.name}</h1>
         </Link>
-        <nav className="flex items-center gap-2 text-sm text-[#59615c]" aria-label="Language">
-          {locales.map((targetLocale) => (
-            <Link
-              className={
-                targetLocale === locale
-                  ? "border border-[#ded8cc] px-2 py-1 text-[#8a1f2d]"
-                  : "px-2 py-1 transition hover:text-[#8a1f2d]"
-              }
-              href={`/${targetLocale}${path}`}
-              key={targetLocale}
-            >
-              {dictionary.language[targetLocale]}
+        <div className="flex items-center gap-5">
+          <nav className="hidden items-center gap-3 text-sm font-medium text-[#59615c] sm:flex" aria-label="Primary">
+            <Link className="transition hover:text-[#8a1f2d]" href={`/${locale}/players`}>
+              {dictionary.nav.players}
             </Link>
-          ))}
-        </nav>
+            <Link className="transition hover:text-[#8a1f2d]" href={`/${locale}/competitions`}>
+              {dictionary.nav.competitions}
+            </Link>
+            <Link className="transition hover:text-[#8a1f2d]" href={`/${locale}/organizations`}>
+              {dictionary.nav.organizations}
+            </Link>
+          </nav>
+          <nav className="flex items-center gap-2 text-sm text-[#59615c]" aria-label="Language">
+            {locales.map((targetLocale) => (
+              <Link
+                className={
+                  targetLocale === locale
+                    ? "border border-[#ded8cc] px-2 py-1 text-[#8a1f2d]"
+                    : "px-2 py-1 transition hover:text-[#8a1f2d]"
+                }
+                href={`/${targetLocale}${path}`}
+                key={targetLocale}
+              >
+                {dictionary.language[targetLocale]}
+              </Link>
+            ))}
+          </nav>
+        </div>
       </div>
     </header>
   );

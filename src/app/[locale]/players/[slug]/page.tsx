@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { Source } from "@prisma/client";
+import type { OrganizationType, Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
@@ -10,6 +10,7 @@ import {
   formatMembershipPeriod,
   getCurrentMembership,
   getHighSchoolMembership,
+  getMembershipOverlap,
   getUniversityMembership,
   sortMembershipsByStartDate,
 } from "@/lib/membership";
@@ -41,6 +42,70 @@ function SourceLink({ source }: { source: Pick<Source, "name" | "url"> }) {
       <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
     </a>
   );
+}
+
+function OrganizationInlineLink({
+  locale,
+  organization,
+  muted = false,
+}: {
+  locale: string;
+  organization: { slug: string; nameJa: string };
+  muted?: boolean;
+}) {
+  return (
+    <Link
+      className={
+        muted
+          ? "text-[#59615c] underline-offset-4 hover:text-[#8a1f2d] hover:underline"
+          : "text-[#8a1f2d] underline-offset-4 hover:underline"
+      }
+      href={`/${locale}/organizations/${organization.slug}`}
+    >
+      {organization.nameJa}
+    </Link>
+  );
+}
+
+type MembershipForRelation = {
+  organizationId: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  startYear: number | null;
+  endYear: number | null;
+  organization: { type: OrganizationType };
+};
+
+function buildOrganizationRelationshipTag(
+  baseLabel: string,
+  playerMemberships: MembershipForRelation[],
+  relatedMemberships: MembershipForRelation[],
+  organizationType: OrganizationType,
+  overlapLabels: {
+    overlap: string;
+    notOverlap: string;
+    unknown: string;
+  },
+) {
+  const playerMatches = playerMemberships.filter((membership) => membership.organization.type === organizationType);
+  const relatedMatches = relatedMemberships.filter((membership) => membership.organization.type === organizationType);
+  const overlapStates = playerMatches.flatMap((playerMembership) =>
+    relatedMatches
+      .filter((relatedMembership) => relatedMembership.organizationId === playerMembership.organizationId)
+      .map((relatedMembership) => getMembershipOverlap(playerMembership, relatedMembership)),
+  );
+
+  if (overlapStates.length === 0) {
+    return null;
+  }
+
+  const overlapLabel = overlapStates.includes("overlap")
+    ? overlapLabels.overlap
+    : overlapStates.includes("not_overlap")
+      ? overlapLabels.notOverlap
+      : overlapLabels.unknown;
+
+  return `${baseLabel}・${overlapLabel}`;
 }
 
 export default async function PlayerDetailPage({ params }: PlayerDetailPageProps) {
@@ -138,15 +203,57 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
       memberships: {
         include: { organization: true },
       },
+      raceResults: {
+        select: { raceId: true },
+      },
     },
     take: 8,
+  });
+  const relatedPlayersWithTags = relatedPlayers.map((related) => {
+    const sameRaceCount = related.raceResults.filter((result) => relatedRaceIds.includes(result.raceId)).length;
+    const overlapLabels = {
+      overlap: dictionary.players.relationshipTags.overlap,
+      notOverlap: dictionary.players.relationshipTags.notOverlap,
+      unknown: dictionary.players.relationshipTags.unknownOverlap,
+    };
+    const tags = [
+      buildOrganizationRelationshipTag(
+        dictionary.players.relationshipTags.sameUniversity,
+        player.memberships,
+        related.memberships,
+        "university",
+        overlapLabels,
+      ),
+      buildOrganizationRelationshipTag(
+        dictionary.players.relationshipTags.sameHighSchool,
+        player.memberships,
+        related.memberships,
+        "high_school",
+        overlapLabels,
+      ),
+      buildOrganizationRelationshipTag(
+        dictionary.players.relationshipTags.sameCorporateTeam,
+        player.memberships,
+        related.memberships,
+        "corporate_team",
+        overlapLabels,
+      ),
+      sameRaceCount > 0
+        ? interpolate(dictionary.players.relationshipTags.sameRace, { count: sameRaceCount })
+        : null,
+    ].filter((tag) => tag !== null);
+
+    return {
+      ...related,
+      relationshipTags: tags,
+    };
   });
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
       <SiteHeader locale={locale} path={`/players/${player.slug}`} />
       <main className="px-5 py-10">
-        <div className="mx-auto max-w-5xl space-y-8">
+        <div className="mx-auto max-w-6xl space-y-8">
           <Link className="inline-flex items-center gap-2 text-sm font-medium text-[#8a1f2d]" href={`/${locale}/players`}>
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             {dictionary.players.backToList}
@@ -176,12 +283,22 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#59615c]">{dictionary.players.currentAffiliation}</dt>
                   <dd className="font-medium">
-                    {currentMembership?.organization.nameJa ?? dictionary.common.emptyDash}
+                    {currentMembership?.organization ? (
+                      <OrganizationInlineLink locale={locale} organization={currentMembership.organization} />
+                    ) : (
+                      dictionary.common.emptyDash
+                    )}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#59615c]">{dictionary.players.university}</dt>
-                  <dd className="font-medium">{university?.organization.nameJa ?? dictionary.common.emptyDash}</dd>
+                  <dd className="font-medium">
+                    {university?.organization ? (
+                      <OrganizationInlineLink locale={locale} organization={university.organization} />
+                    ) : (
+                      dictionary.common.emptyDash
+                    )}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#59615c]">{dictionary.players.grade}</dt>
@@ -193,7 +310,13 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#59615c]">{dictionary.players.highSchool}</dt>
-                  <dd className="font-medium">{highSchool?.organization.nameJa ?? dictionary.common.emptyDash}</dd>
+                  <dd className="font-medium">
+                    {highSchool?.organization ? (
+                      <OrganizationInlineLink locale={locale} organization={highSchool.organization} />
+                    ) : (
+                      dictionary.common.emptyDash
+                    )}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#59615c]">{dictionary.players.hometown}</dt>
@@ -246,7 +369,9 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
             <div className="mt-4 divide-y divide-[#e7e1d8]">
               {sortedMemberships.map((membership) => (
                 <div className="grid gap-2 py-3 text-sm sm:grid-cols-[1fr_1fr_1fr]" key={membership.id}>
-                  <span className="font-medium">{membership.organization.nameJa}</span>
+                  <span className="font-medium">
+                    <OrganizationInlineLink locale={locale} organization={membership.organization} />
+                  </span>
                   <span className="text-[#59615c]">{formatOrganizationType(membership.organization.type, locale)}</span>
                   <span className="text-[#59615c]">
                     {formatMembershipPeriod(membership, locale) || dictionary.common.emptyDash}
@@ -258,9 +383,9 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
           <section className="border border-[#ded8cc] bg-white p-5">
             <h2 className="text-lg font-semibold">{dictionary.players.raceRecord}</h2>
-            <div className="mt-4 hidden overflow-x-auto md:block">
-              <div className="min-w-[1040px]">
-                <div className="grid grid-cols-[104px_180px_130px_100px_72px_150px_140px_1fr] border-b border-[#ded8cc] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+            <div className="mt-4 hidden md:block">
+              <div>
+                <div className="grid grid-cols-[0.8fr_1.45fr_1.1fr_0.8fr_0.55fr_1.35fr_1.1fr_1.25fr] border-b border-[#ded8cc] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
                   <span>{dictionary.players.raceDate}</span>
                   <span>{dictionary.players.raceName}</span>
                   <span>{dictionary.players.raceEvent}</span>
@@ -277,17 +402,26 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
                     return (
                       <div
-                        className="grid grid-cols-[104px_180px_130px_100px_72px_150px_140px_1fr] px-3 py-3 text-sm"
+                        className="grid grid-cols-[0.8fr_1.45fr_1.1fr_0.8fr_0.55fr_1.35fr_1.1fr_1.25fr] px-3 py-3 text-sm"
                         key={result.id}
                       >
                         <span className="text-[#59615c]">{raceDate || dictionary.common.emptyDash}</span>
-                        <span className="font-medium">{edition.shortName ?? edition.officialName}</span>
+                        <Link
+                          className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                          href={`/${locale}/competitions/${edition.slug}`}
+                        >
+                          {edition.shortName ?? edition.officialName}
+                        </Link>
                         <span>{result.race.name}</span>
                         <span>{result.mark ?? dictionary.common.notEntered}</span>
                         <span>{formatRank(result.rank, locale) || dictionary.common.emptyDash}</span>
                         <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
                         <span className="text-[#59615c]">
-                          {result.organization?.nameJa ?? dictionary.common.emptyDash}
+                          {result.organization ? (
+                            <OrganizationInlineLink locale={locale} muted organization={result.organization} />
+                          ) : (
+                            dictionary.common.emptyDash
+                          )}
                         </span>
                         <span className="text-[#59615c]">
                           {isPublicSource(result.source) ? <SourceLink source={result.source} /> : dictionary.common.emptyDash}
@@ -309,7 +443,14 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-xs font-medium text-[#8b938e]">{raceDate || dictionary.common.emptyDash}</p>
-                        <h3 className="mt-1 font-semibold">{edition.shortName ?? edition.officialName}</h3>
+                        <h3 className="mt-1 font-semibold">
+                          <Link
+                            className="text-[#8a1f2d] underline-offset-4 hover:underline"
+                            href={`/${locale}/competitions/${edition.slug}`}
+                          >
+                            {edition.shortName ?? edition.officialName}
+                          </Link>
+                        </h3>
                       </div>
                       <div className="text-right">
                         <p className="text-xs font-medium text-[#8b938e]">{dictionary.players.raceRank}</p>
@@ -327,7 +468,13 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                       </div>
                       <div>
                         <dt className="text-xs font-medium text-[#8b938e]">{dictionary.players.currentAffiliation}</dt>
-                        <dd className="mt-1">{result.organization?.nameJa ?? dictionary.common.emptyDash}</dd>
+                        <dd className="mt-1">
+                          {result.organization ? (
+                            <OrganizationInlineLink locale={locale} muted organization={result.organization} />
+                          ) : (
+                            dictionary.common.emptyDash
+                          )}
+                        </dd>
                       </div>
                       <div>
                         <dt className="text-xs font-medium text-[#8b938e]">{dictionary.players.raceNotes}</dt>
@@ -353,8 +500,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
           <section className="border border-[#ded8cc] bg-white p-5">
             <h2 className="text-lg font-semibold">{dictionary.players.relatedPlayers}</h2>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {relatedPlayers.length > 0 ? (
-                relatedPlayers.map((related) => (
+              {relatedPlayersWithTags.length > 0 ? (
+                relatedPlayersWithTags.map((related) => (
                   <Link
                     className="border border-[#e7e1d8] p-3 transition hover:border-[#8a1f2d]"
                     href={`/${locale}/players/${related.slug}`}
@@ -364,6 +511,13 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                     <p className="mt-1 text-sm text-[#59615c]">
                       {related.memberships.map((membership) => membership.organization.nameJa).join(" / ")}
                     </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {related.relationshipTags.map((tag) => (
+                        <span className="border border-[#ded8cc] px-2 py-1 text-xs text-[#8a1f2d]" key={tag}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </Link>
                 ))
               ) : (

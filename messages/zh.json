@@ -13,6 +13,11 @@
     "zh": "中文",
     "en": "EN"
   },
+  "nav": {
+    "players": "选手",
+    "competitions": "赛事",
+    "organizations": "组织"
+  },
   "common": {
     "search": "搜索",
     "searchPlaceholder": "按选手名、大学名、高中名搜索",
@@ -27,8 +32,10 @@
   },
   "home": {
     "recentPlayers": "最近更新的选手",
+    "confirmedPlayers": "已确认的选手",
     "viewPlayers": "查看选手一览",
     "viewAll": "查看全部",
+    "viewProfile": "查看选手详情",
     "updateQueue": "近期补完计划",
     "updateQueueTag": "数据队列",
     "updateStatus": {
@@ -36,14 +43,16 @@
       "pending": "待处理"
     },
     "updateScope": {
-      "race": "比赛结果"
+      "race": "比赛结果",
+      "source": "来源整理"
     },
     "updateDetails": {
-      "asahiKuroda": "作为深挖样本，正在整理 PB、所属履历和主要比赛。",
-      "hakone102Leg5": "从黑田朝日扩展出的同一区间结果，后续补齐。",
-      "shinsakuKudo": "第102回箱根驿传5区中下一位优先确认的选手。",
+      "shinsakuKudo": "从5区结果创建的基础页，正在确认 PB、所属履历和过往箱根记录。",
       "kiyotoHirabayashi": "目前只有基础页，后续重新确认 PB、出场记录和来源。",
-      "shunkyoYoshii": "目前只有基础页，后续重新确认 PB、出场记录和来源。"
+      "shunkyoYoshii": "目前只有基础页，后续重新确认 PB、出场记录和来源。",
+      "hakone102Leg5Sources": "整理 NTV 来源的区间结果和持有成绩摘要，后续补官方结果与来源展示。",
+      "hakone101Leg2": "从黑田朝日过往出场扩展出的同一区间结果，后续补齐。",
+      "kudoHakoneTimes": "后续用官方结果确认第100回、第101回的5区具体时间。"
     }
   },
   "players": {
@@ -51,6 +60,9 @@
     "backToList": "返回选手一览",
     "listDescription": "V0.1 从青山学院大学、国学院大学、中央大学的样例数据开始。",
     "resultCount": "{count}人",
+    "pageSummary": "第 {current} / {total} 页",
+    "previousPage": "上一页",
+    "nextPage": "下一页",
     "emptyTitle": "还没有符合条件的选手。",
     "emptyDescription": "请调整搜索词或筛选条件。",
     "organizationTypeFilter": "组织类型",
@@ -83,9 +95,52 @@
     "raceNotes": "备注",
     "relatedPlayers": "相关选手",
     "relatedPlayersEmpty": "还没有收录相关选手。",
+    "relationshipTags": {
+      "sameUniversity": "同大学",
+      "sameHighSchool": "同高中",
+      "sameCorporateTeam": "同实业团",
+      "overlap": "同期",
+      "notOverlap": "时期不同",
+      "unknownOverlap": "时期未确认",
+      "sameRace": "同台竞技 {count}次"
+    },
     "dataSource": "数据来源",
     "source": "来源",
     "status": "状态"
+  },
+  "competitions": {
+    "listTitle": "赛事一览",
+    "listDescription": "查看已收录的赛事届次和比赛结果。",
+    "resultCount": "{count}项",
+    "backToList": "返回赛事一览",
+    "edition": "届次",
+    "date": "日期",
+    "raceUnits": "比赛单元",
+    "raceCount": "{count}项",
+    "resultCountLabel": "结果数",
+    "results": "结果",
+    "athlete": "选手",
+    "organization": "所属",
+    "mark": "成绩",
+    "rank": "排名",
+    "notes": "备注",
+    "source": "来源",
+    "emptyResults": "这个比赛单元还没有收录结果。"
+  },
+  "organizations": {
+    "listTitle": "组织一览",
+    "listDescription": "查看高中、大学、实业团等组织及其相关选手。",
+    "resultCount": "{count}项",
+    "backToList": "返回组织一览",
+    "affiliatedPlayers": "相关选手",
+    "currentPlayers": "当前所属选手",
+    "formerPlayers": "过往所属选手",
+    "raceResults": "相关比赛结果",
+    "location": "所在地",
+    "type": "组织类型",
+    "website": "官方网站",
+    "emptyPlayers": "这个组织还没有收录相关选手。",
+    "emptyResults": "这个组织还没有收录相关比赛结果。"
   },
   "status": {
     "verified": "已确认",

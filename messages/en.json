@@ -13,6 +13,11 @@
     "zh": "中文",
     "en": "EN"
   },
+  "nav": {
+    "players": "Athletes",
+    "competitions": "Competitions",
+    "organizations": "Organizations"
+  },
   "common": {
     "search": "Search",
     "searchPlaceholder": "Search by athlete, university, or high school",
@@ -27,8 +32,10 @@
   },
   "home": {
     "recentPlayers": "Recently updated athletes",
+    "confirmedPlayers": "Verified athletes",
     "viewPlayers": "View athletes",
     "viewAll": "View all",
+    "viewProfile": "View profile",
     "updateQueue": "Upcoming data work",
     "updateQueueTag": "Data queue",
     "updateStatus": {
@@ -36,14 +43,16 @@
       "pending": "Pending"
     },
     "updateScope": {
-      "race": "Race results"
+      "race": "Race results",
+      "source": "Source review"
     },
     "updateDetails": {
-      "asahiKuroda": "Deep sample in progress: PBs, affiliation history, and key races.",
-      "hakone102Leg5": "Same-leg results expanded from Asahi Kuroda will be completed next.",
-      "shinsakuKudo": "Next athlete to verify from Hakone Ekiden 102, leg 5.",
+      "shinsakuKudo": "Basic page created from leg 5; PBs, affiliations, and past Hakone records are being reviewed.",
       "kiyotoHirabayashi": "Basic page only. PBs, race history, and sources need review.",
-      "shunkyoYoshii": "Basic page only. PBs, race history, and sources need review."
+      "shunkyoYoshii": "Basic page only. PBs, race history, and sources need review.",
+      "hakone102Leg5Sources": "NTV leg results and listed marks will be reconciled with official results and source display.",
+      "hakone101Leg2": "Same-leg results expanded from Asahi Kuroda's past Hakone appearance will be completed.",
+      "kudoHakoneTimes": "Leg 5 times for the 100th and 101st Hakone will be verified from official results."
     }
   },
   "players": {
@@ -51,6 +60,9 @@
     "backToList": "Back to athletes",
     "listDescription": "V0.1 starts with sample data for Aoyama Gakuin University, Kokugakuin University, and Chuo University.",
     "resultCount": "{count} athletes",
+    "pageSummary": "Page {current} of {total}",
+    "previousPage": "Previous",
+    "nextPage": "Next",
     "emptyTitle": "No athletes match these filters yet.",
     "emptyDescription": "Try changing the search term or filters.",
     "organizationTypeFilter": "Organization type",
@@ -83,9 +95,52 @@
     "raceNotes": "Notes",
     "relatedPlayers": "Related athletes",
     "relatedPlayersEmpty": "No related athletes have been recorded yet.",
+    "relationshipTags": {
+      "sameUniversity": "Same university",
+      "sameHighSchool": "Same high school",
+      "sameCorporateTeam": "Same corporate team",
+      "overlap": "Same period",
+      "notOverlap": "Different period",
+      "unknownOverlap": "Period unknown",
+      "sameRace": "Raced together {count} times"
+    },
     "dataSource": "Data sources",
     "source": "Source",
     "status": "Status"
+  },
+  "competitions": {
+    "listTitle": "Competitions",
+    "listDescription": "Browse recorded competition editions and results.",
+    "resultCount": "{count} editions",
+    "backToList": "Back to competitions",
+    "edition": "Edition",
+    "date": "Date",
+    "raceUnits": "Race units",
+    "raceCount": "{count} units",
+    "resultCountLabel": "Results",
+    "results": "Results",
+    "athlete": "Athlete",
+    "organization": "Affiliation",
+    "mark": "Mark",
+    "rank": "Rank",
+    "notes": "Notes",
+    "source": "Source",
+    "emptyResults": "No results have been recorded for this race unit yet."
+  },
+  "organizations": {
+    "listTitle": "Organizations",
+    "listDescription": "Browse schools, universities, corporate teams, and their related athletes.",
+    "resultCount": "{count} organizations",
+    "backToList": "Back to organizations",
+    "affiliatedPlayers": "Related athletes",
+    "currentPlayers": "Current athletes",
+    "formerPlayers": "Former athletes",
+    "raceResults": "Related race results",
+    "location": "Location",
+    "type": "Organization type",
+    "website": "Official site",
+    "emptyPlayers": "No athletes have been recorded for this organization yet.",
+    "emptyResults": "No race results have been recorded for this organization yet."
   },
   "status": {
     "verified": "Verified",

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { DataStatus, OrganizationType, Prisma } from "@prisma/client";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { CascadingOrganizationFilters } from "@/components/cascading-organization-filters";
 import { prisma } from "@/lib/prisma";
 import { formatDiscipline, formatOrganizationType, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
@@ -21,10 +22,12 @@ type PlayersPageProps = {
     organizationType?: string;
     organization?: string;
     status?: string;
+    page?: string;
   }>;
 };
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
+const pageSize = 10;
 const allowedOrganizationTypes: OrganizationType[] = [
   "junior_high_school",
   "high_school",
@@ -44,6 +47,42 @@ function includesNormalized(value: string | null | undefined, query: string) {
   return normalizeSearchText(value).includes(query);
 }
 
+function buildPlayersPath(locale: string, params: Record<string, string | number | undefined>) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      searchParams.set(key, String(value));
+    }
+  });
+
+  const queryString = searchParams.toString();
+
+  return `/${locale}/players${queryString ? `?${queryString}` : ""}`;
+}
+
+function getPaginationItems(currentPage: number, totalPages: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+  const validPages = [...pages].filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+  const items: Array<number | "ellipsis"> = [];
+
+  validPages.forEach((page, index) => {
+    const previous = validPages[index - 1];
+
+    if (previous && page - previous > 1) {
+      items.push("ellipsis");
+    }
+
+    items.push(page);
+  });
+
+  return items;
+}
+
 export default async function PlayersPage({ params, searchParams }: PlayersPageProps) {
   const { locale: localeParam } = await params;
   const queryParams = await searchParams;
@@ -56,13 +95,27 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   const dictionary = getDictionary(locale);
   const query = queryParams.q?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
-  const organizationType = allowedOrganizationTypes.includes(queryParams.organizationType as OrganizationType)
+  const requestedOrganizationType = allowedOrganizationTypes.includes(queryParams.organizationType as OrganizationType)
     ? (queryParams.organizationType as OrganizationType)
     : "";
   const organizationSlug = queryParams.organization?.trim() ?? "";
+  const selectedOrganization = organizationSlug
+    ? await prisma.organization.findFirst({
+        where: {
+          slug: organizationSlug,
+          memberships: {
+            some: {
+              person: { type: "athlete" },
+            },
+          },
+        },
+      })
+    : null;
+  const organizationType = selectedOrganization?.type ?? requestedOrganizationType;
   const status = allowedStatuses.includes(queryParams.status as DataStatus)
     ? (queryParams.status as DataStatus)
     : "";
+  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
   const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status);
   const pagePathWithQuery = `/players${hasActiveFilters ? `?${new URLSearchParams(
     Object.entries({
@@ -138,6 +191,16 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
         return personMatched || organizationMatched;
       })
     : players;
+  const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / pageSize));
+  const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+  const paginatedPlayers = filteredPlayers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginationParams = {
+    q: query,
+    organizationType,
+    organization: organizationSlug,
+    status,
+  };
+  const paginationItems = getPaginationItems(currentPage, totalPages);
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -148,7 +211,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             <div className="flex flex-col justify-between gap-4 border-b border-[#ded8cc] pb-6 sm:flex-row sm:items-end">
               <div>
                 <h1 className="text-3xl font-semibold">{dictionary.players.listTitle}</h1>
-                <p className="mt-2 text-sm text-[#59615c]">{dictionary.players.listDescription}</p>
               </div>
               <p className="text-sm font-medium text-[#8a1f2d]">
                 {interpolate(dictionary.players.resultCount, { count: filteredPlayers.length })}
@@ -170,38 +232,23 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                 />
               </label>
 
-              <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-                <SlidersHorizontal className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
-                <span className="sr-only">{dictionary.players.organizationTypeFilter}</span>
-                <select
-                  className="w-full bg-transparent text-sm outline-none"
-                  defaultValue={organizationType}
-                  name="organizationType"
-                >
-                  <option value="">{dictionary.common.all}</option>
-                  {allowedOrganizationTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {formatOrganizationType(type, locale)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-                <span className="sr-only">{dictionary.players.organizationFilter}</span>
-                <select
-                  className="w-full bg-transparent text-sm outline-none"
-                  defaultValue={organizationSlug}
-                  name="organization"
-                >
-                  <option value="">{dictionary.common.all}</option>
-                  {organizationOptions.map((organization) => (
-                    <option key={organization.id} value={organization.slug}>
-                      {organization.shortName ?? organization.nameJa}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <CascadingOrganizationFilters
+                allLabel={dictionary.common.all}
+                organizationLabel={dictionary.players.organizationFilter}
+                organizationOptions={organizationOptions.map((organization) => ({
+                  id: organization.id,
+                  label: organization.shortName ?? organization.nameJa,
+                  slug: organization.slug,
+                  type: organization.type,
+                }))}
+                organizationTypeLabel={dictionary.players.organizationTypeFilter}
+                organizationTypes={allowedOrganizationTypes.map((type) => ({
+                  label: formatOrganizationType(type, locale),
+                  value: type,
+                }))}
+                selectedOrganization={organizationSlug}
+                selectedOrganizationType={organizationType}
+              />
 
               <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
                 <span className="sr-only">{dictionary.players.statusFilter}</span>
@@ -243,7 +290,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             </div>
             {filteredPlayers.length > 0 ? (
               <div className="divide-y divide-[#e7e1d8]">
-                {filteredPlayers.map((player) => {
+                {paginatedPlayers.map((player) => {
                   const currentMembership = getCurrentMembership(player.memberships);
                   const university = getUniversityMembership(player.memberships);
                   const highSchool = getHighSchoolMembership(player.memberships);
@@ -298,6 +345,65 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               </div>
             )}
           </section>
+
+          {filteredPlayers.length > pageSize ? (
+            <nav className="flex flex-col items-center justify-between gap-3 border-t border-[#ded8cc] pt-4 sm:flex-row">
+              <p className="text-sm text-[#59615c]">
+                {interpolate(dictionary.players.pageSummary, {
+                  current: currentPage,
+                  total: totalPages,
+                })}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Link
+                  aria-disabled={currentPage <= 1}
+                  className={`inline-flex items-center gap-1 border px-3 py-2 text-sm font-medium ${
+                    currentPage <= 1
+                      ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
+                      : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
+                  }`}
+                  href={buildPlayersPath(locale, { ...paginationParams, page: currentPage - 1 })}
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                  {dictionary.players.previousPage}
+                </Link>
+                <div className="flex flex-wrap items-center justify-center gap-1">
+                  {paginationItems.map((item, index) =>
+                    item === "ellipsis" ? (
+                      <span className="px-2 py-2 text-sm text-[#8b938e]" key={`ellipsis-${index}`}>
+                        ...
+                      </span>
+                    ) : (
+                      <Link
+                        aria-current={item === currentPage ? "page" : undefined}
+                        className={`inline-flex h-9 min-w-9 items-center justify-center border px-3 text-sm font-medium ${
+                          item === currentPage
+                            ? "border-[#8a1f2d] bg-[#8a1f2d] text-white"
+                            : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
+                        }`}
+                        href={buildPlayersPath(locale, { ...paginationParams, page: item })}
+                        key={item}
+                      >
+                        {item}
+                      </Link>
+                    ),
+                  )}
+                </div>
+                <Link
+                  aria-disabled={currentPage >= totalPages}
+                  className={`inline-flex items-center gap-1 border px-3 py-2 text-sm font-medium ${
+                    currentPage >= totalPages
+                      ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
+                      : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
+                  }`}
+                  href={buildPlayersPath(locale, { ...paginationParams, page: currentPage + 1 })}
+                >
+                  {dictionary.players.nextPage}
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
+            </nav>
+          ) : null}
         </div>
       </main>
     </div>
