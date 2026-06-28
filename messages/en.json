@@ -1,0 +1,117 @@
+{
+  "site": {
+    "name": "襷の系譜",
+    "label": "Tasuki Keifu",
+    "subtitle": "An ekiden database connecting high schools, universities, and corporate teams",
+    "shortDescription": "A database for checking athletes, affiliations, schools, PBs, and race records.",
+    "heroTitle": "Trace Japanese distance running lineages through Hakone Ekiden athletes.",
+    "heroDescription": "Starting with athlete rosters from Aoyama Gakuin University, Kokugakuin University, and Chuo University, this archive organizes origins, affiliations, key records, and Hakone appearances.",
+    "footer": "We are building a player-centered archive with clear data sources and verification status."
+  },
+  "language": {
+    "ja": "日本語",
+    "zh": "中文",
+    "en": "EN"
+  },
+  "common": {
+    "search": "Search",
+    "searchPlaceholder": "Search by athlete, university, or high school",
+    "all": "All",
+    "filter": "Filter",
+    "reset": "Reset",
+    "includedTarget": "Included target",
+    "sampleTag": "V0.1 seed",
+    "emptyDash": "-",
+    "notEntered": "Record not entered",
+    "present": "present"
+  },
+  "home": {
+    "recentPlayers": "Recently updated athletes",
+    "viewPlayers": "View athletes",
+    "viewAll": "View all",
+    "updateQueue": "Upcoming data work",
+    "updateQueueTag": "Data queue",
+    "updateStatus": {
+      "inProgress": "In progress",
+      "pending": "Pending"
+    },
+    "updateScope": {
+      "race": "Race results"
+    },
+    "updateDetails": {
+      "asahiKuroda": "Deep sample in progress: PBs, affiliation history, and key races.",
+      "hakone102Leg5": "Same-leg results expanded from Asahi Kuroda will be completed next.",
+      "shinsakuKudo": "Next athlete to verify from Hakone Ekiden 102, leg 5.",
+      "kiyotoHirabayashi": "Basic page only. PBs, race history, and sources need review.",
+      "shunkyoYoshii": "Basic page only. PBs, race history, and sources need review."
+    }
+  },
+  "players": {
+    "listTitle": "Athletes",
+    "backToList": "Back to athletes",
+    "listDescription": "V0.1 starts with sample data for Aoyama Gakuin University, Kokugakuin University, and Chuo University.",
+    "resultCount": "{count} athletes",
+    "emptyTitle": "No athletes match these filters yet.",
+    "emptyDescription": "Try changing the search term or filters.",
+    "organizationTypeFilter": "Organization type",
+    "organizationFilter": "Affiliation",
+    "statusFilter": "Status",
+    "name": "Name",
+    "profile": "Athlete Profile",
+    "affiliation": "Affiliation and Origin",
+    "currentAffiliation": "Current affiliation",
+    "careerTimeline": "Affiliation history",
+    "university": "University",
+    "grade": "Year",
+    "gradeValue": "Year {grade}",
+    "highSchool": "High school",
+    "schoolHistory": "University / High school",
+    "hometown": "Hometown",
+    "birthDate": "Date of birth",
+    "nationality": "Nationality",
+    "registeredPrefecture": "Registered prefecture",
+    "personalBest": "Key PBs",
+    "pbDate": "Date",
+    "pbCompetition": "Competition",
+    "pbVenue": "Venue",
+    "raceRecord": "Race records",
+    "raceDate": "Date",
+    "raceName": "Race",
+    "raceEvent": "Event / Leg",
+    "raceMark": "Mark",
+    "raceRank": "Rank",
+    "raceNotes": "Notes",
+    "relatedPlayers": "Related athletes",
+    "relatedPlayersEmpty": "No related athletes have been recorded yet.",
+    "dataSource": "Data sources",
+    "source": "Source",
+    "status": "Status"
+  },
+  "status": {
+    "verified": "Verified",
+    "pending": "Pending",
+    "conflicting": "Conflicting",
+    "missing": "Missing"
+  },
+  "discipline": {
+    "m1500": "1500m",
+    "m3000": "3000m",
+    "m3000sc": "3000mSC",
+    "m5000": "5000m",
+    "m10000": "10000m",
+    "ten_mile": "10 mile",
+    "half_marathon": "Half marathon",
+    "marathon": "Marathon",
+    "ekiden_leg": "Ekiden leg"
+  },
+  "organizationType": {
+    "junior_high_school": "Junior high school",
+    "high_school": "High school",
+    "university": "University",
+    "corporate_team": "Corporate team",
+    "company": "Company",
+    "club": "Club",
+    "federation": "Federation",
+    "organizer": "Organizer"
+  }
+}

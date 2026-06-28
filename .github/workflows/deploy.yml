@@ -1,0 +1,98 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm prisma:generate
+        env:
+          DATABASE_URL: postgresql://tasuki_keifu_user:dummy@localhost:5432/tasuki_keifu
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build app
+        run: pnpm build
+        env:
+          DATABASE_URL: postgresql://tasuki_keifu_user:dummy@localhost:5432/tasuki_keifu
+
+      - name: Build deploy image archive
+        run: |
+          docker build -t tasuki-keifu-app:latest .
+          docker save tasuki-keifu-app:latest | gzip > tasuki-keifu-image.tar.gz
+
+      - name: Upload deploy image archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: tasuki-keifu-image
+          path: tasuki-keifu-image.tar.gz
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download deploy image archive
+        uses: actions/download-artifact@v4
+        with:
+          name: tasuki-keifu-image
+
+      - name: Copy deployment files
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.UBUNTU3_HOST }}
+          username: ${{ secrets.UBUNTU3_USER }}
+          key: ${{ secrets.UBUNTU3_SSH_KEY }}
+          source: "tasuki-keifu-image.tar.gz,docker-compose.prod.yml"
+          target: "/tmp/tasuki-keifu-deploy"
+
+      - name: Deploy on Ubuntu-3
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.UBUNTU3_HOST }}
+          username: ${{ secrets.UBUNTU3_USER }}
+          key: ${{ secrets.UBUNTU3_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            mkdir -p /opt/apps/tasuki-keifu
+            cp /tmp/tasuki-keifu-deploy/docker-compose.prod.yml /opt/apps/tasuki-keifu/docker-compose.prod.yml
+            sudo docker load -i /tmp/tasuki-keifu-deploy/tasuki-keifu-image.tar.gz
+            cd /opt/apps/tasuki-keifu
+            test -f .env.production
+            sudo docker compose -f docker-compose.prod.yml --env-file .env.production run --rm app pnpm prisma migrate deploy
+            sudo docker compose -f docker-compose.prod.yml --env-file .env.production up -d app
+            sudo docker image prune -f
+            sleep 5
+            curl -fsS http://127.0.0.1:3020/ja >/dev/null

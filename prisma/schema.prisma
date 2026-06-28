@@ -1,0 +1,504 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// 数据确认状态
+enum DataStatus {
+  verified
+  pending
+  conflicting
+  missing
+}
+
+/// 人物类型
+enum PersonType {
+  athlete
+  coach
+  manager
+  staff
+}
+
+/// 组织类型：高中、大学、实业团等统一在 Organization 表
+enum OrganizationType {
+  junior_high_school
+  high_school
+  university
+  corporate_team
+  company
+  club
+  federation
+  organizer
+}
+
+/// 人物与组织之间的所属关系类型
+enum MembershipType {
+  origin
+  enrolled
+  affiliated
+  graduated
+  staff
+}
+
+/// 名称变体类型
+enum NameVariantType {
+  official
+  short
+  kana
+  romanized
+  chinese
+  english
+  former
+  media
+}
+
+/// 数据来源类型
+enum SourceType {
+  university_official
+  hakone_official
+  ntv
+  jaaf
+  rikujokyogi_magazine
+  data_site
+  fan_site
+  pdf
+  manual
+}
+
+/// 比赛项目类型
+enum EventDiscipline {
+  m1500
+  m3000
+  m3000sc
+  m5000
+  m10000
+  ten_mile
+  half_marathon
+  marathon
+  ekiden_leg
+}
+
+/// 审计动作类型
+enum AuditAction {
+  create
+  update
+  delete
+  verify
+  merge
+  split
+}
+
+/// 审计变更原因类型
+enum AuditReasonType {
+  initial_entry
+  source_update
+  source_correction
+  stale_source
+  manual_error
+  format_normalization
+  translation_update
+  verification_update
+  entity_merge
+  entity_split
+  import
+  system
+}
+
+/// 审计操作者类型
+enum AuditActorType {
+  admin
+  import_script
+  system
+}
+
+/// 人物/选手表：记录人本身的稳定信息
+model Person {
+  /// 主键
+  id                   String         @id @default(cuid())
+  /// URL 使用的稳定标识
+  slug                 String         @unique
+  /// 日文显示名
+  displayNameJa        String
+  /// 日文读音
+  displayNameKana      String?
+  /// 罗马字显示名
+  displayNameRoman     String?
+  /// 中文显示名
+  displayNameZh        String?
+  /// 英文显示名
+  displayNameEn        String?
+  /// 出生日期
+  birthDate            DateTime?
+  /// 出身地
+  hometown             String?
+  /// 国籍
+  nationality          String?
+  /// 登録陸協 / 注册都道府县
+  registeredPrefecture String?
+  /// 身高，单位 cm
+  heightCm             Int?
+  /// 体重，单位 kg
+  weightKg             Int?
+  /// 人物类型
+  type                 PersonType     @default(athlete)
+  /// 数据确认状态
+  status               DataStatus     @default(pending)
+  /// 备注
+  notes                String?
+  /// 创建时间
+  createdAt            DateTime       @default(now())
+  /// 更新时间
+  updatedAt            DateTime       @updatedAt
+
+  /// 所属履历
+  memberships          Membership[]
+  /// 当前 PB 快照
+  personalBests        PersonalBest[]
+  /// 比赛结果
+  raceResults          RaceResult[]
+  /// 名称变体
+  nameVariants         NameVariant[]
+}
+
+/// 组织表：统一记录高中、大学、实业团、俱乐部等
+model Organization {
+  /// 主键
+  id           String           @id @default(cuid())
+  /// URL 使用的稳定标识
+  slug         String           @unique
+  /// 日文正式名
+  nameJa       String
+  /// 日文读音
+  nameKana     String?
+  /// 罗马字名称
+  nameRoman    String?
+  /// 中文名称
+  nameZh       String?
+  /// 英文名称
+  nameEn       String?
+  /// 简称
+  shortName    String?
+  /// 组织类型
+  type         OrganizationType
+  /// 所在地文本
+  location     String?
+  /// 都道府县
+  prefecture   String?
+  /// 国家代码
+  country      String           @default("JP")
+  /// 官方网站
+  websiteUrl   String?
+  /// 数据确认状态
+  status       DataStatus       @default(pending)
+  /// 备注
+  notes        String?
+  /// 创建时间
+  createdAt    DateTime         @default(now())
+  /// 更新时间
+  updatedAt    DateTime         @updatedAt
+
+  /// 与人物的所属履历
+  memberships  Membership[]
+  /// 代表该组织参赛的结果
+  raceResults  RaceResult[]
+  /// 名称变体
+  nameVariants NameVariant[]
+}
+
+/// 所属履历表：记录人物在某时间段与某组织的关系
+model Membership {
+  /// 主键
+  id             String         @id @default(cuid())
+  /// 人物 ID
+  personId       String
+  /// 组织 ID
+  organizationId String
+  /// 所属关系类型
+  type           MembershipType
+  /// 开始日期；不确定具体日期时按约定使用 04-01 等学年边界
+  startDate      DateTime?
+  /// 结束日期；当前所属为空
+  endDate        DateTime?
+  /// 开始年份，便于查询
+  startYear      Int?
+  /// 结束年份，便于查询
+  endYear        Int?
+  /// 来源中的年级快照，不作为关系核心
+  grade          Int?
+  /// 学部
+  faculty        String?
+  /// 学科
+  department     String?
+  /// 期/代
+  cohort         String?
+  /// 队内角色，例如主将、主务
+  role           String?
+  /// 数据确认状态
+  status         DataStatus     @default(pending)
+  /// 备注
+  notes          String?
+  /// 来源 ID
+  sourceId       String?
+  /// 创建时间
+  createdAt      DateTime       @default(now())
+  /// 更新时间
+  updatedAt      DateTime       @updatedAt
+
+  /// 所属人物
+  person         Person         @relation(fields: [personId], references: [id], onDelete: Cascade)
+  /// 所属组织
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// 数据来源
+  source         Source?        @relation(fields: [sourceId], references: [id])
+
+  @@index([personId])
+  @@index([organizationId])
+  @@index([type])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+/// 当前 PB 快照表：V0.1 只保存各项目当前最好成绩
+model PersonalBest {
+  id              String          @id @default(cuid())
+  personId        String
+  discipline      EventDiscipline
+  mark            String
+  markMillis      Int?
+  achievedOn      DateTime?
+  competitionName String?
+  venue           String?
+  organizationId  String?
+  stage           String?
+  isHighSchoolPb  Boolean         @default(false)
+  isCollegePb     Boolean         @default(false)
+  status          DataStatus      @default(pending)
+  notes           String?
+  sourceId        String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  person          Person          @relation(fields: [personId], references: [id], onDelete: Cascade)
+  source          Source?         @relation(fields: [sourceId], references: [id])
+
+  @@index([personId])
+  @@index([discipline])
+}
+
+/// 赛事系列表，例如箱根駅伝、出雲駅伝、大阪マラソン
+model Competition {
+  id          String               @id @default(cuid())
+  slug        String               @unique
+  nameJa      String
+  nameKana    String?
+  nameRoman   String?
+  nameZh      String?
+  nameEn      String?
+  type        String?
+  organizer   String?
+  region      String?
+  websiteUrl  String?
+  notes       String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  editions     CompetitionEdition[]
+  nameVariants NameVariant[]
+}
+
+/// 赛事届次表，例如第102回箱根駅伝、大阪マラソン2025
+model CompetitionEdition {
+  id            String       @id @default(cuid())
+  competitionId String
+  slug          String       @unique
+  editionNumber Int?
+  year          Int
+  officialName  String
+  shortName     String?
+  startsOn      DateTime?
+  endsOn        DateTime?
+  notes         String?
+  sourceId      String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  competition   Competition  @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  source        Source?      @relation(fields: [sourceId], references: [id])
+  races         Race[]
+
+  @@index([competitionId])
+  @@index([year])
+}
+
+/// 比赛单元表：某届赛事下的具体区间、项目、组别
+model Race {
+  /// 主键
+  id                   String              @id @default(cuid())
+  /// 所属赛事届次 ID
+  competitionEditionId String
+  /// URL 或导入使用的稳定标识
+  slug                 String              @unique
+  /// 比赛单元名称，例如 5区、男子10000m 4組
+  name                 String
+  /// 比赛项目
+  discipline           EventDiscipline
+  /// 区间号，駅伝区间使用
+  leg                  Int?
+  /// 轮次，例如予選、決勝、タイムレース
+  round                String?
+  /// 组别，例如 4組
+  heat                 String?
+  /// 距离，单位米
+  distanceMeters       Int?
+  /// 开始时间
+  startsAt             DateTime?
+  /// 数据确认状态
+  status               DataStatus          @default(pending)
+  /// 备注
+  notes                String?
+  /// 来源 ID
+  sourceId             String?
+  /// 创建时间
+  createdAt            DateTime            @default(now())
+  /// 更新时间
+  updatedAt            DateTime            @updatedAt
+
+  /// 所属赛事届次
+  competitionEdition   CompetitionEdition  @relation(fields: [competitionEditionId], references: [id], onDelete: Cascade)
+  /// 数据来源
+  source               Source?             @relation(fields: [sourceId], references: [id])
+  /// 比赛结果
+  raceResults          RaceResult[]
+
+  @@index([competitionEditionId])
+  @@index([discipline])
+  @@index([leg])
+}
+
+/// 比赛结果表：某个选手在某个 Race 中的成绩
+model RaceResult {
+  /// 主键
+  id              String        @id @default(cuid())
+  /// 人物 ID
+  personId        String
+  /// 比赛单元 ID
+  raceId          String
+  /// 比赛时所属组织 ID
+  organizationId  String?
+  /// 是否报名
+  isEntry         Boolean       @default(false)
+  /// 是否实际出场
+  isStarter       Boolean       @default(false)
+  /// 是否为当日変更
+  isRaceDayChange Boolean       @default(false)
+  /// 成绩文本
+  mark            String?
+  /// 成绩毫秒值，便于排序
+  markMillis      Int?
+  /// 名次，駅伝可表示区间名次，普通比赛表示该 race 内名次
+  rank            Int?
+  /// 团队名次
+  teamRank        Int?
+  /// 比赛时年级快照
+  gradeAtRace     Int?
+  /// 数据确认状态
+  status          DataStatus    @default(pending)
+  /// 备注，例如区間賞、区間新
+  notes           String?
+  /// 来源 ID
+  sourceId        String?
+  /// 创建时间
+  createdAt       DateTime      @default(now())
+  /// 更新时间
+  updatedAt       DateTime      @updatedAt
+
+  /// 所属人物
+  person          Person        @relation(fields: [personId], references: [id], onDelete: Cascade)
+  /// 所属比赛单元
+  race            Race          @relation(fields: [raceId], references: [id], onDelete: Cascade)
+  /// 比赛时所属组织
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  /// 数据来源
+  source          Source?       @relation(fields: [sourceId], references: [id])
+
+  @@index([personId])
+  @@index([raceId])
+  @@index([organizationId])
+}
+
+/// 数据来源表
+model Source {
+  id           String        @id @default(cuid())
+  name         String
+  url          String?
+  type         SourceType
+  publishedOn  DateTime?
+  accessedOn   DateTime?
+  reliability  Int           @default(3)
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  memberships  Membership[]
+  personalBests PersonalBest[]
+  editions      CompetitionEdition[]
+  races         Race[]
+  raceResults   RaceResult[]
+  nameVariants  NameVariant[]
+  auditLogs     AuditLog[]
+}
+
+/// 名称变体表：正式名、简称、罗马字、翻译名等
+model NameVariant {
+  id              String          @id @default(cuid())
+  value           String
+  language        String?
+  type            NameVariantType
+  isPrimary       Boolean         @default(false)
+  personId        String?
+  organizationId  String?
+  competitionId   String?
+  sourceId        String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  person          Person?         @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization    Organization?   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  competition     Competition?    @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  source          Source?         @relation(fields: [sourceId], references: [id])
+
+  @@index([value])
+  @@index([personId])
+  @@index([organizationId])
+  @@index([competitionId])
+}
+
+/// 审计日志表：记录数据维护行为，不记录现实世界事件
+model AuditLog {
+  id             String           @id @default(cuid())
+  entityType     String
+  entityId       String
+  action         AuditAction
+  fieldName      String?
+  oldValue       Json?
+  newValue       Json?
+  reasonType     AuditReasonType
+  reasonNote     String?
+  sourceId       String?
+  actorType      AuditActorType   @default(admin)
+  actorId        String?
+  batchId        String?
+  metadata       Json?
+  createdAt      DateTime         @default(now())
+
+  source         Source?          @relation(fields: [sourceId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([reasonType])
+  @@index([batchId])
+  @@index([createdAt])
+}
