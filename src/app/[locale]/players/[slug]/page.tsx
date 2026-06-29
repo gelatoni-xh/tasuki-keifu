@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { OrganizationType, Source } from "@prisma/client";
@@ -12,8 +13,10 @@ import {
   getHighSchoolMembership,
   getMembershipOverlap,
   getUniversityMembership,
+  inferCurrentUniversityGrade,
   sortMembershipsByStartDate,
 } from "@/lib/membership";
+import { buildLocaleAlternates } from "@/lib/site";
 
 type PlayerDetailPageProps = {
   params: Promise<{
@@ -21,6 +24,63 @@ type PlayerDetailPageProps = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({ params }: PlayerDetailPageProps): Promise<Metadata> {
+  const { locale: localeParam, slug } = await params;
+
+  if (!isLocale(localeParam)) {
+    return {};
+  }
+
+  const locale = localeParam;
+  const player = await prisma.person.findUnique({
+    where: { slug },
+    include: {
+      memberships: {
+        include: {
+          organization: true,
+        },
+      },
+      personalBests: {
+        select: { id: true },
+      },
+      raceResults: {
+        select: { id: true },
+      },
+    },
+  });
+
+  if (!player) {
+    return {};
+  }
+
+  const currentMembership = getCurrentMembership(player.memberships);
+  const university = getUniversityMembership(player.memberships);
+  const highSchool = getHighSchoolMembership(player.memberships);
+  const title = `${player.displayNameJa}の所属・記録・大会成績`;
+  const descriptionParts = [
+    `${player.displayNameJa}の選手ページです。`,
+    currentMembership?.organization.nameJa ? `現在の所属は${currentMembership.organization.nameJa}。` : null,
+    university?.organization.nameJa ? `大学は${university.organization.nameJa}。` : null,
+    highSchool?.organization.nameJa ? `出身校は${highSchool.organization.nameJa}。` : null,
+    player.personalBests.length > 0 ? `主要PBを${player.personalBests.length}件収録。` : null,
+    player.raceResults.length > 0 ? `大会成績を${player.raceResults.length}件収録。` : null,
+  ].filter(Boolean);
+
+  return {
+    title,
+    description: descriptionParts.join(" "),
+    alternates: {
+      canonical: `/${locale}/players/${slug}`,
+      languages: buildLocaleAlternates(`/players/${slug}`),
+    },
+    openGraph: {
+      title,
+      description: descriptionParts.join(" "),
+      url: `/${locale}/players/${slug}`,
+    },
+  };
+}
 
 function isPublicSource<T extends Pick<Source, "id">>(source: T | null): source is T {
   return source !== null && source.id !== "seed-source";
@@ -154,6 +214,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
   const currentMembership = getCurrentMembership(player.memberships);
   const university = getUniversityMembership(player.memberships);
   const highSchool = getHighSchoolMembership(player.memberships);
+  const currentUniversityGrade = inferCurrentUniversityGrade(university);
   const sortedRaceResults = [...player.raceResults].sort((a, b) => {
     const dateA = a.race.startsAt ?? a.race.competitionEdition.startsOn;
     const dateB = b.race.startsAt ?? b.race.competitionEdition.startsOn;
@@ -303,8 +364,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#59615c]">{dictionary.players.grade}</dt>
                   <dd className="font-medium">
-                    {university?.grade
-                      ? interpolate(dictionary.players.gradeValue, { grade: university.grade })
+                    {currentUniversityGrade
+                      ? interpolate(dictionary.players.gradeValue, { grade: currentUniversityGrade })
                       : dictionary.common.emptyDash}
                   </dd>
                 </div>

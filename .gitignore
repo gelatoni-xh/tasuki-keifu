@@ -44,3 +44,6 @@ next-env.d.ts
 
 # local import scratch files
 tmp/
+local/
+scripts/local/
+data/imports/*.draft.json

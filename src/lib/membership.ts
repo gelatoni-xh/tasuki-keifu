@@ -46,6 +46,35 @@ export function getUniversityMembership(memberships: MembershipWithOrganization[
   );
 }
 
+function getAcademicYearStartYear(date: Date) {
+  const month = date.getUTCMonth() + 1;
+  const year = date.getUTCFullYear();
+
+  return month >= 4 ? year : year - 1;
+}
+
+export function inferCurrentUniversityGrade(
+  membership: MembershipWithOrganization | null,
+  now = new Date(),
+) {
+  if (!membership?.startDate) {
+    return null;
+  }
+
+  const startsBeforeNow = membership.startDate <= now;
+  const hasNotEnded = !membership.endDate || membership.endDate >= now;
+
+  if (!startsBeforeNow || !hasNotEnded) {
+    return null;
+  }
+
+  const startAcademicYear = getAcademicYearStartYear(membership.startDate);
+  const currentAcademicYear = getAcademicYearStartYear(now);
+  const grade = currentAcademicYear - startAcademicYear + 1;
+
+  return grade > 0 ? grade : null;
+}
+
 export function formatMembershipPeriod(membership: MembershipWithOrganization, locale: Locale = "ja") {
   const start = membership.startDate
     ? `${membership.startDate.getFullYear()}`

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
@@ -5,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatOrganizationType } from "@/lib/format";
 import { getDictionary, isLocale } from "@/lib/i18n";
+import { buildLocaleAlternates } from "@/lib/site";
 
 type OrganizationDetailPageProps = {
   params: Promise<{
@@ -12,6 +14,55 @@ type OrganizationDetailPageProps = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({ params }: OrganizationDetailPageProps): Promise<Metadata> {
+  const { locale: localeParam, slug } = await params;
+
+  if (!isLocale(localeParam)) {
+    return {};
+  }
+
+  const locale = localeParam;
+  const organization = await prisma.organization.findUnique({
+    where: { slug },
+    include: {
+      _count: {
+        select: {
+          memberships: true,
+          raceResults: true,
+        },
+      },
+    },
+  });
+
+  if (!organization) {
+    return {};
+  }
+
+  const title = `${organization.nameJa}の所属選手・関連データ`;
+  const description = [
+    `${organization.nameJa}の組織ページです。`,
+    `${formatOrganizationType(organization.type, locale)}として収録しています。`,
+    organization._count.memberships > 0 ? `関連選手を${organization._count.memberships}件収録。` : null,
+    organization.location ?? organization.prefecture ? `所在地は${organization.location ?? organization.prefecture}。` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}/organizations/${slug}`,
+      languages: buildLocaleAlternates(`/organizations/${slug}`),
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/${locale}/organizations/${slug}`,
+    },
+  };
+}
 
 export default async function OrganizationDetailPage({ params }: OrganizationDetailPageProps) {
   const { locale: localeParam, slug } = await params;

@@ -2,8 +2,8 @@
   "batchKey": "hakone-102-leg-1-20260629",
   "sourceId": "source-ntv-hakone-102-leg-1",
   "raceSlug": "hakone-ekiden-102-leg-1",
-  "summary": "第102回箱根駅伝 1区 NTV 区間ページ导入",
-  "pbNotes": "第102回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は后续タスクで再確認。",
+  "summary": "第102回箱根駅伝 1区 NTV 区間ページ導入",
+  "pbNotes": "第102回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は後続タスクで再確認。",
   "entries": [
     {
       "slug": "rui-aoki",
@@ -14,7 +14,7 @@
       "grade": 4,
       "mark": "1:00:28",
       "rank": 1,
-      "notes": null,
+      "notes": "区間賞 / 区間新",
       "pbs": [
         {
           "discipline": "m10000",
@@ -37,7 +37,7 @@
       "grade": 3,
       "mark": "1:00:37",
       "rank": 2,
-      "notes": null,
+      "notes": "区間新",
       "pbs": [
         {
           "discipline": "m10000",

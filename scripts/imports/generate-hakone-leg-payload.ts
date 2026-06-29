@@ -1,79 +1,35 @@
 import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
 
+import {
+  type HakonePbEntry as PbEntry,
+  buildHakoneBatchKey,
+  buildHakoneHtmlPath,
+  buildHakonePayloadPath,
+  buildHakonePbNotes,
+  buildHakoneRaceSlug,
+  buildHakoneSourceId,
+  extractNotesFromBlock,
+  extractPbsFromBlock,
+  extractRunnerBlocks,
+  formatEditionLabel,
+  normalizeJa,
+} from "../lib/hakone";
+import { normalizeDisplayNameJa } from "../lib/name-normalization";
 import { prisma } from "../lib/prisma";
 
-type PbEntry = {
-  discipline: "m5000" | "m10000" | "half_marathon";
-  mark: string;
-};
-
-const disciplineMap: Record<string, PbEntry["discipline"]> = {
-  "5000m": "m5000",
-  "10000m": "m10000",
-  "ハーフ": "half_marathon",
-};
-
-const pbNotes = "第102回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は后续タスクで再確認。";
-
-function normalizeJa(value: string) {
-  return value.replace(/[ 　]/g, "");
-}
-
-function extractRunnerBlocks(html: string, leg: number) {
-  const marker = `<div class="base-heading-subtitle" data-v-42f0980f>${leg}区 選手一覧</div>`;
-  const start = html.indexOf(marker);
-  const end = html.indexOf('<div class="sns-share"', start);
-  const section = html.slice(start, end);
-
-  return section
-    .split('<div class="item" data-v-42f0980f><a class="team"')
-    .slice(1)
-    .map((part) => `<a class="team"${part}`);
-}
-
-function extractPbsFromBlock(block: string): PbEntry[] {
-  const bestStart = block.indexOf('<div class="title" data-v-42f0980f> 公認最高タイム </div>');
-  if (bestStart === -1) {
-    return [];
-  }
-
-  const bestSection = block.slice(bestStart);
-  const results: PbEntry[] = [];
-  const matches = bestSection.matchAll(
-    /<div class="item" data-v-42f0980f><div class="title" data-v-42f0980f>([^<]+)<\/div><div class="text" data-v-42f0980f>([^<]+)<\/div><\/div>/g,
-  );
-
-  for (const match of matches) {
-    const rawDiscipline = match[1]?.trim();
-    const discipline = disciplineMap[rawDiscipline];
-    const mark = match[2]?.trim();
-
-    if (!discipline || !mark) {
-      continue;
-    }
-
-    results.push({ discipline, mark });
-  }
-
-  const deduped = new Map<string, PbEntry>();
-  for (const pb of results) {
-    deduped.set(pb.discipline, pb);
-  }
-
-  return [...deduped.values()];
-}
-
 async function main() {
-  const leg = Number(process.argv[2]);
+  const edition = Number(process.argv[2]);
+  const leg = Number(process.argv[3]);
+  const htmlPath = process.argv[4];
 
-  if (!leg) {
-    throw new Error("Usage: tsx scripts/imports/generate-hakone-leg-payload.ts <leg>");
+  if (!edition || !leg) {
+    throw new Error("Usage: tsx scripts/imports/generate-hakone-leg-payload.ts <edition> <leg> [htmlPath]");
   }
 
-  const sourceId = `source-ntv-hakone-102-leg-${leg}`;
-  const raceSlug = `hakone-ekiden-102-leg-${leg}`;
-  const batchKey = `hakone-102-leg-${leg}-20260629`;
+  const sourceId = buildHakoneSourceId(edition, leg);
+  const raceSlug = buildHakoneRaceSlug(edition, leg);
+  const batchKey = buildHakoneBatchKey(edition, leg, new Date().toISOString().slice(0, 10).replace(/-/g, ""));
+  const pbNotes = buildHakonePbNotes(edition);
 
   const source = await prisma.source.findUnique({ where: { id: sourceId } });
   if (!source) {
@@ -88,10 +44,7 @@ async function main() {
           person: true,
           organization: true,
         },
-        orderBy: [
-          { rank: "asc" },
-          { createdAt: "asc" },
-        ],
+        orderBy: [{ rank: "asc" }, { createdAt: "asc" }],
       },
     },
   });
@@ -100,17 +53,19 @@ async function main() {
     throw new Error(`Missing race: ${raceSlug}`);
   }
 
-  const htmlPath = path.resolve(`tmp/hakone-102-leg-${leg}.html`);
-  const html = await readFile(htmlPath, "utf8");
+  const html = await readFile(htmlPath ? htmlPath : buildHakoneHtmlPath(edition, leg), "utf8");
 
   const pbByName = new Map<string, PbEntry[]>();
+  const notesByName = new Map<string, string | null>();
   for (const block of extractRunnerBlocks(html, leg)) {
     const nameMatch = block.match(/<div class="name"[^>]*>([^<]+)<\/div>/);
     const name = nameMatch?.[1];
     if (!name) {
       continue;
     }
-    pbByName.set(normalizeJa(name), extractPbsFromBlock(block));
+    const normalizedName = normalizeJa(name);
+    pbByName.set(normalizedName, extractPbsFromBlock(block));
+    notesByName.set(normalizedName, extractNotesFromBlock(block));
   }
 
   const entries = [];
@@ -123,11 +78,7 @@ async function main() {
           include: {
             organization: true,
           },
-          orderBy: [
-            { endDate: "desc" },
-            { startDate: "desc" },
-            { createdAt: "desc" },
-          ],
+          orderBy: [{ endDate: "desc" }, { startDate: "desc" }, { createdAt: "desc" }],
         },
       },
     });
@@ -143,16 +94,16 @@ async function main() {
 
     entries.push({
       slug: person.slug,
-      displayNameJa: person.displayNameJa,
+      displayNameJa: normalizeDisplayNameJa(person.displayNameJa),
       displayNameRoman: person.displayNameRoman ?? "",
       universitySlug: result.organization.slug,
       highSchoolSlug: highSchoolMembership.organization.slug,
       grade: result.gradeAtRace ?? 1,
       mark: result.mark ?? "",
       rank: result.rank,
-      notes: result.notes,
+      notes: notesByName.get(normalizeJa(person.displayNameJa)) ?? result.notes,
       pbs: pbByName.get(normalizeJa(person.displayNameJa)) ?? [],
-      sourceEntityKey: `ntv-102-leg${leg}-${person.slug}`,
+      sourceEntityKey: `ntv-${edition}-leg${leg}-${person.slug}`,
       sourceUrl: source.url ?? undefined,
     });
   }
@@ -161,12 +112,12 @@ async function main() {
     batchKey,
     sourceId,
     raceSlug,
-    summary: `第102回箱根駅伝 ${leg}区 NTV 区間ページ导入`,
+    summary: `${formatEditionLabel(edition)} ${leg}区 NTV 区間ページ導入`,
     pbNotes,
     entries,
   };
 
-  const outputPath = path.resolve(`data/imports/hakone-102-leg-${leg}.json`);
+  const outputPath = buildHakonePayloadPath(edition, leg);
   await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   console.log(`Generated payload: ${outputPath}`);
 }

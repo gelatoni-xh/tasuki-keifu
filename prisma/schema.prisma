@@ -238,8 +238,6 @@ model Membership {
   startYear      Int?
   /// 结束年份，便于查询
   endYear        Int?
-  /// 来源中的年级快照，不作为关系核心
-  grade          Int?
   /// 学部
   faculty        String?
   /// 学科

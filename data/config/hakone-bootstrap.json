@@ -1,0 +1,626 @@
+{
+  "competition": {
+    "slug": "hakone-ekiden",
+    "nameJa": "東京箱根間往復大学駅伝競走",
+    "nameRoman": "Hakone Ekiden",
+    "nameZh": "箱根驿传",
+    "nameEn": "Hakone Ekiden",
+    "type": "university_ekiden",
+    "region": "関東",
+    "websiteUrl": "https://www.hakone-ekiden.jp/"
+  },
+  "sources": [
+    {
+      "id": "source-hakone-official-general",
+      "name": "箱根駅伝公式",
+      "url": "https://www.hakone-ekiden.jp/",
+      "type": "hakone_official",
+      "reliability": 5,
+      "notes": "箱根駅伝大会・届次の共通公式ソース。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-1",
+      "name": "日本テレビ 第97回箱根駅伝 1区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/1.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 1区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-2",
+      "name": "日本テレビ 第97回箱根駅伝 2区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/2.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 2区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-3",
+      "name": "日本テレビ 第97回箱根駅伝 3区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/3.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 3区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-4",
+      "name": "日本テレビ 第97回箱根駅伝 4区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/4.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 4区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-5",
+      "name": "日本テレビ 第97回箱根駅伝 5区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/5.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 5区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-6",
+      "name": "日本テレビ 第97回箱根駅伝 6区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/6.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 6区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-7",
+      "name": "日本テレビ 第97回箱根駅伝 7区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/7.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 7区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-8",
+      "name": "日本テレビ 第97回箱根駅伝 8区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/8.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 8区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-9",
+      "name": "日本テレビ 第97回箱根駅伝 9区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/9.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 9区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-97-leg-10",
+      "name": "日本テレビ 第97回箱根駅伝 10区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/97/team_kukan/10.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第97回箱根駅伝 10区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-1",
+      "name": "日本テレビ 第98回箱根駅伝 1区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/1.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 1区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-2",
+      "name": "日本テレビ 第98回箱根駅伝 2区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/2.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 2区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-3",
+      "name": "日本テレビ 第98回箱根駅伝 3区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/3.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 3区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-4",
+      "name": "日本テレビ 第98回箱根駅伝 4区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/4.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 4区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-5",
+      "name": "日本テレビ 第98回箱根駅伝 5区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/5.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 5区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-6",
+      "name": "日本テレビ 第98回箱根駅伝 6区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/6.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 6区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-7",
+      "name": "日本テレビ 第98回箱根駅伝 7区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/7.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 7区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-8",
+      "name": "日本テレビ 第98回箱根駅伝 8区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/8.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 8区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-9",
+      "name": "日本テレビ 第98回箱根駅伝 9区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/9.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 9区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-98-leg-10",
+      "name": "日本テレビ 第98回箱根駅伝 10区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/10.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第98回箱根駅伝 10区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-1",
+      "name": "日本テレビ 第99回箱根駅伝 1区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/1.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 1区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-2",
+      "name": "日本テレビ 第99回箱根駅伝 2区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/2.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 2区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-3",
+      "name": "日本テレビ 第99回箱根駅伝 3区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/3.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 3区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-4",
+      "name": "日本テレビ 第99回箱根駅伝 4区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/4.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 4区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-5",
+      "name": "日本テレビ 第99回箱根駅伝 5区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/5.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 5区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-6",
+      "name": "日本テレビ 第99回箱根駅伝 6区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/6.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 6区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-7",
+      "name": "日本テレビ 第99回箱根駅伝 7区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/7.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 7区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-8",
+      "name": "日本テレビ 第99回箱根駅伝 8区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/8.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 8区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-9",
+      "name": "日本テレビ 第99回箱根駅伝 9区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/9.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 9区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-99-leg-10",
+      "name": "日本テレビ 第99回箱根駅伝 10区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/10.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第99回箱根駅伝 10区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-1",
+      "name": "日本テレビ 第100回箱根駅伝 1区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/1.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 1区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-2",
+      "name": "日本テレビ 第100回箱根駅伝 2区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/2.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 2区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-3",
+      "name": "日本テレビ 第100回箱根駅伝 3区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/3.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 3区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-4",
+      "name": "日本テレビ 第100回箱根駅伝 4区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/4.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 4区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-5",
+      "name": "日本テレビ 第100回箱根駅伝 5区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/5.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 5区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-6",
+      "name": "日本テレビ 第100回箱根駅伝 6区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/6.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 6区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-7",
+      "name": "日本テレビ 第100回箱根駅伝 7区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/7.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 7区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-8",
+      "name": "日本テレビ 第100回箱根駅伝 8区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/8.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 8区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-9",
+      "name": "日本テレビ 第100回箱根駅伝 9区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/9.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 9区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-100-leg-10",
+      "name": "日本テレビ 第100回箱根駅伝 10区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/10.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第100回箱根駅伝 10区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-1",
+      "name": "日本テレビ 第101回箱根駅伝 1区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/1.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 1区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-2",
+      "name": "日本テレビ 第101回箱根駅伝 2区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/2.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 2区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-3",
+      "name": "日本テレビ 第101回箱根駅伝 3区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/3.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 3区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-4",
+      "name": "日本テレビ 第101回箱根駅伝 4区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/4.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 4区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-5",
+      "name": "日本テレビ 第101回箱根駅伝 5区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/5.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 5区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-6",
+      "name": "日本テレビ 第101回箱根駅伝 6区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/6.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 6区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-7",
+      "name": "日本テレビ 第101回箱根駅伝 7区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/7.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 7区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-8",
+      "name": "日本テレビ 第101回箱根駅伝 8区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/8.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 8区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-9",
+      "name": "日本テレビ 第101回箱根駅伝 9区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/9.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 9区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-101-leg-10",
+      "name": "日本テレビ 第101回箱根駅伝 10区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/101/team_kukan/10.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第101回箱根駅伝 10区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-1",
+      "name": "日本テレビ 第102回箱根駅伝 1区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/1.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 1区の区間順位、区間タイム、学年、出身校の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-2",
+      "name": "日本テレビ 第102回箱根駅伝 2区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 2区の区間順位、区間タイム、学年、出身校の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-3",
+      "name": "日本テレビ 第102回箱根駅伝 3区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/3.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 3区の区間順位、区間タイム、学年、出身校の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-4",
+      "name": "日本テレビ 第102回箱根駅伝 4区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/4.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 4区の区間順位、区間タイム、学年、出身校的参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-5",
+      "name": "日本テレビ 第102回箱根駅伝 5区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/5.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 5区の区間順位、区間タイム、学年、出身校、持ちタイム摘要の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-6",
+      "name": "日本テレビ 第102回箱根駅伝 6区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/6.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 6区の区間順位、区間タイム、学年、出身校の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-7",
+      "name": "日本テレビ 第102回箱根駅伝 7区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/7.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 7区の区間順位、区間タイム、学年、出身校の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-8",
+      "name": "日本テレビ 第102回箱根駅伝 8区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/8.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 8区の区間順位、区間タイム、学年、出身校の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-9",
+      "name": "日本テレビ 第102回箱根駅伝 9区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/9.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 9区の区間順位、区間タイム、学年、出身校の参照元。"
+    },
+    {
+      "id": "source-ntv-hakone-102-leg-10",
+      "name": "日本テレビ 第102回箱根駅伝 10区区間成績",
+      "url": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/10.html",
+      "type": "ntv",
+      "reliability": 4,
+      "notes": "第102回箱根駅伝 10区の区間順位、区間タイム、学年、出身校の参照元。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "hakone-ekiden-97",
+      "editionNumber": 97,
+      "year": 2021,
+      "officialName": "第97回東京箱根間往復大学駅伝競走",
+      "shortName": "第97回箱根駅伝",
+      "startsOn": "2021-01-02",
+      "endsOn": "2021-01-03",
+      "sourceId": "source-hakone-official-general"
+    },
+    {
+      "slug": "hakone-ekiden-98",
+      "editionNumber": 98,
+      "year": 2022,
+      "officialName": "第98回東京箱根間往復大学駅伝競走",
+      "shortName": "第98回箱根駅伝",
+      "startsOn": "2022-01-02",
+      "endsOn": "2022-01-03",
+      "sourceId": "source-hakone-official-general"
+    },
+    {
+      "slug": "hakone-ekiden-99",
+      "editionNumber": 99,
+      "year": 2023,
+      "officialName": "第99回東京箱根間往復大学駅伝競走",
+      "shortName": "第99回箱根駅伝",
+      "startsOn": "2023-01-02",
+      "endsOn": "2023-01-03",
+      "sourceId": "source-hakone-official-general"
+    },
+    {
+      "slug": "hakone-ekiden-100",
+      "editionNumber": 100,
+      "year": 2024,
+      "officialName": "第100回東京箱根間往復大学駅伝競走",
+      "shortName": "第100回箱根駅伝",
+      "startsOn": "2024-01-02",
+      "endsOn": "2024-01-03",
+      "sourceId": "source-hakone-official-general"
+    },
+    {
+      "slug": "hakone-ekiden-101",
+      "editionNumber": 101,
+      "year": 2025,
+      "officialName": "第101回東京箱根間往復大学駅伝競走",
+      "shortName": "第101回箱根駅伝",
+      "startsOn": "2025-01-02",
+      "endsOn": "2025-01-03",
+      "sourceId": "source-hakone-official-general"
+    },
+    {
+      "slug": "hakone-ekiden-102",
+      "editionNumber": 102,
+      "year": 2026,
+      "officialName": "第102回東京箱根間往復大学駅伝競走",
+      "shortName": "第102回箱根駅伝",
+      "startsOn": "2026-01-02",
+      "endsOn": "2026-01-03",
+      "sourceId": "source-hakone-official-general"
+    }
+  ],
+  "races": [
+    { "slug": "hakone-ekiden-97-leg-1", "editionSlug": "hakone-ekiden-97", "name": "1区", "discipline": "ekiden_leg", "leg": 1, "sourceId": "source-ntv-hakone-97-leg-1" },
+    { "slug": "hakone-ekiden-97-leg-2", "editionSlug": "hakone-ekiden-97", "name": "2区", "discipline": "ekiden_leg", "leg": 2, "sourceId": "source-ntv-hakone-97-leg-2" },
+    { "slug": "hakone-ekiden-97-leg-3", "editionSlug": "hakone-ekiden-97", "name": "3区", "discipline": "ekiden_leg", "leg": 3, "sourceId": "source-ntv-hakone-97-leg-3" },
+    { "slug": "hakone-ekiden-97-leg-4", "editionSlug": "hakone-ekiden-97", "name": "4区", "discipline": "ekiden_leg", "leg": 4, "sourceId": "source-ntv-hakone-97-leg-4" },
+    { "slug": "hakone-ekiden-97-leg-5", "editionSlug": "hakone-ekiden-97", "name": "5区", "discipline": "ekiden_leg", "leg": 5, "sourceId": "source-ntv-hakone-97-leg-5" },
+    { "slug": "hakone-ekiden-97-leg-6", "editionSlug": "hakone-ekiden-97", "name": "6区", "discipline": "ekiden_leg", "leg": 6, "sourceId": "source-ntv-hakone-97-leg-6" },
+    { "slug": "hakone-ekiden-97-leg-7", "editionSlug": "hakone-ekiden-97", "name": "7区", "discipline": "ekiden_leg", "leg": 7, "sourceId": "source-ntv-hakone-97-leg-7" },
+    { "slug": "hakone-ekiden-97-leg-8", "editionSlug": "hakone-ekiden-97", "name": "8区", "discipline": "ekiden_leg", "leg": 8, "sourceId": "source-ntv-hakone-97-leg-8" },
+    { "slug": "hakone-ekiden-97-leg-9", "editionSlug": "hakone-ekiden-97", "name": "9区", "discipline": "ekiden_leg", "leg": 9, "sourceId": "source-ntv-hakone-97-leg-9" },
+    { "slug": "hakone-ekiden-97-leg-10", "editionSlug": "hakone-ekiden-97", "name": "10区", "discipline": "ekiden_leg", "leg": 10, "sourceId": "source-ntv-hakone-97-leg-10" },
+    { "slug": "hakone-ekiden-98-leg-1", "editionSlug": "hakone-ekiden-98", "name": "1区", "discipline": "ekiden_leg", "leg": 1, "sourceId": "source-ntv-hakone-98-leg-1" },
+    { "slug": "hakone-ekiden-98-leg-2", "editionSlug": "hakone-ekiden-98", "name": "2区", "discipline": "ekiden_leg", "leg": 2, "sourceId": "source-ntv-hakone-98-leg-2" },
+    { "slug": "hakone-ekiden-98-leg-3", "editionSlug": "hakone-ekiden-98", "name": "3区", "discipline": "ekiden_leg", "leg": 3, "sourceId": "source-ntv-hakone-98-leg-3" },
+    { "slug": "hakone-ekiden-98-leg-4", "editionSlug": "hakone-ekiden-98", "name": "4区", "discipline": "ekiden_leg", "leg": 4, "sourceId": "source-ntv-hakone-98-leg-4" },
+    { "slug": "hakone-ekiden-98-leg-5", "editionSlug": "hakone-ekiden-98", "name": "5区", "discipline": "ekiden_leg", "leg": 5, "sourceId": "source-ntv-hakone-98-leg-5" },
+    { "slug": "hakone-ekiden-98-leg-6", "editionSlug": "hakone-ekiden-98", "name": "6区", "discipline": "ekiden_leg", "leg": 6, "sourceId": "source-ntv-hakone-98-leg-6" },
+    { "slug": "hakone-ekiden-98-leg-7", "editionSlug": "hakone-ekiden-98", "name": "7区", "discipline": "ekiden_leg", "leg": 7, "sourceId": "source-ntv-hakone-98-leg-7" },
+    { "slug": "hakone-ekiden-98-leg-8", "editionSlug": "hakone-ekiden-98", "name": "8区", "discipline": "ekiden_leg", "leg": 8, "sourceId": "source-ntv-hakone-98-leg-8" },
+    { "slug": "hakone-ekiden-98-leg-9", "editionSlug": "hakone-ekiden-98", "name": "9区", "discipline": "ekiden_leg", "leg": 9, "sourceId": "source-ntv-hakone-98-leg-9" },
+    { "slug": "hakone-ekiden-98-leg-10", "editionSlug": "hakone-ekiden-98", "name": "10区", "discipline": "ekiden_leg", "leg": 10, "sourceId": "source-ntv-hakone-98-leg-10" },
+    { "slug": "hakone-ekiden-99-leg-1", "editionSlug": "hakone-ekiden-99", "name": "1区", "discipline": "ekiden_leg", "leg": 1, "sourceId": "source-ntv-hakone-99-leg-1" },
+    { "slug": "hakone-ekiden-99-leg-2", "editionSlug": "hakone-ekiden-99", "name": "2区", "discipline": "ekiden_leg", "leg": 2, "sourceId": "source-ntv-hakone-99-leg-2" },
+    { "slug": "hakone-ekiden-99-leg-3", "editionSlug": "hakone-ekiden-99", "name": "3区", "discipline": "ekiden_leg", "leg": 3, "sourceId": "source-ntv-hakone-99-leg-3" },
+    { "slug": "hakone-ekiden-99-leg-4", "editionSlug": "hakone-ekiden-99", "name": "4区", "discipline": "ekiden_leg", "leg": 4, "sourceId": "source-ntv-hakone-99-leg-4" },
+    { "slug": "hakone-ekiden-99-leg-5", "editionSlug": "hakone-ekiden-99", "name": "5区", "discipline": "ekiden_leg", "leg": 5, "sourceId": "source-ntv-hakone-99-leg-5" },
+    { "slug": "hakone-ekiden-99-leg-6", "editionSlug": "hakone-ekiden-99", "name": "6区", "discipline": "ekiden_leg", "leg": 6, "sourceId": "source-ntv-hakone-99-leg-6" },
+    { "slug": "hakone-ekiden-99-leg-7", "editionSlug": "hakone-ekiden-99", "name": "7区", "discipline": "ekiden_leg", "leg": 7, "sourceId": "source-ntv-hakone-99-leg-7" },
+    { "slug": "hakone-ekiden-99-leg-8", "editionSlug": "hakone-ekiden-99", "name": "8区", "discipline": "ekiden_leg", "leg": 8, "sourceId": "source-ntv-hakone-99-leg-8" },
+    { "slug": "hakone-ekiden-99-leg-9", "editionSlug": "hakone-ekiden-99", "name": "9区", "discipline": "ekiden_leg", "leg": 9, "sourceId": "source-ntv-hakone-99-leg-9" },
+    { "slug": "hakone-ekiden-99-leg-10", "editionSlug": "hakone-ekiden-99", "name": "10区", "discipline": "ekiden_leg", "leg": 10, "sourceId": "source-ntv-hakone-99-leg-10" },
+    { "slug": "hakone-ekiden-100-leg-1", "editionSlug": "hakone-ekiden-100", "name": "1区", "discipline": "ekiden_leg", "leg": 1, "sourceId": "source-ntv-hakone-100-leg-1" },
+    { "slug": "hakone-ekiden-100-leg-2", "editionSlug": "hakone-ekiden-100", "name": "2区", "discipline": "ekiden_leg", "leg": 2, "sourceId": "source-ntv-hakone-100-leg-2" },
+    { "slug": "hakone-ekiden-100-leg-3", "editionSlug": "hakone-ekiden-100", "name": "3区", "discipline": "ekiden_leg", "leg": 3, "sourceId": "source-ntv-hakone-100-leg-3" },
+    { "slug": "hakone-ekiden-100-leg-4", "editionSlug": "hakone-ekiden-100", "name": "4区", "discipline": "ekiden_leg", "leg": 4, "sourceId": "source-ntv-hakone-100-leg-4" },
+    { "slug": "hakone-ekiden-100-leg-5", "editionSlug": "hakone-ekiden-100", "name": "5区", "discipline": "ekiden_leg", "leg": 5, "sourceId": "source-ntv-hakone-100-leg-5" },
+    { "slug": "hakone-ekiden-100-leg-6", "editionSlug": "hakone-ekiden-100", "name": "6区", "discipline": "ekiden_leg", "leg": 6, "sourceId": "source-ntv-hakone-100-leg-6" },
+    { "slug": "hakone-ekiden-100-leg-7", "editionSlug": "hakone-ekiden-100", "name": "7区", "discipline": "ekiden_leg", "leg": 7, "sourceId": "source-ntv-hakone-100-leg-7" },
+    { "slug": "hakone-ekiden-100-leg-8", "editionSlug": "hakone-ekiden-100", "name": "8区", "discipline": "ekiden_leg", "leg": 8, "sourceId": "source-ntv-hakone-100-leg-8" },
+    { "slug": "hakone-ekiden-100-leg-9", "editionSlug": "hakone-ekiden-100", "name": "9区", "discipline": "ekiden_leg", "leg": 9, "sourceId": "source-ntv-hakone-100-leg-9" },
+    { "slug": "hakone-ekiden-100-leg-10", "editionSlug": "hakone-ekiden-100", "name": "10区", "discipline": "ekiden_leg", "leg": 10, "sourceId": "source-ntv-hakone-100-leg-10" },
+    { "slug": "hakone-ekiden-101-leg-1", "editionSlug": "hakone-ekiden-101", "name": "1区", "discipline": "ekiden_leg", "leg": 1, "sourceId": "source-ntv-hakone-101-leg-1" },
+    { "slug": "hakone-ekiden-101-leg-2", "editionSlug": "hakone-ekiden-101", "name": "2区", "discipline": "ekiden_leg", "leg": 2, "sourceId": "source-ntv-hakone-101-leg-2" },
+    { "slug": "hakone-ekiden-101-leg-3", "editionSlug": "hakone-ekiden-101", "name": "3区", "discipline": "ekiden_leg", "leg": 3, "sourceId": "source-ntv-hakone-101-leg-3" },
+    { "slug": "hakone-ekiden-101-leg-4", "editionSlug": "hakone-ekiden-101", "name": "4区", "discipline": "ekiden_leg", "leg": 4, "sourceId": "source-ntv-hakone-101-leg-4" },
+    { "slug": "hakone-ekiden-101-leg-5", "editionSlug": "hakone-ekiden-101", "name": "5区", "discipline": "ekiden_leg", "leg": 5, "sourceId": "source-ntv-hakone-101-leg-5" },
+    { "slug": "hakone-ekiden-101-leg-6", "editionSlug": "hakone-ekiden-101", "name": "6区", "discipline": "ekiden_leg", "leg": 6, "sourceId": "source-ntv-hakone-101-leg-6" },
+    { "slug": "hakone-ekiden-101-leg-7", "editionSlug": "hakone-ekiden-101", "name": "7区", "discipline": "ekiden_leg", "leg": 7, "sourceId": "source-ntv-hakone-101-leg-7" },
+    { "slug": "hakone-ekiden-101-leg-8", "editionSlug": "hakone-ekiden-101", "name": "8区", "discipline": "ekiden_leg", "leg": 8, "sourceId": "source-ntv-hakone-101-leg-8" },
+    { "slug": "hakone-ekiden-101-leg-9", "editionSlug": "hakone-ekiden-101", "name": "9区", "discipline": "ekiden_leg", "leg": 9, "sourceId": "source-ntv-hakone-101-leg-9" },
+    { "slug": "hakone-ekiden-101-leg-10", "editionSlug": "hakone-ekiden-101", "name": "10区", "discipline": "ekiden_leg", "leg": 10, "sourceId": "source-ntv-hakone-101-leg-10" },
+    { "slug": "hakone-ekiden-102-leg-1", "editionSlug": "hakone-ekiden-102", "name": "1区", "discipline": "ekiden_leg", "leg": 1, "sourceId": "source-ntv-hakone-102-leg-1" },
+    { "slug": "hakone-ekiden-102-leg-2", "editionSlug": "hakone-ekiden-102", "name": "2区", "discipline": "ekiden_leg", "leg": 2, "sourceId": "source-ntv-hakone-102-leg-2" },
+    { "slug": "hakone-ekiden-102-leg-3", "editionSlug": "hakone-ekiden-102", "name": "3区", "discipline": "ekiden_leg", "leg": 3, "sourceId": "source-ntv-hakone-102-leg-3" },
+    { "slug": "hakone-ekiden-102-leg-4", "editionSlug": "hakone-ekiden-102", "name": "4区", "discipline": "ekiden_leg", "leg": 4, "sourceId": "source-ntv-hakone-102-leg-4" },
+    { "slug": "hakone-ekiden-102-leg-5", "editionSlug": "hakone-ekiden-102", "name": "5区", "discipline": "ekiden_leg", "leg": 5, "sourceId": "source-ntv-hakone-102-leg-5" },
+    { "slug": "hakone-ekiden-102-leg-6", "editionSlug": "hakone-ekiden-102", "name": "6区", "discipline": "ekiden_leg", "leg": 6, "sourceId": "source-ntv-hakone-102-leg-6" },
+    { "slug": "hakone-ekiden-102-leg-7", "editionSlug": "hakone-ekiden-102", "name": "7区", "discipline": "ekiden_leg", "leg": 7, "sourceId": "source-ntv-hakone-102-leg-7" },
+    { "slug": "hakone-ekiden-102-leg-8", "editionSlug": "hakone-ekiden-102", "name": "8区", "discipline": "ekiden_leg", "leg": 8, "sourceId": "source-ntv-hakone-102-leg-8" },
+    { "slug": "hakone-ekiden-102-leg-9", "editionSlug": "hakone-ekiden-102", "name": "9区", "discipline": "ekiden_leg", "leg": 9, "sourceId": "source-ntv-hakone-102-leg-9" },
+    { "slug": "hakone-ekiden-102-leg-10", "editionSlug": "hakone-ekiden-102", "name": "10区", "discipline": "ekiden_leg", "leg": 10, "sourceId": "source-ntv-hakone-102-leg-10" }
+  ]
+}

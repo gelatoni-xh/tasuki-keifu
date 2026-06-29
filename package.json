@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
+    "bootstrap:competition": "tsx scripts/imports/bootstrap-competition.ts",
     "import:race": "tsx scripts/imports/import-race.ts",
+    "import:hakone": "tsx scripts/imports/run-hakone-import.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"

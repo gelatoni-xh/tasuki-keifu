@@ -3,7 +3,7 @@
 V0.1 target:
 
 - Host: Ubuntu-3
-- Domain: `tasuki-keifu.gelatoni.uk`
+- Domain: `tasukikeifu.com`
 - App directory: `/opt/apps/tasuki-keifu`
 - Local app port: `127.0.0.1:3020`
 - Runtime: Docker Compose
@@ -44,16 +44,19 @@ Nginx:
 
 DNS:
 
-- Add `tasuki-keifu.gelatoni.uk` pointing to `13.230.244.67`
+- Add `tasukikeifu.com` A record pointing to `13.230.244.67`
+- Add `www.tasukikeifu.com` CNAME pointing to `tasukikeifu.com`
 - After DNS resolves, issue HTTPS cert with certbot.
-- Current server-side HTTP route has been verified with `Host: tasuki-keifu.gelatoni.uk`.
+- Current server-side HTTP route should be verified with `Host: tasukikeifu.com`.
 - Current public HTTPS route has been verified.
 
 Health checks:
 
 ```bash
 curl -I http://127.0.0.1:3020/ja
-curl -I http://tasuki-keifu.gelatoni.uk/ja
+curl -I http://tasukikeifu.com/ja
+curl -I https://tasukikeifu.com/ja
+curl -I https://www.tasukikeifu.com/ja
 ```
 
 Backup:
@@ -71,7 +74,7 @@ Cron:
 After adding DNS, issue HTTPS:
 
 ```bash
-sudo certbot --nginx -d tasuki-keifu.gelatoni.uk
+sudo certbot --nginx -d tasukikeifu.com -d www.tasukikeifu.com
 ```
 
 Current certificate:

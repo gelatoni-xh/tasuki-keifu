@@ -10,6 +10,7 @@ import {
   SourceType,
 } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { markToMilliseconds, upsertPersonalBestSnapshot } from "../scripts/lib/import-utils";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -239,6 +240,114 @@ async function replaceRaceResult(input: {
       notes: input.notes,
       sourceId: input.sourceId,
     },
+  });
+}
+
+async function ensureSeedMembership(input: {
+  personId: string;
+  organizationId: string;
+  type: MembershipType;
+  startDate?: Date | null;
+  endDate?: Date | null;
+  startYear?: number | null;
+  endYear?: number | null;
+  faculty?: string | null;
+  department?: string | null;
+  status?: DataStatus;
+  sourceId?: string;
+}) {
+  const existing = await prisma.membership.findFirst({
+    where: {
+      personId: input.personId,
+      organizationId: input.organizationId,
+      type: input.type,
+    },
+    orderBy: [{ startDate: "asc" }, { createdAt: "asc" }],
+  });
+
+  if (!existing) {
+    await prisma.membership.create({
+      data: {
+        personId: input.personId,
+        organizationId: input.organizationId,
+        type: input.type,
+        startDate: input.startDate ?? null,
+        endDate: input.endDate ?? null,
+        startYear: input.startYear ?? null,
+        endYear: input.endYear ?? null,
+        faculty: input.faculty ?? null,
+        department: input.department ?? null,
+        status: input.status ?? DataStatus.pending,
+        sourceId: input.sourceId,
+      },
+    });
+    return;
+  }
+
+  const patch: Record<string, unknown> = {};
+  if (!existing.startDate && input.startDate) patch.startDate = input.startDate;
+  if (!existing.endDate && input.endDate) patch.endDate = input.endDate;
+  if (!existing.startYear && input.startYear) patch.startYear = input.startYear;
+  if (!existing.endYear && input.endYear) patch.endYear = input.endYear;
+  if (!existing.faculty && input.faculty) patch.faculty = input.faculty;
+  if (!existing.department && input.department) patch.department = input.department;
+  if (!existing.sourceId && input.sourceId) patch.sourceId = input.sourceId;
+
+  if (Object.keys(patch).length > 0) {
+    await prisma.membership.update({
+      where: { id: existing.id },
+      data: patch,
+    });
+  }
+}
+
+async function upsertSeedPerson(input: {
+  slug: string;
+  displayNameJa: string;
+  displayNameKana?: string | null;
+  displayNameRoman?: string | null;
+  birthDate?: Date | null;
+  hometown?: string | null;
+  nationality?: string | null;
+  registeredPrefecture?: string | null;
+  status?: DataStatus;
+}) {
+  const existing = await prisma.person.findUnique({
+    where: { slug: input.slug },
+  });
+
+  if (!existing) {
+    return prisma.person.create({
+      data: {
+        slug: input.slug,
+        displayNameJa: input.displayNameJa,
+        displayNameKana: input.displayNameKana ?? null,
+        displayNameRoman: input.displayNameRoman ?? null,
+        birthDate: input.birthDate ?? null,
+        hometown: input.hometown ?? null,
+        nationality: input.nationality ?? null,
+        registeredPrefecture: input.registeredPrefecture ?? null,
+        type: "athlete",
+        status: input.status ?? DataStatus.pending,
+      },
+    });
+  }
+
+  const patch: Record<string, unknown> = {};
+  if (!existing.displayNameKana && input.displayNameKana) patch.displayNameKana = input.displayNameKana;
+  if (!existing.displayNameRoman && input.displayNameRoman) patch.displayNameRoman = input.displayNameRoman;
+  if (!existing.birthDate && input.birthDate) patch.birthDate = input.birthDate;
+  if (!existing.hometown && input.hometown) patch.hometown = input.hometown;
+  if (!existing.nationality && input.nationality) patch.nationality = input.nationality;
+  if (!existing.registeredPrefecture && input.registeredPrefecture) patch.registeredPrefecture = input.registeredPrefecture;
+
+  if (Object.keys(patch).length === 0) {
+    return existing;
+  }
+
+  return prisma.person.update({
+    where: { id: existing.id },
+    data: patch,
   });
 }
 
@@ -1999,88 +2108,75 @@ async function main() {
   ]);
 
   for (const player of players) {
-    const person = await prisma.person.upsert({
-      where: { slug: player.slug },
-      update: {
-        displayNameJa: player.displayNameJa,
-        displayNameKana: player.displayNameKana,
-        displayNameRoman: player.displayNameRoman,
-        birthDate: player.birthDate,
-        hometown: player.hometown,
-        nationality: player.nationality,
-        registeredPrefecture: player.registeredPrefecture,
-        status: player.profileStatus ?? DataStatus.pending,
-      },
-      create: {
-        slug: player.slug,
-        displayNameJa: player.displayNameJa,
-        displayNameKana: player.displayNameKana,
-        displayNameRoman: player.displayNameRoman,
-        birthDate: player.birthDate,
-        hometown: player.hometown,
-        nationality: player.nationality,
-        registeredPrefecture: player.registeredPrefecture,
-        type: "athlete",
-        status: player.profileStatus ?? DataStatus.pending,
-      },
+    const person = await upsertSeedPerson({
+      slug: player.slug,
+      displayNameJa: player.displayNameJa,
+      displayNameKana: player.displayNameKana,
+      displayNameRoman: player.displayNameRoman,
+      birthDate: player.birthDate,
+      hometown: player.hometown,
+      nationality: player.nationality,
+      registeredPrefecture: player.registeredPrefecture,
+      status: player.profileStatus ?? DataStatus.pending,
     });
 
-    await prisma.membership.deleteMany({ where: { personId: person.id } });
-    await prisma.membership.createMany({
-      data: [
-        {
-          personId: person.id,
-          organizationId: player.university.id,
-          type: MembershipType.enrolled,
-          startDate: player.universityStart,
-          endDate: player.universityEnd,
-          startYear: player.universityStart.getFullYear(),
-          endYear: player.universityEnd.getFullYear(),
-          grade: player.grade,
-          faculty: player.faculty,
-          department: player.department,
-          status: DataStatus.pending,
-          sourceId: source.id,
-        },
-        {
-          personId: person.id,
-          organizationId: player.highSchool.id,
-          type: MembershipType.enrolled,
-          startDate: player.highSchoolStart,
-          endDate: player.highSchoolEnd,
-          startYear: player.highSchoolStart.getFullYear(),
-          endYear: player.highSchoolEnd.getFullYear(),
-          status: DataStatus.pending,
-          sourceId: source.id,
-        },
-        ...(player.currentTeam && player.currentTeamStart
-          ? [
-              {
-                personId: person.id,
-                organizationId: player.currentTeam.id,
-                type: MembershipType.affiliated,
-                startDate: player.currentTeamStart,
-                startYear: player.currentTeamStart.getFullYear(),
-                status: DataStatus.pending,
-                sourceId: player.currentTeamSourceId ?? source.id,
-              },
-            ]
-          : []),
-      ],
+    await ensureSeedMembership({
+      personId: person.id,
+      organizationId: player.university.id,
+      type: MembershipType.enrolled,
+      startDate: player.universityStart,
+      endDate: player.universityEnd,
+      startYear: player.universityStart.getFullYear(),
+      endYear: player.universityEnd.getFullYear(),
+      faculty: player.faculty,
+      department: player.department,
+      status: DataStatus.pending,
+      sourceId: source.id,
     });
+    await ensureSeedMembership({
+      personId: person.id,
+      organizationId: player.highSchool.id,
+      type: MembershipType.enrolled,
+      startDate: player.highSchoolStart,
+      endDate: player.highSchoolEnd,
+      startYear: player.highSchoolStart.getFullYear(),
+      endYear: player.highSchoolEnd.getFullYear(),
+      status: DataStatus.pending,
+      sourceId: source.id,
+    });
+    if (player.currentTeam && player.currentTeamStart) {
+      await ensureSeedMembership({
+        personId: person.id,
+        organizationId: player.currentTeam.id,
+        type: MembershipType.affiliated,
+        startDate: player.currentTeamStart,
+        startYear: player.currentTeamStart.getFullYear(),
+        status: DataStatus.pending,
+        sourceId: player.currentTeamSourceId ?? source.id,
+      });
+    }
 
-    await prisma.personalBest.deleteMany({ where: { personId: person.id } });
     for (const pb of player.pbs) {
-      await prisma.personalBest.create({
-        data: {
+      await upsertPersonalBestSnapshot(prisma, {
+        personId: person.id,
+        discipline: pb.discipline,
+        mark: pb.mark,
+        notes: pb.notes ?? "",
+        sourceId: pb.sourceId,
+      });
+      await prisma.personalBest.updateMany({
+        where: {
           personId: person.id,
           discipline: pb.discipline,
           mark: pb.mark,
-          achievedOn: pb.achievedOn,
-          competitionName: pb.competitionName,
-          venue: pb.venue,
+        },
+        data: {
+          markMillis: markToMilliseconds(pb.mark),
+          achievedOn: pb.achievedOn ?? undefined,
+          competitionName: pb.competitionName ?? undefined,
+          venue: pb.venue ?? undefined,
           status: DataStatus.pending,
-          notes: pb.notes,
+          notes: pb.notes ?? undefined,
           sourceId: pb.sourceId,
         },
       });
@@ -2136,83 +2232,62 @@ async function main() {
         throw new Error(`Missing organization for ${entry.displayNameJa}`);
       }
 
-      const person = await prisma.person.upsert({
-        where: { slug: entry.slug },
-        update: {
-          displayNameJa: entry.displayNameJa,
-          displayNameRoman: entry.displayNameRoman,
-        },
-        create: {
-          slug: entry.slug,
-          displayNameJa: entry.displayNameJa,
-          displayNameRoman: entry.displayNameRoman,
-          type: "athlete",
-          status: DataStatus.pending,
-        },
+      const person = await upsertSeedPerson({
+        slug: entry.slug,
+        displayNameJa: entry.displayNameJa,
+        displayNameRoman: entry.displayNameRoman,
+        status: DataStatus.pending,
       });
 
       if (!protectedProfileSlugs.has(entry.slug) && !isCompetitionOnlyTeam) {
         const dates = academicDatesForGrade(entry.grade);
 
-        await prisma.membership.deleteMany({ where: { personId: person.id } });
-        await prisma.membership.createMany({
-          data: [
-            {
-              personId: person.id,
-              organizationId: university.id,
-              type: MembershipType.enrolled,
-              startDate: dates.universityStart,
-              endDate: dates.universityEnd,
-              startYear: dates.universityStart.getFullYear(),
-              endYear: dates.universityEnd.getFullYear(),
-              grade: entry.grade,
-              status: DataStatus.pending,
-              sourceId: input.sourceId,
-            },
-            {
-              personId: person.id,
-              organizationId: highSchool.id,
-              type: MembershipType.enrolled,
-              startDate: dates.highSchoolStart,
-              endDate: dates.highSchoolEnd,
-              startYear: dates.highSchoolStart.getFullYear(),
-              endYear: dates.highSchoolEnd.getFullYear(),
-              status: DataStatus.pending,
-              sourceId: input.sourceId,
-            },
-          ],
+        await ensureSeedMembership({
+          personId: person.id,
+          organizationId: university.id,
+          type: MembershipType.enrolled,
+          startDate: dates.universityStart,
+          endDate: dates.universityEnd,
+          startYear: dates.universityStart.getFullYear(),
+          endYear: dates.universityEnd.getFullYear(),
+          status: DataStatus.pending,
+          sourceId: input.sourceId,
+        });
+        await ensureSeedMembership({
+          personId: person.id,
+          organizationId: highSchool.id,
+          type: MembershipType.enrolled,
+          startDate: dates.highSchoolStart,
+          endDate: dates.highSchoolEnd,
+          startYear: dates.highSchoolStart.getFullYear(),
+          endYear: dates.highSchoolEnd.getFullYear(),
+          status: DataStatus.pending,
+          sourceId: input.sourceId,
         });
       } else if (isCompetitionOnlyTeam) {
-        await prisma.membership.deleteMany({ where: { personId: person.id } });
         const dates = academicDatesForGrade(entry.grade);
 
-        await prisma.membership.create({
-          data: {
-            personId: person.id,
-            organizationId: highSchool.id,
-            type: MembershipType.enrolled,
-            startDate: dates.highSchoolStart,
-            endDate: dates.highSchoolEnd,
-            startYear: dates.highSchoolStart.getFullYear(),
-            endYear: dates.highSchoolEnd.getFullYear(),
-            status: DataStatus.pending,
-            sourceId: input.sourceId,
-          },
+        await ensureSeedMembership({
+          personId: person.id,
+          organizationId: highSchool.id,
+          type: MembershipType.enrolled,
+          startDate: dates.highSchoolStart,
+          endDate: dates.highSchoolEnd,
+          startYear: dates.highSchoolStart.getFullYear(),
+          endYear: dates.highSchoolEnd.getFullYear(),
+          status: DataStatus.pending,
+          sourceId: input.sourceId,
         });
       }
 
       if (!protectedProfileSlugs.has(entry.slug)) {
-        await prisma.personalBest.deleteMany({ where: { personId: person.id } });
         for (const pb of entry.pbs) {
-          await prisma.personalBest.create({
-            data: {
-              personId: person.id,
-              discipline: pb.discipline,
-              mark: pb.mark,
-              status: DataStatus.pending,
-              notes: input.pbNotes,
-              sourceId: input.sourceId,
-            },
+          await upsertPersonalBestSnapshot(prisma, {
+            personId: person.id,
+            discipline: pb.discipline,
+            mark: pb.mark,
+            notes: input.pbNotes,
+            sourceId: input.sourceId,
           });
         }
       }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
@@ -5,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatDiscipline, formatRank } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
+import { buildLocaleAlternates } from "@/lib/site";
 
 type CompetitionEditionPageProps = {
   params: Promise<{
@@ -12,6 +14,56 @@ type CompetitionEditionPageProps = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
+  const { locale: localeParam, slug } = await params;
+
+  if (!isLocale(localeParam)) {
+    return {};
+  }
+
+  const locale = localeParam;
+  const edition = await prisma.competitionEdition.findUnique({
+    where: { slug },
+    include: {
+      competition: true,
+      races: {
+        include: {
+          _count: {
+            select: { raceResults: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!edition) {
+    return {};
+  }
+
+  const raceCount = edition.races.length;
+  const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
+  const title = `${edition.shortName ?? edition.officialName}の結果・出場選手`;
+  const description = [
+    `${edition.competition.nameJa}の届次ページです。`,
+    `開催日は${formatDate(edition.startsOn) || "未確認"}。`,
+    `${raceCount}件の競技単位と${resultCount}件の結果を収録しています。`,
+  ].join(" ");
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}/competitions/${slug}`,
+      languages: buildLocaleAlternates(`/competitions/${slug}`),
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/${locale}/competitions/${slug}`,
+    },
+  };
+}
 
 export default async function CompetitionEditionPage({ params }: CompetitionEditionPageProps) {
   const { locale: localeParam, slug } = await params;
