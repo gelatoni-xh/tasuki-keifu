@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
+    "import:race": "tsx scripts/imports/import-race.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"

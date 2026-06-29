@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatOrganizationType, formatRank } from "@/lib/format";
+import { formatDate, formatOrganizationType } from "@/lib/format";
 import { getDictionary, isLocale } from "@/lib/i18n";
 
 type OrganizationDetailPageProps = {
@@ -30,17 +30,6 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
           person: true,
         },
         orderBy: [{ startDate: "desc" }, { startYear: "desc" }],
-      },
-      raceResults: {
-        include: {
-          person: true,
-          race: {
-            include: {
-              competitionEdition: true,
-            },
-          },
-        },
-        orderBy: [{ race: { competitionEdition: { startsOn: "desc" } } }, { rank: "asc" }],
       },
     },
   });
@@ -146,51 +135,6 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                 <p className="mt-4 text-sm text-[#59615c]">{dictionary.organizations.emptyPlayers}</p>
               )}
             </div>
-          </section>
-
-          <section className="border border-[#ded8cc] bg-white p-5">
-            <h2 className="text-lg font-semibold">{dictionary.organizations.raceResults}</h2>
-            {organization.raceResults.length > 0 ? (
-              <div className="mt-4 overflow-x-auto">
-                <div className="min-w-[760px]">
-                  <div className="grid grid-cols-[1.2fr_1fr_1fr_120px_120px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
-                    <span>{dictionary.competitions.results}</span>
-                    <span>{dictionary.competitions.athlete}</span>
-                    <span>{dictionary.competitions.date}</span>
-                    <span>{dictionary.competitions.mark}</span>
-                    <span>{dictionary.competitions.rank}</span>
-                  </div>
-                  <div className="divide-y divide-[#e7e1d8]">
-                    {organization.raceResults.map((result) => (
-                      <div className="grid grid-cols-[1.2fr_1fr_1fr_120px_120px] px-3 py-3 text-sm" key={result.id}>
-                        <Link
-                          className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
-                          href={`/${locale}/competitions/${result.race.competitionEdition.slug}`}
-                        >
-                          {result.race.competitionEdition.shortName ?? result.race.competitionEdition.officialName}
-                          {" / "}
-                          {result.race.name}
-                        </Link>
-                        <Link
-                          className="text-[#8a1f2d] underline-offset-4 hover:underline"
-                          href={`/${locale}/players/${result.person.slug}`}
-                        >
-                          {result.person.displayNameJa}
-                        </Link>
-                        <span className="text-[#59615c]">
-                          {formatDate(result.race.startsAt ?? result.race.competitionEdition.startsOn) ||
-                            dictionary.common.emptyDash}
-                        </span>
-                        <span>{result.mark ?? dictionary.common.notEntered}</span>
-                        <span>{formatRank(result.rank, locale) || dictionary.common.emptyDash}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="mt-4 text-sm text-[#59615c]">{dictionary.organizations.emptyResults}</p>
-            )}
           </section>
         </div>
       </main>

@@ -33,10 +33,7 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "high_school",
   "university",
   "corporate_team",
-  "company",
-  "club",
   "federation",
-  "organizer",
 ];
 
 function normalizeSearchText(value: string | null | undefined) {

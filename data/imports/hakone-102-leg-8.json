@@ -1,0 +1,471 @@
+{
+  "batchKey": "hakone-102-leg-8-20260629",
+  "sourceId": "source-ntv-hakone-102-leg-8",
+  "raceSlug": "hakone-ekiden-102-leg-8",
+  "summary": "第102回箱根駅伝 8区 NTV 区間ページ导入",
+  "pbNotes": "第102回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は後続タスクで再確認。",
+  "entries": [
+    {
+      "slug": "shota-shiode",
+      "displayNameJa": "塩出 翔太",
+      "displayNameRoman": "Shota Shiode",
+      "universitySlug": "aoyama-gakuin-university",
+      "highSchoolSlug": "sera-high-school",
+      "grade": 4,
+      "mark": "1:03:45",
+      "rank": 1,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:55.81"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:54"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-shota-shiode"
+    },
+    {
+      "slug": "takuma-yamakawa",
+      "displayNameJa": "山川 拓馬",
+      "displayNameRoman": "Takuma Yamakawa",
+      "universitySlug": "komazawa-university",
+      "highSchoolSlug": "kamiina-agriculture-high-school",
+      "grade": 4,
+      "mark": "1:04:34",
+      "rank": 4,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:36.98"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:25"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-takuma-yamakawa"
+    },
+    {
+      "slug": "arata-iiguni",
+      "displayNameJa": "飯國 新太",
+      "displayNameRoman": "Arata Iiguni",
+      "universitySlug": "kokugakuin-university",
+      "highSchoolSlug": "kokugakuin-kugayama-high-school",
+      "grade": 2,
+      "mark": "1:04:01",
+      "rank": 2,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:39.28"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:51"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-arata-iiguni"
+    },
+    {
+      "slug": "shota-horino",
+      "displayNameJa": "堀野 正太",
+      "displayNameRoman": "Shota Horino",
+      "universitySlug": "waseda-university",
+      "highSchoolSlug": "suma-gakuen-high-school",
+      "grade": 1,
+      "mark": "1:06:09",
+      "rank": 16,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "30:10.69"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:28"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-shota-horino"
+    },
+    {
+      "slug": "daisuke-sato",
+      "displayNameJa": "佐藤 大介",
+      "displayNameRoman": "Daisuke Sato",
+      "universitySlug": "chuo-university",
+      "highSchoolSlug": "saitama-sakae-high-school",
+      "grade": 2,
+      "mark": "1:04:34",
+      "rank": 4,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:10.82"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:26"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-daisuke-sato"
+    },
+    {
+      "slug": "iori-oda",
+      "displayNameJa": "小田 伊織",
+      "displayNameRoman": "Iori Oda",
+      "universitySlug": "josai-university",
+      "highSchoolSlug": "nishiwaki-technical-high-school",
+      "grade": 3,
+      "mark": "1:05:26",
+      "rank": 13,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:04.91"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:36"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-iori-oda"
+    },
+    {
+      "slug": "yuta-kinugawa",
+      "displayNameJa": "衣川 勇太",
+      "displayNameRoman": "Yuta Kinugawa",
+      "universitySlug": "soka-university",
+      "highSchoolSlug": "nishiwaki-technical-high-school",
+      "grade": 1,
+      "mark": "1:05:14",
+      "rank": 11,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m5000",
+          "mark": "14:10.21"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:54"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-yuta-kinugawa"
+    },
+    {
+      "slug": "hiroaki-maeda",
+      "displayNameJa": "前田 寛明",
+      "displayNameRoman": "Hiroaki Maeda",
+      "universitySlug": "tokyo-international-university",
+      "highSchoolSlug": "tsuchiura-nichidai-high-school",
+      "grade": 4,
+      "mark": "1:04:55",
+      "rank": 8,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:58.17"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:04:08"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-hiroaki-maeda"
+    },
+    {
+      "slug": "keigo-amimoto",
+      "displayNameJa": "網本 佳悟",
+      "displayNameRoman": "Keigo Amimoto",
+      "universitySlug": "toyo-university",
+      "highSchoolSlug": "matsuura-high-school",
+      "grade": 4,
+      "mark": "1:05:53",
+      "rank": 14,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:31.26"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:54"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-keigo-amimoto"
+    },
+    {
+      "slug": "hajime-matsui",
+      "displayNameJa": "松井 一",
+      "displayNameRoman": "Hajime Matsui",
+      "universitySlug": "teikyo-university",
+      "highSchoolSlug": "oita-tomei-high-school",
+      "grade": 2,
+      "mark": "1:04:34",
+      "rank": 4,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:54.52"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:33"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-hajime-matsui"
+    },
+    {
+      "slug": "yu-kurotani",
+      "displayNameJa": "黒谷 優",
+      "displayNameRoman": "Yu Kurotani",
+      "universitySlug": "chuo-gakuin-university",
+      "highSchoolSlug": "chuetsu-high-school",
+      "grade": 4,
+      "mark": "1:04:52",
+      "rank": 7,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:00.04"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:11"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-yu-kurotani"
+    },
+    {
+      "slug": "soma-nagahara",
+      "displayNameJa": "永原 颯磨",
+      "displayNameRoman": "Soma Nagahara",
+      "universitySlug": "juntendo-university",
+      "highSchoolSlug": "saku-chosei-high-school",
+      "grade": 2,
+      "mark": "1:04:04",
+      "rank": 3,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "30:19.81"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:25"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-soma-nagahara"
+    },
+    {
+      "slug": "issei-matsuoka",
+      "displayNameJa": "松岡 一星",
+      "displayNameRoman": "Issei Matsuoka",
+      "universitySlug": "yamanashi-gakuin-university",
+      "highSchoolSlug": "kuri-gakuen-high-school",
+      "grade": 2,
+      "mark": "1:05:01",
+      "rank": 9,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:07.89"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:04:19"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-issei-matsuoka"
+    },
+    {
+      "slug": "runa-yamaguchi",
+      "displayNameJa": "山口 月暉",
+      "displayNameRoman": "Runa Yamaguchi",
+      "universitySlug": "nihon-university",
+      "highSchoolSlug": "tottori-johoku-high-school",
+      "grade": 4,
+      "mark": "1:06:46",
+      "rank": 18,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:41.36"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:02"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-runa-yamaguchi"
+    },
+    {
+      "slug": "shumon-rohoman",
+      "displayNameJa": "ロホマン シュモン",
+      "displayNameRoman": "Shumon Rohoman",
+      "universitySlug": "tokai-university",
+      "highSchoolSlug": "kawasaki-tachibana-high-school",
+      "grade": 4,
+      "mark": "1:05:05",
+      "rank": 10,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:07.48"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:40"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-shumon-rohoman"
+    },
+    {
+      "slug": "takuto-sugahara",
+      "displayNameJa": "菅原 匠人",
+      "displayNameRoman": "Takuto Sugahara",
+      "universitySlug": "tokyo-university-of-agriculture",
+      "highSchoolSlug": "saitama-sakae-high-school",
+      "grade": 2,
+      "mark": "1:05:55",
+      "rank": 15,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:24.41"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:04:20"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-takuto-sugahara"
+    },
+    {
+      "slug": "mahiro-endo",
+      "displayNameJa": "遠藤 優裕",
+      "displayNameRoman": "Mahiro Endo",
+      "universitySlug": "kanagawa-university",
+      "highSchoolSlug": "saku-chosei-high-school",
+      "grade": 2,
+      "mark": "1:06:48",
+      "rank": 19,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:38.20"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:04:18"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-mahiro-endo"
+    },
+    {
+      "slug": "kaito-terui",
+      "displayNameJa": "照井 海翔",
+      "displayNameRoman": "Kaito Terui",
+      "universitySlug": "daito-bunka-university",
+      "highSchoolSlug": "ichinoseki-gakuin-high-school",
+      "grade": 4,
+      "mark": "1:06:44",
+      "rank": 17,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:39.97"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:23"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-kaito-terui"
+    },
+    {
+      "slug": "reo-yoshida",
+      "displayNameJa": "吉田 黎大",
+      "displayNameRoman": "Reo Yoshida",
+      "universitySlug": "nippon-sport-science-university",
+      "highSchoolSlug": "saitama-sakae-high-school",
+      "grade": 3,
+      "mark": "1:05:20",
+      "rank": 12,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:09.64"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:04:08"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-reo-yoshida"
+    },
+    {
+      "slug": "shogo-yamashita",
+      "displayNameJa": "山下 翔吾",
+      "displayNameRoman": "Shogo Yamashita",
+      "universitySlug": "rikkyo-university",
+      "highSchoolSlug": "kokugakuin-kugayama-high-school",
+      "grade": 2,
+      "mark": "1:06:54",
+      "rank": 20,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:10.07"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:44"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-shogo-yamashita"
+    },
+    {
+      "slug": "hikaru-yoko",
+      "displayNameJa": "横尾 皓",
+      "displayNameRoman": "Hikaru Yoko",
+      "universitySlug": "kanto-student-union",
+      "highSchoolSlug": "kyushu-gakuin-high-school",
+      "grade": 4,
+      "mark": "1:05:28",
+      "rank": null,
+      "notes": "OP",
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:36.97"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:04:16"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg8-hikaru-yoko"
+    }
+  ]
+}

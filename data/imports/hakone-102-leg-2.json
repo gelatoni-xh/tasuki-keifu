@@ -1,0 +1,492 @@
+{
+  "batchKey": "hakone-102-leg-2-20260629",
+  "sourceId": "source-ntv-hakone-102-leg-2",
+  "raceSlug": "hakone-ekiden-102-leg-2",
+  "summary": "第102回箱根駅伝 2区 NTV 区間ページ导入",
+  "pbNotes": "第102回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は后续タスクで再確認。",
+  "entries": [
+    {
+      "slug": "victor-kimutai",
+      "displayNameJa": "Ｖ.キムタイ",
+      "displayNameRoman": "Victor Kimutai",
+      "universitySlug": "josai-university",
+      "highSchoolSlug": "mau-high-school",
+      "grade": 4,
+      "mark": "1:05:09",
+      "rank": 1,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:41.04"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:21"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-victor-kimutai",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "shadrack-kipkemei",
+      "displayNameJa": "Ｓ.キップケメイ",
+      "displayNameRoman": "Shadrack Kipkemei",
+      "universitySlug": "nihon-university",
+      "highSchoolSlug": "irigitati-high-school",
+      "grade": 3,
+      "mark": "1:05:42",
+      "rank": 2,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:20.05"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": ":59:49"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-shadrack-kipkemei",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "brian-kipyegon",
+      "displayNameJa": "Ｂ.キピエゴ",
+      "displayNameRoman": "Brian Kipyegon",
+      "universitySlug": "yamanashi-gakuin-university",
+      "highSchoolSlug": "kapkatet-high-school",
+      "grade": 3,
+      "mark": "1:05:43",
+      "rank": 3,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:42.76"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:00:16"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-brian-kipyegon",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "yamaguchi-tomonori",
+      "displayNameJa": "山口 智規",
+      "displayNameRoman": "Tomonori Yamaguchi",
+      "universitySlug": "waseda-university",
+      "highSchoolSlug": "gakuho-ishikawa-high-school",
+      "grade": 4,
+      "mark": "1:05:47",
+      "rank": 4,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:52.37"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:16"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-yamaguchi-tomonori",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "stephen-muthini",
+      "displayNameJa": "Ｓ.ムチーニ",
+      "displayNameRoman": "Stephen Muthini",
+      "universitySlug": "soka-university",
+      "highSchoolSlug": "mikuyuni-high-school",
+      "grade": 3,
+      "mark": "1:06:00",
+      "rank": 5,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:34.32"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:08"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-stephen-muthini",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "tameike-itta",
+      "displayNameJa": "溜池 一太",
+      "displayNameRoman": "Itta Tameike",
+      "universitySlug": "chuo-university",
+      "highSchoolSlug": "rakunan-high-school",
+      "grade": 4,
+      "mark": "1:06:06",
+      "rank": 6,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:52.18"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:18"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-tameike-itta",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "richard-etir",
+      "displayNameJa": "Ｒ.エティーリ",
+      "displayNameRoman": "Richard Etir",
+      "universitySlug": "tokyo-international-university",
+      "highSchoolSlug": "sil-high-school",
+      "grade": 3,
+      "mark": "1:06:14",
+      "rank": 7,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:06.88"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "59:30"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-richard-etir",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "shunsuke-kuwata",
+      "displayNameJa": "桑田 駿介",
+      "displayNameRoman": "Kuwata Shunsuke",
+      "universitySlug": "komazawa-university",
+      "highSchoolSlug": "kurashiki-high-school",
+      "grade": 2,
+      "mark": "1:06:19",
+      "rank": 8,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:12.02"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:00:48"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-shunsuke-kuwata",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "hiroto-yoshioka",
+      "displayNameJa": "吉岡 大翔",
+      "displayNameRoman": "Yoshioka Hiroto",
+      "universitySlug": "juntendo-university",
+      "highSchoolSlug": "saku-chosei-high-school",
+      "grade": 3,
+      "mark": "1:06:28",
+      "rank": 9,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:08.02"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:25"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-hiroto-yoshioka",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "kaito-iida",
+      "displayNameJa": "飯田 翔大",
+      "displayNameRoman": "Iida Kaito",
+      "universitySlug": "aoyama-gakuin-university",
+      "highSchoolSlug": "izumi-chuo-high-school",
+      "grade": 2,
+      "mark": "1:06:29",
+      "rank": 10,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:51.51"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:03:18"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-kaito-iida",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "kazuma-maeda",
+      "displayNameJa": "前田 和摩",
+      "displayNameRoman": "Maeda Kazuma",
+      "universitySlug": "tokyo-university-of-agriculture",
+      "highSchoolSlug": "hotoku-gakuen-high-school",
+      "grade": 3,
+      "mark": "1:06:31",
+      "rank": 11,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:21.52"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:42"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-kazuma-maeda",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "ryuto-uehara",
+      "displayNameJa": "上原 琉翔",
+      "displayNameRoman": "Uehara Ryuto",
+      "universitySlug": "kokugakuin-university",
+      "highSchoolSlug": "hokuzan-high-school",
+      "grade": 4,
+      "mark": "1:07:08",
+      "rank": 12,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:16.76"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:00:30"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-ryuto-uehara",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "miyamoto-haruto",
+      "displayNameJa": "宮本 陽叶",
+      "displayNameRoman": "Haruto Miyamoto",
+      "universitySlug": "kanagawa-university",
+      "highSchoolSlug": "rakunan-high-school",
+      "grade": 4,
+      "mark": "1:07:26",
+      "rank": 13,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:33.32"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:09"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-miyamoto-haruto",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "shunsuke-tajima",
+      "displayNameJa": "田島 駿介",
+      "displayNameRoman": "Tajima Shunsuke",
+      "universitySlug": "nippon-sport-science-university",
+      "highSchoolSlug": "asahino-high-school",
+      "grade": 4,
+      "mark": "1:07:41",
+      "rank": 14,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:11.41"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:04"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-shunsuke-tajima",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "taisei-ichikawa",
+      "displayNameJa": "市川 大世",
+      "displayNameRoman": "Ichikawa Taisei",
+      "universitySlug": "chuo-gakuin-university",
+      "highSchoolSlug": "koma-high-school",
+      "grade": 3,
+      "mark": "1:07:42",
+      "rank": 15,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:38.31"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:43"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-taisei-ichikawa",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "hisaya-hanaoka",
+      "displayNameJa": "花岡 寿哉",
+      "displayNameRoman": "Hanaoka Hisaya",
+      "universitySlug": "tokai-university",
+      "highSchoolSlug": "ueda-nishi-high-school",
+      "grade": 4,
+      "mark": "1:08:00",
+      "rank": 16,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:08.26"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:09"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-hisaya-hanaoka",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "munakata-kazura",
+      "displayNameJa": "棟方 一楽",
+      "displayNameRoman": "Kazura Munakata",
+      "universitySlug": "daito-bunka-university",
+      "highSchoolSlug": "hirosaki-jitsugyo-high-school",
+      "grade": 3,
+      "mark": "1:09:29",
+      "rank": 17,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:19.82"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:38"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-munakata-kazura",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "baba-kento",
+      "displayNameJa": "馬場 賢人",
+      "displayNameRoman": "Kento Baba",
+      "universitySlug": "rikkyo-university",
+      "highSchoolSlug": "omuta-high-school",
+      "grade": 4,
+      "mark": "1:09:54",
+      "rank": 18,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:40.67"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:00:26"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-baba-kento",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "mashu-nishimura",
+      "displayNameJa": "西村 真周",
+      "displayNameRoman": "Nishimura Mashu",
+      "universitySlug": "toyo-university",
+      "highSchoolSlug": "jiyugaoka-high-school",
+      "grade": 4,
+      "mark": "1:10:24",
+      "rank": 19,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:34.86"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:18"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-mashu-nishimura",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "yoshihiro-kusuoka",
+      "displayNameJa": "楠岡 由浩",
+      "displayNameRoman": "Kusuoka Yoshihiro",
+      "universitySlug": "teikyo-university",
+      "highSchoolSlug": "keisei-high-school",
+      "grade": 3,
+      "mark": "1:11:50",
+      "rank": 20,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:52.09"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:01:43"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-yoshihiro-kusuoka",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    },
+    {
+      "slug": "kio-furuhashi",
+      "displayNameJa": "古橋 希翁",
+      "displayNameRoman": "Furuhashi Kio",
+      "universitySlug": "kanto-student-union",
+      "highSchoolSlug": "iga-hakuho-high-school",
+      "grade": 3,
+      "mark": "1:07:59",
+      "rank": null,
+      "notes": "OP",
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:19.45"
+        },
+        {
+          "discipline": "half_marathon",
+          "mark": "1:02:13"
+        }
+      ],
+      "sourceEntityKey": "ntv-102-leg2-kio-furuhashi",
+      "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/102/team_kukan/2.html"
+    }
+  ]
+}

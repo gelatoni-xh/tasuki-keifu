@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
@@ -10,10 +10,61 @@ type CompetitionsPageProps = {
   params: Promise<{
     locale: string;
   }>;
+  searchParams: Promise<{
+    q?: string;
+    page?: string;
+  }>;
 };
 
-export default async function CompetitionsPage({ params }: CompetitionsPageProps) {
+const pageSize = 10;
+
+function normalizeSearchText(value: string | null | undefined) {
+  return (value ?? "").replace(/\s+/g, "").toLocaleLowerCase();
+}
+
+function includesNormalized(value: string | null | undefined, query: string) {
+  return normalizeSearchText(value).includes(query);
+}
+
+function buildCompetitionsPath(locale: string, params: Record<string, string | number | undefined>) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      searchParams.set(key, String(value));
+    }
+  });
+
+  const queryString = searchParams.toString();
+
+  return `/${locale}/competitions${queryString ? `?${queryString}` : ""}`;
+}
+
+function getPaginationItems(currentPage: number, totalPages: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const pages = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+  const validPages = [...pages].filter((page) => page >= 1 && page <= totalPages).sort((a, b) => a - b);
+  const items: Array<number | "ellipsis"> = [];
+
+  validPages.forEach((page, index) => {
+    const previous = validPages[index - 1];
+
+    if (previous && page - previous > 1) {
+      items.push("ellipsis");
+    }
+
+    items.push(page);
+  });
+
+  return items;
+}
+
+export default async function CompetitionsPage({ params, searchParams }: CompetitionsPageProps) {
   const { locale: localeParam } = await params;
+  const queryParams = await searchParams;
 
   if (!isLocale(localeParam)) {
     notFound();
@@ -21,6 +72,9 @@ export default async function CompetitionsPage({ params }: CompetitionsPageProps
 
   const locale = localeParam;
   const dictionary = getDictionary(locale);
+  const query = queryParams.q?.trim() ?? "";
+  const normalizedQuery = normalizeSearchText(query);
+  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
   const editions = await prisma.competitionEdition.findMany({
     include: {
       competition: true,
@@ -34,10 +88,26 @@ export default async function CompetitionsPage({ params }: CompetitionsPageProps
     },
     orderBy: [{ year: "desc" }, { startsOn: "desc" }, { officialName: "asc" }],
   });
+  const filteredEditions = normalizedQuery
+    ? editions.filter((edition) =>
+        [
+          edition.officialName,
+          edition.shortName,
+          edition.competition.nameJa,
+          edition.competition.nameZh,
+          edition.competition.nameEn,
+          edition.year?.toString(),
+        ].some((value) => includesNormalized(value, normalizedQuery)),
+      )
+    : editions;
+  const totalPages = Math.max(1, Math.ceil(filteredEditions.length / pageSize));
+  const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+  const paginatedEditions = filteredEditions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginationItems = getPaginationItems(currentPage, totalPages);
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
-      <SiteHeader locale={locale} path="/competitions" />
+      <SiteHeader locale={locale} path={buildCompetitionsPath(locale, { q: query })} />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">
           <header className="flex flex-col justify-between gap-4 border-b border-[#ded8cc] pb-6 sm:flex-row sm:items-end">
@@ -46,12 +116,44 @@ export default async function CompetitionsPage({ params }: CompetitionsPageProps
               <p className="mt-2 text-sm text-[#59615c]">{dictionary.competitions.listDescription}</p>
             </div>
             <p className="text-sm font-medium text-[#8a1f2d]">
-              {interpolate(dictionary.competitions.resultCount, { count: editions.length })}
+              {interpolate(dictionary.competitions.resultCount, { count: filteredEditions.length })}
             </p>
           </header>
 
+          <form action={`/${locale}/competitions`} className="border border-[#ded8cc] bg-white p-4">
+            <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+              <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
+                <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
+                <span className="sr-only">{dictionary.common.search}</span>
+                <input
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-[#8b938e]"
+                  defaultValue={query}
+                  name="q"
+                  placeholder={dictionary.competitions.searchPlaceholder}
+                  type="search"
+                />
+              </label>
+
+              <button
+                className="inline-flex items-center justify-center gap-2 border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
+                type="submit"
+              >
+                <Search className="h-4 w-4" aria-hidden="true" />
+                {dictionary.common.filter}
+              </button>
+
+              <Link
+                className="inline-flex items-center justify-center gap-2 border border-[#cfc7b8] px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
+                href={`/${locale}/competitions`}
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+                {dictionary.common.reset}
+              </Link>
+            </div>
+          </form>
+
           <div className="divide-y divide-[#e7e1d8] border-y border-[#ded8cc] bg-white">
-            {editions.map((edition) => {
+            {paginatedEditions.length > 0 ? paginatedEditions.map((edition) => {
               const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
 
               return (
@@ -80,8 +182,72 @@ export default async function CompetitionsPage({ params }: CompetitionsPageProps
                   </span>
                 </Link>
               );
-            })}
+            }) : (
+              <div className="px-4 py-10 text-center">
+                <h2 className="text-lg font-semibold">{dictionary.competitions.emptyTitle}</h2>
+                <p className="mt-2 text-sm text-[#59615c]">{dictionary.competitions.emptyDescription}</p>
+              </div>
+            )}
           </div>
+
+          {filteredEditions.length > pageSize ? (
+            <nav className="flex flex-col items-center justify-between gap-3 border-t border-[#ded8cc] pt-4 sm:flex-row">
+              <p className="text-sm text-[#59615c]">
+                {interpolate(dictionary.competitions.pageSummary, {
+                  current: currentPage,
+                  total: totalPages,
+                })}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Link
+                  aria-disabled={currentPage <= 1}
+                  className={`inline-flex items-center gap-1 border px-3 py-2 text-sm font-medium ${
+                    currentPage <= 1
+                      ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
+                      : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
+                  }`}
+                  href={buildCompetitionsPath(locale, { q: query, page: currentPage - 1 })}
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                  {dictionary.competitions.previousPage}
+                </Link>
+                <div className="flex flex-wrap items-center justify-center gap-1">
+                  {paginationItems.map((item, index) =>
+                    item === "ellipsis" ? (
+                      <span className="px-2 py-2 text-sm text-[#8b938e]" key={`ellipsis-${index}`}>
+                        ...
+                      </span>
+                    ) : (
+                      <Link
+                        aria-current={item === currentPage ? "page" : undefined}
+                        className={`inline-flex h-9 min-w-9 items-center justify-center border px-3 text-sm font-medium ${
+                          item === currentPage
+                            ? "border-[#8a1f2d] bg-[#8a1f2d] text-white"
+                            : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
+                        }`}
+                        href={buildCompetitionsPath(locale, { q: query, page: item })}
+                        key={item}
+                      >
+                        {item}
+                      </Link>
+                    ),
+                  )}
+                </div>
+                <Link
+                  aria-disabled={currentPage >= totalPages}
+                  className={`inline-flex items-center gap-1 border px-3 py-2 text-sm font-medium ${
+                    currentPage >= totalPages
+                      ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
+                      : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
+                  }`}
+                  href={buildCompetitionsPath(locale, { q: query, page: currentPage + 1 })}
+                >
+                  {dictionary.competitions.nextPage}
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
+            </nav>
+          ) : null}
         </div>
       </main>
     </div>

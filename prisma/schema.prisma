@@ -114,6 +114,14 @@ enum AuditActorType {
   system
 }
 
+/// 导入批次状态
+enum ImportBatchStatus {
+  pending
+  running
+  completed
+  failed
+}
+
 /// 人物/选手表：记录人本身的稳定信息
 model Person {
   /// 主键
@@ -161,6 +169,8 @@ model Person {
   raceResults          RaceResult[]
   /// 名称变体
   nameVariants         NameVariant[]
+  /// 外部来源映射
+  sourceReferences     SourceReference[]
 }
 
 /// 组织表：统一记录高中、大学、实业团、俱乐部等
@@ -206,6 +216,8 @@ model Organization {
   raceResults  RaceResult[]
   /// 名称变体
   nameVariants NameVariant[]
+  /// 外部来源映射
+  sourceReferences SourceReference[]
 }
 
 /// 所属履历表：记录人物在某时间段与某组织的关系
@@ -307,6 +319,7 @@ model Competition {
 
   editions     CompetitionEdition[]
   nameVariants NameVariant[]
+  sourceReferences SourceReference[]
 }
 
 /// 赛事届次表，例如第102回箱根駅伝、大阪マラソン2025
@@ -328,6 +341,7 @@ model CompetitionEdition {
   competition   Competition  @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   source        Source?      @relation(fields: [sourceId], references: [id])
   races         Race[]
+  sourceReferences SourceReference[]
 
   @@index([competitionId])
   @@index([year])
@@ -372,6 +386,8 @@ model Race {
   source               Source?             @relation(fields: [sourceId], references: [id])
   /// 比赛结果
   raceResults          RaceResult[]
+  /// 外部来源映射
+  sourceReferences     SourceReference[]
 
   @@index([competitionEditionId])
   @@index([discipline])
@@ -449,6 +465,8 @@ model Source {
   raceResults   RaceResult[]
   nameVariants  NameVariant[]
   auditLogs     AuditLog[]
+  sourceReferences SourceReference[]
+  importBatches ImportBatch[]
 }
 
 /// 名称变体表：正式名、简称、罗马字、翻译名等
@@ -500,5 +518,58 @@ model AuditLog {
   @@index([action])
   @@index([reasonType])
   @@index([batchId])
+  @@index([createdAt])
+}
+
+/// 外部来源与内部实体之间的稳定映射
+model SourceReference {
+  id                  String              @id @default(cuid())
+  sourceId            String
+  sourceEntityType    String
+  sourceEntityKey     String
+  sourceUrl           String?
+  personId            String?
+  organizationId      String?
+  competitionId       String?
+  competitionEditionId String?
+  raceId              String?
+  metadata            Json?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  source              Source              @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  person              Person?             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization        Organization?       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  competition         Competition?        @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  competitionEdition  CompetitionEdition? @relation(fields: [competitionEditionId], references: [id], onDelete: Cascade)
+  race                Race?               @relation(fields: [raceId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, sourceEntityType, sourceEntityKey])
+  @@index([personId])
+  @@index([organizationId])
+  @@index([competitionId])
+  @@index([competitionEditionId])
+  @@index([raceId])
+}
+
+/// 导入批次表：记录一次正式导入执行
+model ImportBatch {
+  id             String            @id @default(cuid())
+  key            String            @unique
+  type           String
+  status         ImportBatchStatus @default(pending)
+  sourceId       String?
+  summary        String?
+  payload        Json?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  errorMessage   String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  source         Source?           @relation(fields: [sourceId], references: [id])
+
+  @@index([type])
+  @@index([status])
   @@index([createdAt])
 }
