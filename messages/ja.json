@@ -33,6 +33,17 @@
   "home": {
     "recentPlayers": "最近更新された選手",
     "confirmedPlayers": "確認済みの選手",
+    "confirmedData": "確認済みデータ",
+    "openEntry": "開く",
+    "confirmedEntryType": {
+      "competition": "大会",
+      "player": "選手"
+    },
+    "confirmedDetails": {
+      "hakone102": "届次ページと区間結果の参照入口。",
+      "hakone101": "届次ページと区間結果の参照入口。",
+      "asahiKuroda": "所属履歴、PB、箱根出場歴まで確認済み。"
+    },
     "viewPlayers": "選手一覧を見る",
     "viewAll": "すべて見る",
     "viewProfile": "選手詳細を見る",
@@ -44,7 +55,8 @@
     },
     "updateScope": {
       "race": "レース結果",
-      "source": "出典整理"
+      "source": "出典整理",
+      "competition": "大会更新"
     },
     "updateDetails": {
       "shinsakuKudo": "5区結果から作成した基礎ページを、PB・所属履歴・過去箱根まで確認中。",
@@ -52,7 +64,10 @@
       "shunkyoYoshii": "基礎ページのみ。PB・出場歴・出典を再確認予定。",
       "hakone102Leg5Sources": "NTV 由来の区間結果と持ちタイム摘要を、公式結果・出典表示へ整理予定。",
       "hakone101Leg2": "黒田朝日の過去出場から広がる同一区間の結果を補完予定。",
-      "kudoHakoneTimes": "第100回・第101回の5区タイムを公式結果で確認予定。"
+      "kudoHakoneTimes": "第100回・第101回の5区タイムを公式結果で確認予定。",
+      "hakone100": "第100回の届次ページと区間結果を、確認済みデータとして整備予定。",
+      "hakone99": "第99回の届次ページと区間結果を、倒序で補完予定。",
+      "hakone98": "第98回の届次ページと区間結果を、同じ手順で補完予定。"
     }
   },
   "players": {

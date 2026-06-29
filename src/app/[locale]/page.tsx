@@ -1,11 +1,8 @@
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { DataStatus } from "@prisma/client";
 import { SiteHeader } from "@/components/site-header";
-import { prisma } from "@/lib/prisma";
 import { getDictionary, isLocale } from "@/lib/i18n";
-import { getCurrentMembership } from "@/lib/membership";
 
 type HomePageProps = {
   params: Promise<{
@@ -22,53 +19,49 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const locale = localeParam;
   const dictionary = getDictionary(locale);
-  const updateQueue = [
+  const confirmedEntries = [
     {
-      title: "工藤 慎作",
-      scope: "早稲田大学",
-      status: dictionary.home.updateStatus.inProgress,
-      detail: dictionary.home.updateDetails.shinsakuKudo,
-      href: `/${locale}/players/kudo-shinsaku`,
+      title: "第102回箱根駅伝",
+      scope: dictionary.home.confirmedEntryType.competition,
+      detail: dictionary.home.confirmedDetails.hakone102,
+      href: `/${locale}/competitions/hakone-ekiden-102`,
     },
     {
-      title: "平林 清澄",
-      scope: "國學院大學",
-      status: dictionary.home.updateStatus.pending,
-      detail: dictionary.home.updateDetails.kiyotoHirabayashi,
-      href: `/${locale}/players/kiyoto-hirabayashi`,
+      title: "第101回箱根駅伝",
+      scope: dictionary.home.confirmedEntryType.competition,
+      detail: dictionary.home.confirmedDetails.hakone101,
+      href: `/${locale}/competitions/hakone-ekiden-101`,
     },
     {
-      title: "吉居 駿恭",
-      scope: "中央大学",
-      status: dictionary.home.updateStatus.pending,
-      detail: dictionary.home.updateDetails.shunkyoYoshii,
-      href: `/${locale}/players/shunkyo-yoshii`,
-    },
-    {
-      title: "第102回箱根駅伝 5区 出典整理",
-      scope: dictionary.home.updateScope.source,
-      status: dictionary.home.updateStatus.pending,
-      detail: dictionary.home.updateDetails.hakone102Leg5Sources,
-      href: `/${locale}/players?organizationType=university`,
-    },
-    {
-      title: "第101回箱根駅伝 2区",
-      scope: dictionary.home.updateScope.race,
-      status: dictionary.home.updateStatus.pending,
-      detail: dictionary.home.updateDetails.hakone101Leg2,
+      title: "黒田 朝日",
+      scope: dictionary.home.confirmedEntryType.player,
+      detail: dictionary.home.confirmedDetails.asahiKuroda,
       href: `/${locale}/players/asahi-kuroda`,
     },
   ];
-  const confirmedPlayers = await prisma.person.findMany({
-    where: { status: DataStatus.verified },
-    include: {
-      memberships: {
-        include: { organization: true },
-      },
+  const updateQueue = [
+    {
+      title: "第100回箱根駅伝",
+      scope: dictionary.home.updateScope.competition,
+      status: dictionary.home.updateStatus.pending,
+      detail: dictionary.home.updateDetails.hakone100,
+      href: `/${locale}/competitions`,
     },
-    orderBy: { updatedAt: "desc" },
-    take: 5,
-  });
+    {
+      title: "第99回箱根駅伝",
+      scope: dictionary.home.updateScope.competition,
+      status: dictionary.home.updateStatus.pending,
+      detail: dictionary.home.updateDetails.hakone99,
+      href: `/${locale}/competitions`,
+    },
+    {
+      title: "第98回箱根駅伝",
+      scope: dictionary.home.updateScope.competition,
+      status: dictionary.home.updateStatus.pending,
+      detail: dictionary.home.updateDetails.hakone98,
+      href: `/${locale}/competitions`,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -119,35 +112,29 @@ export default async function HomePage({ params }: HomePageProps) {
               </Link>
             </div>
 
-            {confirmedPlayers.length > 0 ? (
+            {confirmedEntries.length > 0 ? (
               <section className="border-t border-[#ded8cc] pt-8">
                 <div className="flex items-center justify-between gap-4">
-                  <h2 className="text-lg font-semibold">{dictionary.home.confirmedPlayers}</h2>
-                  <Link className="text-sm font-medium text-[#8a1f2d]" href={`/${locale}/players?status=verified`}>
-                    {dictionary.home.viewAll}
-                  </Link>
+                  <h2 className="text-lg font-semibold">{dictionary.home.confirmedData}</h2>
                 </div>
                 <div className="mt-4 divide-y divide-[#e7e1d8] border-y border-[#e7e1d8]">
-                  {confirmedPlayers.map((player) => {
-                    const currentMembership = getCurrentMembership(player.memberships);
-
-                    return (
-                      <Link
-                        className="grid gap-2 py-4 text-sm transition hover:bg-white sm:grid-cols-[1fr_1fr_auto]"
-                        href={`/${locale}/players/${player.slug}`}
-                        key={player.id}
-                      >
-                        <span className="font-semibold">{player.displayNameJa}</span>
-                        <span className="text-[#59615c]">
-                          {currentMembership?.organization.nameJa ?? dictionary.common.emptyDash}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[#8a1f2d]">
-                          {dictionary.home.viewProfile}
-                          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                        </span>
-                      </Link>
-                    );
-                  })}
+                  {confirmedEntries.map((entry) => (
+                    <Link
+                      className="grid gap-2 py-4 text-sm transition hover:bg-white sm:grid-cols-[1fr_1fr_auto]"
+                      href={entry.href}
+                      key={entry.title}
+                    >
+                      <span className="flex items-center gap-2 font-semibold">
+                        <span>{entry.title}</span>
+                        <span className="text-xs font-medium text-[#8b938e]">{entry.scope}</span>
+                      </span>
+                      <span className="text-[#59615c]">{entry.detail}</span>
+                      <span className="inline-flex items-center gap-1 text-[#8a1f2d]">
+                        {dictionary.home.openEntry}
+                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                      </span>
+                    </Link>
+                  ))}
                 </div>
               </section>
             ) : null}
@@ -160,7 +147,7 @@ export default async function HomePage({ params }: HomePageProps) {
             </div>
             <div className="divide-y divide-[#e7e1d8]">
               {updateQueue.map((item) => (
-                <article className="py-4" key={item.title}>
+                <Link className="block py-4 transition hover:bg-[#fbfaf7]" href={item.href} key={item.title}>
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold">{item.title}</p>
@@ -171,7 +158,7 @@ export default async function HomePage({ params }: HomePageProps) {
                       {item.status}
                     </span>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </aside>

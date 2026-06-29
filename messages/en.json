@@ -33,6 +33,17 @@
   "home": {
     "recentPlayers": "Recently updated athletes",
     "confirmedPlayers": "Verified athletes",
+    "confirmedData": "Verified data",
+    "openEntry": "Open",
+    "confirmedEntryType": {
+      "competition": "Competition",
+      "player": "Athlete"
+    },
+    "confirmedDetails": {
+      "hakone102": "Shortcut to the edition page and leg results.",
+      "hakone101": "Shortcut to the edition page and leg results.",
+      "asahiKuroda": "Affiliations, PBs, and Hakone appearances have been verified."
+    },
     "viewPlayers": "View athletes",
     "viewAll": "View all",
     "viewProfile": "View profile",
@@ -44,7 +55,8 @@
     },
     "updateScope": {
       "race": "Race results",
-      "source": "Source review"
+      "source": "Source review",
+      "competition": "Competition update"
     },
     "updateDetails": {
       "shinsakuKudo": "Basic page created from leg 5; PBs, affiliations, and past Hakone records are being reviewed.",
@@ -52,7 +64,10 @@
       "shunkyoYoshii": "Basic page only. PBs, race history, and sources need review.",
       "hakone102Leg5Sources": "NTV leg results and listed marks will be reconciled with official results and source display.",
       "hakone101Leg2": "Same-leg results expanded from Asahi Kuroda's past Hakone appearance will be completed.",
-      "kudoHakoneTimes": "Leg 5 times for the 100th and 101st Hakone will be verified from official results."
+      "kudoHakoneTimes": "Leg 5 times for the 100th and 101st Hakone will be verified from official results.",
+      "hakone100": "The 100th edition page and leg results will be prepared as verified data.",
+      "hakone99": "The 99th edition page and leg results will be added next in reverse order.",
+      "hakone98": "The 98th edition page and leg results will be added with the same workflow."
     }
   },
   "players": {

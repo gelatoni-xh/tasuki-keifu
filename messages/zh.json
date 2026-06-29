@@ -33,6 +33,17 @@
   "home": {
     "recentPlayers": "最近更新的选手",
     "confirmedPlayers": "已确认的选手",
+    "confirmedData": "已确认的数据",
+    "openEntry": "打开",
+    "confirmedEntryType": {
+      "competition": "赛事",
+      "player": "选手"
+    },
+    "confirmedDetails": {
+      "hakone102": "届次页与区间结果的快捷入口。",
+      "hakone101": "届次页与区间结果的快捷入口。",
+      "asahiKuroda": "所属履历、PB 与箱根出场记录已确认。"
+    },
     "viewPlayers": "查看选手一览",
     "viewAll": "查看全部",
     "viewProfile": "查看选手详情",
@@ -44,7 +55,8 @@
     },
     "updateScope": {
       "race": "比赛结果",
-      "source": "来源整理"
+      "source": "来源整理",
+      "competition": "赛事更新"
     },
     "updateDetails": {
       "shinsakuKudo": "从5区结果创建的基础页，正在确认 PB、所属履历和过往箱根记录。",
@@ -52,7 +64,10 @@
       "shunkyoYoshii": "目前只有基础页，后续重新确认 PB、出场记录和来源。",
       "hakone102Leg5Sources": "整理 NTV 来源的区间结果和持有成绩摘要，后续补官方结果与来源展示。",
       "hakone101Leg2": "从黑田朝日过往出场扩展出的同一区间结果，后续补齐。",
-      "kudoHakoneTimes": "后续用官方结果确认第100回、第101回的5区具体时间。"
+      "kudoHakoneTimes": "后续用官方结果确认第100回、第101回的5区具体时间。",
+      "hakone100": "准备把第100回的届次页和区间结果整理成已确认数据。",
+      "hakone99": "按倒序继续补第99回的届次页和区间结果。",
+      "hakone98": "沿用同样方法补第98回的届次页和区间结果。"
     }
   },
   "players": {
