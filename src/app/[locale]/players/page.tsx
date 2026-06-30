@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { DataStatus, OrganizationType, Prisma } from "@prisma/client";
+import type { DataStatus, OrganizationType, PersonType, Prisma } from "@prisma/client";
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CascadingOrganizationFilters } from "@/components/cascading-organization-filters";
 import { prisma } from "@/lib/prisma";
 import { formatDiscipline, formatOrganizationType, formatPersonType, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
+import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
 import { buildLocaleAlternates } from "@/lib/site";
 import {
   getCurrentMembership,
@@ -24,6 +25,8 @@ type PlayersPageProps = {
     organizationType?: string;
     organization?: string;
     status?: string;
+    type?: string;
+    hometown?: string;
     page?: string;
   }>;
 };
@@ -54,6 +57,7 @@ export async function generateMetadata({ params }: Pick<PlayersPageProps, "param
 }
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
+const allowedPersonTypes: PersonType[] = ["athlete", "coach", "staff"];
 const pageSize = 10;
 const allowedOrganizationTypes: OrganizationType[] = [
   "junior_high_school",
@@ -69,6 +73,37 @@ function normalizeSearchText(value: string | null | undefined) {
 
 function includesNormalized(value: string | null | undefined, query: string) {
   return normalizeSearchText(value).includes(query);
+}
+
+function getStatusPriority(status: DataStatus) {
+  switch (status) {
+    case "verified":
+      return 0;
+    case "pending":
+      return 1;
+    case "conflicting":
+      return 2;
+    case "missing":
+    default:
+      return 3;
+  }
+}
+
+function getOrganizationTypePriority(type: OrganizationType | null | undefined) {
+  switch (type) {
+    case "university":
+      return 0;
+    case "corporate_team":
+      return 1;
+    case "high_school":
+      return 2;
+    case "junior_high_school":
+      return 3;
+    case "federation":
+      return 4;
+    default:
+      return 5;
+  }
 }
 
 function buildPlayersPath(locale: string, params: Record<string, string | number | undefined>) {
@@ -137,14 +172,20 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   const status = allowedStatuses.includes(queryParams.status as DataStatus)
     ? (queryParams.status as DataStatus)
     : "";
+  const personType = allowedPersonTypes.includes(queryParams.type as PersonType)
+    ? (queryParams.type as PersonType)
+    : "";
+  const hometown = isJapanPrefecture(queryParams.hometown) ? queryParams.hometown : "";
   const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
-  const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status);
+  const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status || personType || hometown);
   const pagePathWithQuery = `/players${hasActiveFilters ? `?${new URLSearchParams(
     Object.entries({
       q: query,
       organizationType,
       organization: organizationSlug,
       status,
+      type: personType,
+      hometown,
     }).filter(([, value]) => value),
   ).toString()}` : ""}`;
 
@@ -159,7 +200,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   });
 
   const playerWhere: Prisma.PersonWhereInput = {
+    ...(personType ? { type: personType } : {}),
     ...(status ? { status } : {}),
+    ...(hometown ? { hometown } : {}),
     ...(organizationSlug || organizationType
       ? {
           memberships: {
@@ -176,8 +219,13 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
 
   const players = await prisma.person.findMany({
     where: playerWhere,
-    orderBy: { displayNameJa: "asc" },
     include: {
+      _count: {
+        select: {
+          raceResults: true,
+          personalBests: true,
+        },
+      },
       memberships: {
         include: { organization: true },
         orderBy: { type: "asc" },
@@ -210,6 +258,43 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
         return personMatched || organizationMatched;
       })
     : players;
+  filteredPlayers.sort((left, right) => {
+    const statusDelta = getStatusPriority(left.status) - getStatusPriority(right.status);
+    if (statusDelta !== 0) {
+      return statusDelta;
+    }
+
+    const leftCurrentMembership = getCurrentMembership(left.memberships);
+    const rightCurrentMembership = getCurrentMembership(right.memberships);
+    const currentMembershipDelta = Number(Boolean(rightCurrentMembership)) - Number(Boolean(leftCurrentMembership));
+    if (currentMembershipDelta !== 0) {
+      return currentMembershipDelta;
+    }
+
+    const membershipTypeDelta =
+      getOrganizationTypePriority(leftCurrentMembership?.organization.type) -
+      getOrganizationTypePriority(rightCurrentMembership?.organization.type);
+    if (membershipTypeDelta !== 0) {
+      return membershipTypeDelta;
+    }
+
+    const raceResultDelta = right._count.raceResults - left._count.raceResults;
+    if (raceResultDelta !== 0) {
+      return raceResultDelta;
+    }
+
+    const pbDelta = right._count.personalBests - left._count.personalBests;
+    if (pbDelta !== 0) {
+      return pbDelta;
+    }
+
+    const updatedAtDelta = right.updatedAt.getTime() - left.updatedAt.getTime();
+    if (updatedAtDelta !== 0) {
+      return updatedAtDelta;
+    }
+
+    return left.displayNameJa.localeCompare(right.displayNameJa, "ja");
+  });
   const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / pageSize));
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
   const paginatedPlayers = filteredPlayers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -218,6 +303,8 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     organizationType,
     organization: organizationSlug,
     status,
+    type: personType,
+    hometown,
   };
   const paginationItems = getPaginationItems(currentPage, totalPages);
 
@@ -243,7 +330,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             data-analytics-event={hasActiveFilters ? "players_filter_apply" : "players_search_submit"}
             data-analytics-form="players_search"
           >
-            <div className="grid gap-3 lg:grid-cols-[1.35fr_0.8fr_0.95fr_0.75fr_auto_auto]">
+            <div className="grid gap-3 lg:grid-cols-[1.15fr_0.8fr_0.9fr_0.75fr_0.7fr_0.85fr_auto_auto]">
               <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
                 <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
                 <span className="sr-only">{dictionary.common.search}</span>
@@ -281,6 +368,30 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                   {allowedStatuses.map((statusOption) => (
                     <option key={statusOption} value={statusOption}>
                       {formatStatus(statusOption, locale)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
+                <span className="sr-only">{dictionary.players.personTypeFilter}</span>
+                <select className="w-full bg-transparent text-sm outline-none" defaultValue={personType} name="type">
+                  <option value="">{dictionary.common.all}</option>
+                  {allowedPersonTypes.map((personTypeOption) => (
+                    <option key={personTypeOption} value={personTypeOption}>
+                      {formatPersonType(personTypeOption, locale)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
+                <span className="sr-only">{dictionary.players.hometownFilter}</span>
+                <select className="w-full bg-transparent text-sm outline-none" defaultValue={hometown} name="hometown">
+                  <option value="">{dictionary.common.all}</option>
+                  {JAPAN_PREFECTURES.map((hometownOption) => (
+                    <option key={hometownOption} value={hometownOption}>
+                      {hometownOption}
                     </option>
                   ))}
                 </select>

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { OrganizationType } from "@prisma/client";
+import type { DataStatus, OrganizationType } from "@prisma/client";
 import { ArrowRight, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatOrganizationType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
+import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
 import { buildLocaleAlternates } from "@/lib/site";
 
 type OrganizationsPageProps = {
@@ -16,6 +17,8 @@ type OrganizationsPageProps = {
   searchParams: Promise<{
     q?: string;
     type?: string;
+    status?: string;
+    prefecture?: string;
     page?: string;
   }>;
 };
@@ -52,6 +55,7 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "corporate_team",
   "federation",
 ];
+const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const pageSize = 10;
 
 function normalizeSearchText(value: string | null | undefined) {
@@ -60,6 +64,20 @@ function normalizeSearchText(value: string | null | undefined) {
 
 function includesNormalized(value: string | null | undefined, query: string) {
   return normalizeSearchText(value).includes(query);
+}
+
+function getStatusPriority(status: DataStatus) {
+  switch (status) {
+    case "verified":
+      return 0;
+    case "pending":
+      return 1;
+    case "conflicting":
+      return 2;
+    case "missing":
+    default:
+      return 3;
+  }
 }
 
 function buildOrganizationsPath(locale: string, params: Record<string, string | number | undefined>) {
@@ -113,17 +131,22 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
   const organizationType = allowedOrganizationTypes.includes(queryParams.type as OrganizationType)
     ? (queryParams.type as OrganizationType)
     : "university";
+  const status = allowedStatuses.includes(queryParams.status as DataStatus)
+    ? (queryParams.status as DataStatus)
+    : "";
+  const prefecture = isJapanPrefecture(queryParams.prefecture) ? queryParams.prefecture : "";
   const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
   const organizations = await prisma.organization.findMany({
     where: {
       type: organizationType,
+      ...(status ? { status } : {}),
+      ...(prefecture ? { prefecture } : {}),
     },
     include: {
       _count: {
-        select: { memberships: true, raceResults: true },
+        select: { memberships: true, raceResults: true, teamCompetitionResults: true },
       },
     },
-    orderBy: [{ type: "asc" }, { nameJa: "asc" }],
   });
   const filteredOrganizations = normalizedQuery
     ? organizations.filter((organization) =>
@@ -139,6 +162,34 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
         ].some((value) => includesNormalized(value, normalizedQuery)),
       )
     : organizations;
+  filteredOrganizations.sort((left, right) => {
+    const statusDelta = getStatusPriority(left.status) - getStatusPriority(right.status);
+    if (statusDelta !== 0) {
+      return statusDelta;
+    }
+
+    const membershipDelta = right._count.memberships - left._count.memberships;
+    if (membershipDelta !== 0) {
+      return membershipDelta;
+    }
+
+    const teamResultDelta = right._count.teamCompetitionResults - left._count.teamCompetitionResults;
+    if (teamResultDelta !== 0) {
+      return teamResultDelta;
+    }
+
+    const raceResultDelta = right._count.raceResults - left._count.raceResults;
+    if (raceResultDelta !== 0) {
+      return raceResultDelta;
+    }
+
+    const updatedAtDelta = right.updatedAt.getTime() - left.updatedAt.getTime();
+    if (updatedAtDelta !== 0) {
+      return updatedAtDelta;
+    }
+
+    return left.nameJa.localeCompare(right.nameJa, "ja");
+  });
   const totalPages = Math.max(1, Math.ceil(filteredOrganizations.length / pageSize));
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
   const paginatedOrganizations = filteredOrganizations.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -146,7 +197,10 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
-      <SiteHeader locale={locale} path={buildOrganizationsPath(locale, { q: query, type: organizationType })} />
+      <SiteHeader
+        locale={locale}
+        path={buildOrganizationsPath(locale, { q: query, type: organizationType, status, prefecture })}
+      />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">
           <header className="flex flex-col justify-between gap-4 border-b border-[#ded8cc] pb-6 sm:flex-row sm:items-end">
@@ -160,7 +214,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
           </header>
 
           <form action={`/${locale}/organizations`} className="border border-[#ded8cc] bg-white p-4">
-            <div className="grid gap-3 lg:grid-cols-[1fr_0.8fr_auto_auto]">
+            <div className="grid gap-3 lg:grid-cols-[1fr_0.8fr_0.75fr_0.85fr_auto_auto]">
               <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
                 <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
                 <span className="sr-only">{dictionary.common.search}</span>
@@ -179,6 +233,30 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
                   {allowedOrganizationTypes.map((type) => (
                     <option key={type} value={type}>
                       {formatOrganizationType(type, locale)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
+                <span className="sr-only">{dictionary.organizations.statusFilter}</span>
+                <select className="w-full bg-transparent text-sm outline-none" defaultValue={status} name="status">
+                  <option value="">{dictionary.common.all}</option>
+                  {allowedStatuses.map((statusOption) => (
+                    <option key={statusOption} value={statusOption}>
+                      {dictionary.status[statusOption]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
+                <span className="sr-only">{dictionary.organizations.prefectureFilter}</span>
+                <select className="w-full bg-transparent text-sm outline-none" defaultValue={prefecture} name="prefecture">
+                  <option value="">{dictionary.common.all}</option>
+                  {JAPAN_PREFECTURES.map((prefectureOption) => (
+                    <option key={prefectureOption} value={prefectureOption}>
+                      {prefectureOption}
                     </option>
                   ))}
                 </select>
@@ -250,7 +328,13 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
                       ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
                       : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
                   }`}
-                  href={buildOrganizationsPath(locale, { q: query, type: organizationType, page: currentPage - 1 })}
+                  href={buildOrganizationsPath(locale, {
+                    q: query,
+                    type: organizationType,
+                    status,
+                    prefecture,
+                    page: currentPage - 1,
+                  })}
                 >
                   <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                   {dictionary.organizations.previousPage}
@@ -269,7 +353,13 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
                             ? "border-[#8a1f2d] bg-[#8a1f2d] text-white"
                             : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
                         }`}
-                        href={buildOrganizationsPath(locale, { q: query, type: organizationType, page: item })}
+                        href={buildOrganizationsPath(locale, {
+                          q: query,
+                          type: organizationType,
+                          status,
+                          prefecture,
+                          page: item,
+                        })}
                         key={item}
                       >
                         {item}
@@ -284,7 +374,13 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
                       ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
                       : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
                   }`}
-                  href={buildOrganizationsPath(locale, { q: query, type: organizationType, page: currentPage + 1 })}
+                  href={buildOrganizationsPath(locale, {
+                    q: query,
+                    type: organizationType,
+                    status,
+                    prefecture,
+                    page: currentPage + 1,
+                  })}
                 >
                   {dictionary.organizations.nextPage}
                   <ChevronRight className="h-4 w-4" aria-hidden="true" />
