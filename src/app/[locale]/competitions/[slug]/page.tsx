@@ -227,40 +227,23 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 </div>
 
                 {hasEkidenTeamResults ? (
-                  <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                    <div className="border border-[#e7e1d8] p-4">
-                      <h3 className="text-base font-semibold">{dictionary.competitions.teamResults}</h3>
-                      <div className="mt-4 space-y-3">
-                        {teamResults.slice(0, 5).map((result) => (
-                          <div className="flex items-center justify-between border-b border-[#efe7db] pb-3 last:border-b-0 last:pb-0" key={result.id}>
-                            <Link
-                              className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
-                              href={`/${locale}/organizations/${result.organization.slug}`}
-                            >
-                              {result.organization.nameJa}
-                            </Link>
-                            <div className="text-right text-sm text-[#59615c]">
-                              <p>{formatRank(result.finalRank, locale) || dictionary.common.emptyDash}</p>
-                              <p>{result.finalMark ?? dictionary.common.emptyDash}</p>
-                            </div>
+                  <div className="mt-6 border border-[#e7e1d8] p-4">
+                    <h3 className="text-base font-semibold">{dictionary.competitions.teamResults}</h3>
+                    <div className="mt-4 space-y-3">
+                      {teamResults.slice(0, 5).map((result) => (
+                        <div className="flex items-center justify-between border-b border-[#efe7db] pb-3 last:border-b-0 last:pb-0" key={result.id}>
+                          <Link
+                            className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                            href={`/${locale}/organizations/${result.organization.slug}`}
+                          >
+                            {result.organization.nameJa}
+                          </Link>
+                          <div className="text-right text-sm text-[#59615c]">
+                            <p>{formatRank(result.finalRank, locale) || dictionary.common.emptyDash}</p>
+                            <p>{result.finalMark ?? dictionary.common.emptyDash}</p>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="border border-[#e7e1d8] p-4">
-                      <h3 className="text-base font-semibold">{dictionary.competitions.raceUnits}</h3>
-                      <div className="mt-4 space-y-3">
-                        {edition.races.slice(0, 5).map((race) => (
-                          <div className="border-b border-[#efe7db] pb-3 last:border-b-0 last:pb-0" key={race.id}>
-                            <p className="font-medium">{race.name}</p>
-                            <p className="mt-1 text-sm text-[#59615c]">
-                              {formatDiscipline(race.discipline, locale)}
-                              {race.startsAt ? ` / ${formatDate(race.startsAt)}` : ""}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ) : null}
