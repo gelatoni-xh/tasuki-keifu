@@ -41,32 +41,37 @@ export function CascadingOrganizationFilters({
 
   return (
     <>
-      <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-        <SlidersHorizontal className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
-        <span className="sr-only">{organizationTypeLabel}</span>
-        <select
-          className="w-full bg-transparent text-sm outline-none"
-          name="organizationType"
-          onChange={(event) => {
-            const nextOrganizationType = event.currentTarget.value;
-            setOrganizationType(nextOrganizationType);
-            setOrganization("");
-          }}
-          value={organizationType}
-        >
-          <option value="">{allLabel}</option>
-          {organizationTypes.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
+      <label className="filter-field">
+        <span className="filter-label">{organizationTypeLabel}</span>
+        <div className="relative">
+          <SlidersHorizontal
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a1f2d]"
+            aria-hidden="true"
+          />
+          <select
+            className="filter-input pl-9"
+            name="organizationType"
+            onChange={(event) => {
+              const nextOrganizationType = event.currentTarget.value;
+              setOrganizationType(nextOrganizationType);
+              setOrganization("");
+            }}
+            value={organizationType}
+          >
+            <option value="">{allLabel}</option>
+            {organizationTypes.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </label>
 
-      <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-        <span className="sr-only">{organizationLabel}</span>
+      <label className="filter-field">
+        <span className="filter-label">{organizationLabel}</span>
         <select
-          className="w-full bg-transparent text-sm outline-none"
+          className="filter-input"
           name="organization"
           onChange={(event) => {
             setOrganization(event.currentTarget.value);

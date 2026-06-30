@@ -331,16 +331,18 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             data-analytics-form="players_search"
           >
             <div className="grid gap-3 lg:grid-cols-[1.15fr_0.8fr_0.9fr_0.75fr_0.7fr_0.85fr_auto_auto]">
-              <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-                <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
-                <span className="sr-only">{dictionary.common.search}</span>
-                <input
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-[#8b938e]"
-                  defaultValue={query}
-                  name="q"
-                  placeholder={dictionary.common.searchPlaceholder}
-                  type="search"
-                />
+              <label className="filter-field">
+                <span className="filter-label">{dictionary.common.search}</span>
+                <div className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
+                  <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
+                  <input
+                    className="w-full bg-transparent text-sm outline-none placeholder:text-[#8b938e]"
+                    defaultValue={query}
+                    name="q"
+                    placeholder={dictionary.common.searchPlaceholder}
+                    type="search"
+                  />
+                </div>
               </label>
 
               <CascadingOrganizationFilters
@@ -361,9 +363,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                 selectedOrganizationType={organizationType}
               />
 
-              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-                <span className="sr-only">{dictionary.players.statusFilter}</span>
-                <select className="w-full bg-transparent text-sm outline-none" defaultValue={status} name="status">
+              <label className="filter-field">
+                <span className="filter-label">{dictionary.players.statusFilter}</span>
+                <select className="filter-input" defaultValue={status} name="status">
                   <option value="">{dictionary.common.all}</option>
                   {allowedStatuses.map((statusOption) => (
                     <option key={statusOption} value={statusOption}>
@@ -373,9 +375,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                 </select>
               </label>
 
-              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-                <span className="sr-only">{dictionary.players.personTypeFilter}</span>
-                <select className="w-full bg-transparent text-sm outline-none" defaultValue={personType} name="type">
+              <label className="filter-field">
+                <span className="filter-label">{dictionary.players.personTypeFilter}</span>
+                <select className="filter-input" defaultValue={personType} name="type">
                   <option value="">{dictionary.common.all}</option>
                   {allowedPersonTypes.map((personTypeOption) => (
                     <option key={personTypeOption} value={personTypeOption}>
@@ -385,9 +387,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                 </select>
               </label>
 
-              <label className="border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-                <span className="sr-only">{dictionary.players.hometownFilter}</span>
-                <select className="w-full bg-transparent text-sm outline-none" defaultValue={hometown} name="hometown">
+              <label className="filter-field">
+                <span className="filter-label">{dictionary.players.hometownFilter}</span>
+                <select className="filter-input" defaultValue={hometown} name="hometown">
                   <option value="">{dictionary.common.all}</option>
                   {JAPAN_PREFECTURES.map((hometownOption) => (
                     <option key={hometownOption} value={hometownOption}>
@@ -398,7 +400,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               </label>
 
               <button
-                className="inline-flex items-center justify-center gap-2 border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
+                className="inline-flex items-center justify-center gap-2 self-end border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
                 type="submit"
               >
                 <Search className="h-4 w-4" aria-hidden="true" />
@@ -406,7 +408,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               </button>
 
               <Link
-                className="inline-flex items-center justify-center gap-2 border border-[#cfc7b8] px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
+                className="inline-flex items-center justify-center gap-2 self-end border border-[#cfc7b8] px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
                 href={`/${locale}/players`}
               >
                 <X className="h-4 w-4" aria-hidden="true" />

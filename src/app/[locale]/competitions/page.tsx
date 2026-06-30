@@ -149,20 +149,22 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
 
           <form action={`/${locale}/competitions`} className="border border-[#ded8cc] bg-white p-4">
             <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
-              <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
-                <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
-                <span className="sr-only">{dictionary.common.search}</span>
-                <input
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-[#8b938e]"
-                  defaultValue={query}
-                  name="q"
-                  placeholder={dictionary.competitions.searchPlaceholder}
-                  type="search"
-                />
+              <label className="filter-field">
+                <span className="filter-label">{dictionary.common.search}</span>
+                <div className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
+                  <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
+                  <input
+                    className="w-full bg-transparent text-sm outline-none placeholder:text-[#8b938e]"
+                    defaultValue={query}
+                    name="q"
+                    placeholder={dictionary.competitions.searchPlaceholder}
+                    type="search"
+                  />
+                </div>
               </label>
 
               <button
-                className="inline-flex items-center justify-center gap-2 border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
+                className="inline-flex items-center justify-center gap-2 self-end border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
                 type="submit"
               >
                 <Search className="h-4 w-4" aria-hidden="true" />
@@ -170,7 +172,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
               </button>
 
               <Link
-                className="inline-flex items-center justify-center gap-2 border border-[#cfc7b8] px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
+                className="inline-flex items-center justify-center gap-2 self-end border border-[#cfc7b8] px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
                 href={`/${locale}/competitions`}
               >
                 <X className="h-4 w-4" aria-hidden="true" />
