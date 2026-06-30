@@ -15,6 +15,7 @@ type CompetitionEditionPageProps = {
   }>;
   searchParams?: Promise<{
     tab?: string;
+    raceUnit?: string;
   }>;
 };
 
@@ -110,6 +111,8 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     notFound();
   }
 
+  const editionSlug = edition.slug;
+
   const resultCount = edition.races.reduce((sum, race) => sum + race.raceResults.length, 0);
   const teamResults = [...edition.teamCompetitionResults].sort((left, right) => {
     const leftRank = left.finalRank ?? Number.MAX_SAFE_INTEGER;
@@ -135,6 +138,20 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const activeTab = availableTabs.some((tab) => tab.key === requestedTab)
     ? requestedTab!
     : availableTabs[0]?.key ?? "overview";
+  const selectedRaceUnit =
+    activeTab === "race-units"
+      ? edition.races.find((race) => race.slug === queryParams.raceUnit) ?? edition.races[0] ?? null
+      : null;
+
+  function buildCompetitionEditionHref(tab: string, raceUnit?: string) {
+    const params = new URLSearchParams({ tab });
+
+    if (tab === "race-units" && raceUnit) {
+      params.set("raceUnit", raceUnit);
+    }
+
+    return `/${locale}/competitions/${editionSlug}?${params.toString()}`;
+  }
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -188,7 +205,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                         ? "bg-[#8a1f2d] text-white"
                         : "bg-white text-[#6b5f54] hover:bg-[#efe7db] hover:text-[#8a1f2d]"
                     }`}
-                    href={`/${locale}/competitions/${edition.slug}?tab=${tab.key}`}
+                    href={buildCompetitionEditionHref(tab.key, tab.key === "race-units" ? selectedRaceUnit?.slug : undefined)}
                   >
                     {tab.label}
                   </Link>
@@ -332,82 +349,108 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
             {activeTab === "race-units" ? (
               <section className="space-y-5">
                 <h2 className="text-xl font-semibold">{dictionary.competitions.raceUnits}</h2>
-                {edition.races.map((race) => (
-                  <article className="border border-[#ded8cc] bg-white p-5" key={race.id}>
-                    <div className="flex flex-col justify-between gap-3 border-b border-[#e7e1d8] pb-4 sm:flex-row sm:items-start">
-                      <div>
-                        <h3 className="text-lg font-semibold">{race.name}</h3>
-                        <p className="mt-1 text-sm text-[#59615c]">
-                          {formatDiscipline(race.discipline, locale)}
-                          {race.startsAt ? ` / ${formatDate(race.startsAt)}` : ""}
-                        </p>
-                      </div>
-                      {race.source?.url ? (
-                        <a
-                          className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
-                          data-analytics-event="source_outbound_click"
-                          data-analytics-link-type="competition_source"
-                          href={race.source.url}
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          {dictionary.competitions.source}
-                          <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                        </a>
-                      ) : null}
-                    </div>
+                {edition.races.length > 0 ? (
+                  <>
+                    <nav className="border border-[#ded8cc] bg-[#f6f1e8] p-3" aria-label={dictionary.competitions.raceUnits}>
+                      <div className="flex flex-wrap gap-2">
+                        {edition.races.map((race) => {
+                          const isActiveRace = selectedRaceUnit?.id === race.id;
 
-                    {race.raceResults.length > 0 ? (
-                      <div className="mt-4 overflow-x-auto">
-                        <div className="min-w-[780px]">
-                          <div className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
-                            <span>{dictionary.competitions.rank}</span>
-                            <span>{dictionary.competitions.athlete}</span>
-                            <span>{dictionary.competitions.organization}</span>
-                            <span>{dictionary.competitions.mark}</span>
-                            <span>{dictionary.competitions.notes}</span>
-                          </div>
-                          <div className="divide-y divide-[#e7e1d8]">
-                            {race.raceResults.map((result) => (
-                              <div
-                                className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] px-3 py-3 text-sm"
-                                key={result.id}
-                              >
-                                <span className="text-[#59615c]">
-                                  {formatRank(result.rank, locale) || dictionary.common.emptyDash}
-                                </span>
-                                <Link
-                                  className="font-semibold text-[#8a1f2d] underline-offset-4 hover:underline"
-                                  data-analytics-event="player_profile_view"
-                                  data-analytics-link-type="competition_result_player"
-                                  href={`/${locale}/players/${result.person.slug}`}
-                                >
-                                  {result.person.displayNameJa}
-                                </Link>
-                                {result.organization ? (
-                                  <Link
-                                    className="text-[#59615c] underline-offset-4 hover:text-[#8a1f2d] hover:underline"
-                                    data-analytics-event="player_to_organization_click"
-                                    data-analytics-link-type="competition_result_organization"
-                                    href={`/${locale}/organizations/${result.organization.slug}`}
-                                  >
-                                    {result.organization.nameJa}
-                                  </Link>
-                                ) : (
-                                  <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
-                                )}
-                                <span>{result.mark ?? dictionary.common.notEntered}</span>
-                                <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
+                          return (
+                            <Link
+                              key={race.id}
+                              className={`px-4 py-2 text-sm font-semibold transition ${
+                                isActiveRace
+                                  ? "bg-[#8a1f2d] text-white"
+                                  : "bg-white text-[#6b5f54] hover:bg-[#efe7db] hover:text-[#8a1f2d]"
+                              }`}
+                              href={buildCompetitionEditionHref("race-units", race.slug)}
+                            >
+                              {race.name}
+                            </Link>
+                          );
+                        })}
                       </div>
-                    ) : (
-                      <p className="mt-4 text-sm text-[#59615c]">{dictionary.competitions.emptyResults}</p>
-                    )}
-                  </article>
-                ))}
+                    </nav>
+
+                    {selectedRaceUnit ? (
+                      <article className="border border-[#ded8cc] bg-white p-5">
+                        <div className="flex flex-col justify-between gap-3 border-b border-[#e7e1d8] pb-4 sm:flex-row sm:items-start">
+                          <div>
+                            <h3 className="text-lg font-semibold">{selectedRaceUnit.name}</h3>
+                            <p className="mt-1 text-sm text-[#59615c]">
+                              {formatDiscipline(selectedRaceUnit.discipline, locale)}
+                              {selectedRaceUnit.startsAt ? ` / ${formatDate(selectedRaceUnit.startsAt)}` : ""}
+                            </p>
+                          </div>
+                          {selectedRaceUnit.source?.url ? (
+                            <a
+                              className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                              data-analytics-event="source_outbound_click"
+                              data-analytics-link-type="competition_source"
+                              href={selectedRaceUnit.source.url}
+                              rel="noreferrer"
+                              target="_blank"
+                            >
+                              {dictionary.competitions.source}
+                              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                            </a>
+                          ) : null}
+                        </div>
+
+                        {selectedRaceUnit.raceResults.length > 0 ? (
+                          <div className="mt-4 overflow-x-auto">
+                            <div className="min-w-[780px]">
+                              <div className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                                <span>{dictionary.competitions.rank}</span>
+                                <span>{dictionary.competitions.athlete}</span>
+                                <span>{dictionary.competitions.organization}</span>
+                                <span>{dictionary.competitions.mark}</span>
+                                <span>{dictionary.competitions.notes}</span>
+                              </div>
+                              <div className="divide-y divide-[#e7e1d8]">
+                                {selectedRaceUnit.raceResults.map((result) => (
+                                  <div
+                                    className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] px-3 py-3 text-sm"
+                                    key={result.id}
+                                  >
+                                    <span className="text-[#59615c]">
+                                      {formatRank(result.rank, locale) || dictionary.common.emptyDash}
+                                    </span>
+                                    <Link
+                                      className="font-semibold text-[#8a1f2d] underline-offset-4 hover:underline"
+                                      data-analytics-event="player_profile_view"
+                                      data-analytics-link-type="competition_result_player"
+                                      href={`/${locale}/players/${result.person.slug}`}
+                                    >
+                                      {result.person.displayNameJa}
+                                    </Link>
+                                    {result.organization ? (
+                                      <Link
+                                        className="text-[#59615c] underline-offset-4 hover:text-[#8a1f2d] hover:underline"
+                                        data-analytics-event="player_to_organization_click"
+                                        data-analytics-link-type="competition_result_organization"
+                                        href={`/${locale}/organizations/${result.organization.slug}`}
+                                      >
+                                        {result.organization.nameJa}
+                                      </Link>
+                                    ) : (
+                                      <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
+                                    )}
+                                    <span>{result.mark ?? dictionary.common.notEntered}</span>
+                                    <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="mt-4 text-sm text-[#59615c]">{dictionary.competitions.emptyResults}</p>
+                        )}
+                      </article>
+                    ) : null}
+                  </>
+                ) : null}
               </section>
             ) : null}
           </section>
