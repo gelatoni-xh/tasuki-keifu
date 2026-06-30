@@ -13,6 +13,9 @@ type CompetitionEditionPageProps = {
     locale: string;
     slug: string;
   }>;
+  searchParams?: Promise<{
+    tab?: string;
+  }>;
 };
 
 export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
@@ -65,8 +68,9 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
   };
 }
 
-export default async function CompetitionEditionPage({ params }: CompetitionEditionPageProps) {
+export default async function CompetitionEditionPage({ params, searchParams }: CompetitionEditionPageProps) {
   const { locale: localeParam, slug } = await params;
+  const queryParams = searchParams ? await searchParams : {};
 
   if (!isLocale(localeParam)) {
     notFound();
@@ -117,8 +121,20 @@ export default async function CompetitionEditionPage({ params }: CompetitionEdit
 
     return left.organization.nameJa.localeCompare(right.organization.nameJa, "ja");
   });
+  const totalTeamSnapshotCount = teamResults.reduce((sum, result) => sum + result.legSnapshots.length, 0);
   const hasEkidenTeamResults = teamResults.length > 0;
   const maxSnapshotLeg = Math.max(0, ...teamResults.flatMap((result) => result.legSnapshots.map((snapshot) => snapshot.leg)));
+  const hasRaceUnits = edition.races.length > 0;
+  const availableTabs = [
+    { key: "overview", label: dictionary.competitions.tabOverview, enabled: true },
+    { key: "team-results", label: dictionary.competitions.tabTeamResults, enabled: hasEkidenTeamResults },
+    { key: "snapshots", label: dictionary.competitions.tabSnapshots, enabled: maxSnapshotLeg > 0 },
+    { key: "race-units", label: dictionary.competitions.tabRaceUnits, enabled: hasRaceUnits },
+  ].filter((tab) => tab.enabled);
+  const requestedTab = queryParams.tab;
+  const activeTab = availableTabs.some((tab) => tab.key === requestedTab)
+    ? requestedTab!
+    : availableTabs[0]?.key ?? "overview";
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -161,8 +177,97 @@ export default async function CompetitionEditionPage({ params }: CompetitionEdit
             </div>
           </header>
 
-          {hasEkidenTeamResults ? (
-            <section className="space-y-5">
+          <section className="space-y-5">
+            <nav className="border border-[#ded8cc] bg-[#f6f1e8] p-2" aria-label={dictionary.competitions.tabNav}>
+              <div className="flex flex-wrap gap-2">
+                {availableTabs.map((tab) => (
+                  <Link
+                    key={tab.key}
+                    className={`px-4 py-2 text-sm font-semibold transition ${
+                      activeTab === tab.key
+                        ? "bg-[#8a1f2d] text-white"
+                        : "bg-white text-[#6b5f54] hover:bg-[#efe7db] hover:text-[#8a1f2d]"
+                    }`}
+                    href={`/${locale}/competitions/${edition.slug}?tab=${tab.key}`}
+                  >
+                    {tab.label}
+                  </Link>
+                ))}
+              </div>
+            </nav>
+
+            {activeTab === "overview" ? (
+              <article className="border border-[#ded8cc] bg-white p-5">
+                <h2 className="text-xl font-semibold">{dictionary.competitions.tabOverview}</h2>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                  <div className="border border-[#e7e1d8] bg-[#fcfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">
+                      {dictionary.competitions.teamResults}
+                    </p>
+                    <p className="mt-2 text-3xl font-semibold">{teamResults.length}</p>
+                  </div>
+                  <div className="border border-[#e7e1d8] bg-[#fcfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">
+                      {dictionary.competitions.teamSnapshots}
+                    </p>
+                    <p className="mt-2 text-3xl font-semibold">{totalTeamSnapshotCount}</p>
+                  </div>
+                  <div className="border border-[#e7e1d8] bg-[#fcfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">
+                      {dictionary.competitions.raceUnits}
+                    </p>
+                    <p className="mt-2 text-3xl font-semibold">{edition.races.length}</p>
+                  </div>
+                  <div className="border border-[#e7e1d8] bg-[#fcfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">
+                      {dictionary.competitions.resultCountLabel}
+                    </p>
+                    <p className="mt-2 text-3xl font-semibold">{resultCount}</p>
+                  </div>
+                </div>
+
+                {hasEkidenTeamResults ? (
+                  <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                    <div className="border border-[#e7e1d8] p-4">
+                      <h3 className="text-base font-semibold">{dictionary.competitions.teamResults}</h3>
+                      <div className="mt-4 space-y-3">
+                        {teamResults.slice(0, 5).map((result) => (
+                          <div className="flex items-center justify-between border-b border-[#efe7db] pb-3 last:border-b-0 last:pb-0" key={result.id}>
+                            <Link
+                              className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                              href={`/${locale}/organizations/${result.organization.slug}`}
+                            >
+                              {result.organization.nameJa}
+                            </Link>
+                            <div className="text-right text-sm text-[#59615c]">
+                              <p>{formatRank(result.finalRank, locale) || dictionary.common.emptyDash}</p>
+                              <p>{result.finalMark ?? dictionary.common.emptyDash}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="border border-[#e7e1d8] p-4">
+                      <h3 className="text-base font-semibold">{dictionary.competitions.raceUnits}</h3>
+                      <div className="mt-4 space-y-3">
+                        {edition.races.slice(0, 5).map((race) => (
+                          <div className="border-b border-[#efe7db] pb-3 last:border-b-0 last:pb-0" key={race.id}>
+                            <p className="font-medium">{race.name}</p>
+                            <p className="mt-1 text-sm text-[#59615c]">
+                              {formatDiscipline(race.discipline, locale)}
+                              {race.startsAt ? ` / ${formatDate(race.startsAt)}` : ""}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </article>
+            ) : null}
+
+            {activeTab === "team-results" && hasEkidenTeamResults ? (
               <article className="border border-[#ded8cc] bg-white p-5">
                 <h2 className="text-xl font-semibold">{dictionary.competitions.teamResults}</h2>
                 <div className="mt-4 overflow-x-auto">
@@ -191,135 +296,137 @@ export default async function CompetitionEditionPage({ params }: CompetitionEdit
                   </div>
                 </div>
               </article>
+            ) : null}
 
-              {maxSnapshotLeg > 0 ? (
-                <article className="border border-[#ded8cc] bg-white p-5">
-                  <h2 className="text-xl font-semibold">{dictionary.competitions.teamSnapshots}</h2>
-                  <div className="mt-4 overflow-x-auto">
-                    <div className="min-w-[820px]">
-                      <div className="grid grid-cols-[1.2fr_80px_120px_140px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
-                        <span>{dictionary.competitions.team}</span>
-                        <span>{dictionary.competitions.leg}</span>
-                        <span>{dictionary.competitions.cumulativeRank}</span>
-                        <span>{dictionary.competitions.cumulativeMark}</span>
-                        <span>{dictionary.competitions.gapFromLeader}</span>
+            {activeTab === "snapshots" && maxSnapshotLeg > 0 ? (
+              <article className="border border-[#ded8cc] bg-white p-5">
+                <h2 className="text-xl font-semibold">{dictionary.competitions.teamSnapshots}</h2>
+                <div className="mt-4 overflow-x-auto">
+                  <div className="min-w-[820px]">
+                    <div className="grid grid-cols-[1.2fr_80px_120px_140px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                      <span>{dictionary.competitions.team}</span>
+                      <span>{dictionary.competitions.leg}</span>
+                      <span>{dictionary.competitions.cumulativeRank}</span>
+                      <span>{dictionary.competitions.cumulativeMark}</span>
+                      <span>{dictionary.competitions.gapFromLeader}</span>
+                    </div>
+                    <div className="divide-y divide-[#e7e1d8]">
+                      {teamResults.map((result) =>
+                        [...result.legSnapshots]
+                          .sort((left, right) => left.leg - right.leg)
+                          .map((snapshot, index) => (
+                            <div
+                              className={`grid grid-cols-[1.2fr_80px_120px_140px_140px] px-3 py-3 text-sm ${
+                                index === 0 ? "border-t border-[#d9d1c5]" : ""
+                              }`}
+                              key={snapshot.id}
+                            >
+                              {index === 0 ? (
+                                <Link
+                                  className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                                  href={`/${locale}/organizations/${result.organization.slug}`}
+                                >
+                                  {result.organization.nameJa}
+                                </Link>
+                              ) : (
+                                <span className="text-[#c1b7aa]">{dictionary.common.emptyDash}</span>
+                              )}
+                              <span>{snapshot.leg}</span>
+                              <span className="text-[#59615c]">
+                                {formatRank(snapshot.cumulativeRank, locale) || dictionary.common.emptyDash}
+                              </span>
+                              <span>{snapshot.cumulativeMark ?? dictionary.common.emptyDash}</span>
+                              <span>{snapshot.gapFromLeader ?? dictionary.common.emptyDash}</span>
+                            </div>
+                          )),
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ) : null}
+
+            {activeTab === "race-units" ? (
+              <section className="space-y-5">
+                <h2 className="text-xl font-semibold">{dictionary.competitions.raceUnits}</h2>
+                {edition.races.map((race) => (
+                  <article className="border border-[#ded8cc] bg-white p-5" key={race.id}>
+                    <div className="flex flex-col justify-between gap-3 border-b border-[#e7e1d8] pb-4 sm:flex-row sm:items-start">
+                      <div>
+                        <h3 className="text-lg font-semibold">{race.name}</h3>
+                        <p className="mt-1 text-sm text-[#59615c]">
+                          {formatDiscipline(race.discipline, locale)}
+                          {race.startsAt ? ` / ${formatDate(race.startsAt)}` : ""}
+                        </p>
                       </div>
-                      <div className="divide-y divide-[#e7e1d8]">
-                        {teamResults.map((result) =>
-                          [...result.legSnapshots]
-                            .sort((left, right) => left.leg - right.leg)
-                            .map((snapshot, index) => (
+                      {race.source?.url ? (
+                        <a
+                          className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                          data-analytics-event="source_outbound_click"
+                          data-analytics-link-type="competition_source"
+                          href={race.source.url}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {dictionary.competitions.source}
+                          <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                        </a>
+                      ) : null}
+                    </div>
+
+                    {race.raceResults.length > 0 ? (
+                      <div className="mt-4 overflow-x-auto">
+                        <div className="min-w-[780px]">
+                          <div className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                            <span>{dictionary.competitions.rank}</span>
+                            <span>{dictionary.competitions.athlete}</span>
+                            <span>{dictionary.competitions.organization}</span>
+                            <span>{dictionary.competitions.mark}</span>
+                            <span>{dictionary.competitions.notes}</span>
+                          </div>
+                          <div className="divide-y divide-[#e7e1d8]">
+                            {race.raceResults.map((result) => (
                               <div
-                                className={`grid grid-cols-[1.2fr_80px_120px_140px_140px] px-3 py-3 text-sm ${
-                                  index === 0 ? "border-t border-[#d9d1c5]" : ""
-                                }`}
-                                key={snapshot.id}
+                                className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] px-3 py-3 text-sm"
+                                key={result.id}
                               >
-                                {index === 0 ? (
+                                <span className="text-[#59615c]">
+                                  {formatRank(result.rank, locale) || dictionary.common.emptyDash}
+                                </span>
+                                <Link
+                                  className="font-semibold text-[#8a1f2d] underline-offset-4 hover:underline"
+                                  data-analytics-event="player_profile_view"
+                                  data-analytics-link-type="competition_result_player"
+                                  href={`/${locale}/players/${result.person.slug}`}
+                                >
+                                  {result.person.displayNameJa}
+                                </Link>
+                                {result.organization ? (
                                   <Link
-                                    className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                                    className="text-[#59615c] underline-offset-4 hover:text-[#8a1f2d] hover:underline"
+                                    data-analytics-event="player_to_organization_click"
+                                    data-analytics-link-type="competition_result_organization"
                                     href={`/${locale}/organizations/${result.organization.slug}`}
                                   >
                                     {result.organization.nameJa}
                                   </Link>
                                 ) : (
-                                  <span className="text-[#c1b7aa]">{dictionary.common.emptyDash}</span>
+                                  <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
                                 )}
-                                <span>{snapshot.leg}</span>
-                                <span className="text-[#59615c]">
-                                  {formatRank(snapshot.cumulativeRank, locale) || dictionary.common.emptyDash}
-                                </span>
-                                <span>{snapshot.cumulativeMark ?? dictionary.common.emptyDash}</span>
-                                <span>{snapshot.gapFromLeader ?? dictionary.common.emptyDash}</span>
+                                <span>{result.mark ?? dictionary.common.notEntered}</span>
+                                <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
                               </div>
-                            )),
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ) : null}
-            </section>
-          ) : null}
-
-          <section className="space-y-5">
-            <h2 className="text-xl font-semibold">{dictionary.competitions.raceUnits}</h2>
-            {edition.races.map((race) => (
-              <article className="border border-[#ded8cc] bg-white p-5" key={race.id}>
-                <div className="flex flex-col justify-between gap-3 border-b border-[#e7e1d8] pb-4 sm:flex-row sm:items-start">
-                  <div>
-                    <h3 className="text-lg font-semibold">{race.name}</h3>
-                    <p className="mt-1 text-sm text-[#59615c]">
-                      {formatDiscipline(race.discipline, locale)}
-                      {race.startsAt ? ` / ${formatDate(race.startsAt)}` : ""}
-                    </p>
-                  </div>
-                  {race.source?.url ? (
-                    <a
-                      className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
-                      data-analytics-event="source_outbound_click"
-                      data-analytics-link-type="competition_source"
-                      href={race.source.url}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      {dictionary.competitions.source}
-                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                    </a>
-                  ) : null}
-                </div>
-
-                {race.raceResults.length > 0 ? (
-                  <div className="mt-4 overflow-x-auto">
-                    <div className="min-w-[780px]">
-                      <div className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
-                        <span>{dictionary.competitions.rank}</span>
-                        <span>{dictionary.competitions.athlete}</span>
-                        <span>{dictionary.competitions.organization}</span>
-                        <span>{dictionary.competitions.mark}</span>
-                        <span>{dictionary.competitions.notes}</span>
-                      </div>
-                      <div className="divide-y divide-[#e7e1d8]">
-                        {race.raceResults.map((result) => (
-                          <div
-                            className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] px-3 py-3 text-sm"
-                            key={result.id}
-                          >
-                            <span className="text-[#59615c]">
-                              {formatRank(result.rank, locale) || dictionary.common.emptyDash}
-                            </span>
-                            <Link
-                              className="font-semibold text-[#8a1f2d] underline-offset-4 hover:underline"
-                              data-analytics-event="player_profile_view"
-                              data-analytics-link-type="competition_result_player"
-                              href={`/${locale}/players/${result.person.slug}`}
-                            >
-                              {result.person.displayNameJa}
-                            </Link>
-                            {result.organization ? (
-                              <Link
-                                className="text-[#59615c] underline-offset-4 hover:text-[#8a1f2d] hover:underline"
-                                data-analytics-event="player_to_organization_click"
-                                data-analytics-link-type="competition_result_organization"
-                                href={`/${locale}/organizations/${result.organization.slug}`}
-                              >
-                                {result.organization.nameJa}
-                              </Link>
-                            ) : (
-                              <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
-                            )}
-                            <span>{result.mark ?? dictionary.common.notEntered}</span>
-                            <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
+                            ))}
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="mt-4 text-sm text-[#59615c]">{dictionary.competitions.emptyResults}</p>
-                )}
-              </article>
-            ))}
+                    ) : (
+                      <p className="mt-4 text-sm text-[#59615c]">{dictionary.competitions.emptyResults}</p>
+                    )}
+                  </article>
+                ))}
+              </section>
+            ) : null}
           </section>
         </div>
       </main>
