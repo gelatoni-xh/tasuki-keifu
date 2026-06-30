@@ -188,7 +188,6 @@ async function main() {
       !person.birthDate ? "birthDate" : null,
       !person.hometown ? "hometown" : null,
       !person.nationality ? "nationality" : null,
-      !person.registeredPrefecture ? "registeredPrefecture" : null,
     ].filter(Boolean);
 
     if (missingProfileFields.length > 0) {

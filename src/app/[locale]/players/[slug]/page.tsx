@@ -394,10 +394,6 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                   <dt className="text-[#59615c]">{dictionary.players.nationality}</dt>
                   <dd className="font-medium">{player.nationality ?? dictionary.common.emptyDash}</dd>
                 </div>
-                <div className="flex justify-between gap-4">
-                  <dt className="text-[#59615c]">{dictionary.players.registeredPrefecture}</dt>
-                  <dd className="font-medium">{player.registeredPrefecture ?? dictionary.common.emptyDash}</dd>
-                </div>
               </dl>
             </div>
 
