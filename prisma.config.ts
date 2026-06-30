@@ -1,5 +1,8 @@
-import "dotenv/config";
 import { defineConfig } from "prisma/config";
+
+import { loadWorkspaceEnv } from "./scripts/lib/load-env";
+
+loadWorkspaceEnv();
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

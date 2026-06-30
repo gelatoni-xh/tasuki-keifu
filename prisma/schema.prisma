@@ -186,6 +186,8 @@ model Person {
   nameVariants         NameVariant[]
   /// 外部来源映射
   sourceReferences     SourceReference[]
+  /// 选手关系缓存
+  playerRelationCache  PlayerRelationCache?
 }
 
 /// 组织表：统一记录高中、大学、实业团、俱乐部等
@@ -505,6 +507,21 @@ model RaceResult {
   @@index([personId])
   @@index([raceId])
   @@index([organizationId])
+}
+
+/// 选手关系缓存表：存储派生关系结果
+model PlayerRelationCache {
+  id          String   @id @default(cuid())
+  personId    String   @unique
+  payload     Json
+  generatedAt DateTime @default(now())
+  sourceHash  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  person      Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@index([generatedAt])
 }
 
 /// 数据来源表

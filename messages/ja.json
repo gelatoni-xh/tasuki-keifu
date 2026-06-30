@@ -86,16 +86,22 @@
     "raceMark": "記録",
     "raceRank": "順位",
     "raceNotes": "備考",
-    "relatedPlayers": "関連人物",
-    "relatedPlayersEmpty": "関連人物はまだ収録されていません。",
+    "relatedPlayers": "関係の深い選手",
+    "relatedPlayersEmpty": "関係の深い選手はまだ表示できません。",
     "relationshipTags": {
-      "sameUniversity": "同大学",
-      "sameHighSchool": "同高校",
-      "sameCorporateTeam": "同実業団",
-      "overlap": "同時期",
-      "notOverlap": "時期違い",
-      "unknownOverlap": "時期未確認",
-      "sameRace": "同レース出場 {count}回"
+      "directEkiden": "駅伝で {count} 回直接対抗",
+      "directCrossStage": "{start}から{end}まで {count} 回同じ舞台で対戦",
+      "directSameStage": "{count} 回同じ舞台で直接対戦",
+      "directLatestCompetition": "{competition}で直接対戦",
+      "teammateOverlapYears": "{years} 年同じチームで並走",
+      "teammateSharedEditions": "{editions}で共に出場",
+      "frequentSameStage": "{stage}時代に同じ舞台で何度も登場",
+      "stageGeneric": "同じ世代",
+      "stages": {
+        "high_school": "高校",
+        "university": "大学",
+        "corporate_team": "実業団"
+      }
     },
     "dataSource": "データソース",
     "source": "出典",

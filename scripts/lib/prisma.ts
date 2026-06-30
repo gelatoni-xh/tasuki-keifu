@@ -1,6 +1,10 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
+import { loadWorkspaceEnv } from "./load-env";
+
+loadWorkspaceEnv();
+
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
@@ -9,7 +13,13 @@ if (!connectionString) {
 
 const adapter = new PrismaPg(connectionString);
 
-export const prisma = new PrismaClient({
-  adapter,
-  log: ["error", "warn"],
-});
+function createPrismaClient() {
+  return new PrismaClient({
+    adapter,
+    log: ["error", "warn"],
+  });
+}
+
+type ScriptPrismaClient = ReturnType<typeof createPrismaClient>;
+
+export const prisma: ScriptPrismaClient = createPrismaClient();

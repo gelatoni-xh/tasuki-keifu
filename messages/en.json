@@ -86,16 +86,22 @@
     "raceMark": "Mark",
     "raceRank": "Rank",
     "raceNotes": "Notes",
-    "relatedPlayers": "Related people",
-    "relatedPlayersEmpty": "No related people have been recorded yet.",
+    "relatedPlayers": "Players Closely Connected to Him",
+    "relatedPlayersEmpty": "No relationship results are available yet.",
     "relationshipTags": {
-      "sameUniversity": "Same university",
-      "sameHighSchool": "Same high school",
-      "sameCorporateTeam": "Same corporate team",
-      "overlap": "Same period",
-      "notOverlap": "Different period",
-      "unknownOverlap": "Period unknown",
-      "sameRace": "Raced together {count} times"
+      "directEkiden": "Directly matched up {count} times in ekiden",
+      "directCrossStage": "Met on the same stage {count} times from {start} to {end}",
+      "directSameStage": "Directly matched up on the same stage {count} times",
+      "directLatestCompetition": "Direct matchup at {competition}",
+      "teammateOverlapYears": "Ran together on the same team for {years} years",
+      "teammateSharedEditions": "Competed together in {editions}",
+      "frequentSameStage": "Appeared on the same stage many times during the {stage} era",
+      "stageGeneric": "same era",
+      "stages": {
+        "high_school": "high school",
+        "university": "university",
+        "corporate_team": "corporate team"
+      }
     },
     "dataSource": "Data sources",
     "source": "Source",

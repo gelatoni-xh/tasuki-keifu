@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { OrganizationType, Source } from "@prisma/client";
+import type { Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
@@ -11,12 +11,13 @@ import {
   formatMembershipPeriod,
   getCurrentMembership,
   getHighSchoolMembership,
-  getMembershipOverlap,
   getUniversityMembership,
   inferCurrentUniversityGrade,
   sortMembershipsByStartDate,
 } from "@/lib/membership";
+import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
 import { buildLocaleAlternates } from "@/lib/site";
+import type { PlayerRelationEntry, RelationReason, RelationStageKey } from "@/lib/player-relations/types";
 
 type PlayerDetailPageProps = {
   params: Promise<{
@@ -130,45 +131,55 @@ function OrganizationInlineLink({
   );
 }
 
-type MembershipForRelation = {
-  organizationId: string;
-  startDate: Date | null;
-  endDate: Date | null;
-  startYear: number | null;
-  endYear: number | null;
-  organization: { type: OrganizationType };
-};
-
-function buildOrganizationRelationshipTag(
-  baseLabel: string,
-  playerMemberships: MembershipForRelation[],
-  relatedMemberships: MembershipForRelation[],
-  organizationType: OrganizationType,
-  overlapLabels: {
-    overlap: string;
-    notOverlap: string;
-    unknown: string;
-  },
-) {
-  const playerMatches = playerMemberships.filter((membership) => membership.organization.type === organizationType);
-  const relatedMatches = relatedMemberships.filter((membership) => membership.organization.type === organizationType);
-  const overlapStates = playerMatches.flatMap((playerMembership) =>
-    relatedMatches
-      .filter((relatedMembership) => relatedMembership.organizationId === playerMembership.organizationId)
-      .map((relatedMembership) => getMembershipOverlap(playerMembership, relatedMembership)),
-  );
-
-  if (overlapStates.length === 0) {
-    return null;
+function getRelationStageLabel(dictionary: ReturnType<typeof getDictionary>, stage: RelationStageKey | null) {
+  if (!stage) {
+    return dictionary.players.relationshipTags.stageGeneric;
   }
 
-  const overlapLabel = overlapStates.includes("overlap")
-    ? overlapLabels.overlap
-    : overlapStates.includes("not_overlap")
-      ? overlapLabels.notOverlap
-      : overlapLabels.unknown;
+  return dictionary.players.relationshipTags.stages[stage];
+}
 
-  return `${baseLabel}・${overlapLabel}`;
+function formatRelationReason(
+  dictionary: ReturnType<typeof getDictionary>,
+  reason: RelationReason,
+) {
+  switch (reason.type) {
+    case "direct_matchup":
+      switch (reason.kind) {
+        case "ekiden":
+          return interpolate(dictionary.players.relationshipTags.directEkiden, { count: reason.count });
+        case "cross_stage": {
+          const stageNames = reason.stages.map((stage) => getRelationStageLabel(dictionary, stage));
+          return interpolate(dictionary.players.relationshipTags.directCrossStage, {
+            count: reason.count,
+            start: stageNames[0] ?? dictionary.players.relationshipTags.stageGeneric,
+            end: stageNames[stageNames.length - 1] ?? dictionary.players.relationshipTags.stageGeneric,
+          });
+        }
+        case "same_stage":
+          return interpolate(dictionary.players.relationshipTags.directSameStage, { count: reason.count });
+        case "latest_competition":
+          return interpolate(dictionary.players.relationshipTags.directLatestCompetition, {
+            competition: reason.competitionName,
+          });
+      }
+      break;
+    case "teammate_overlap":
+      switch (reason.kind) {
+        case "overlap_years":
+          return interpolate(dictionary.players.relationshipTags.teammateOverlapYears, { years: reason.years });
+        case "shared_editions":
+          return interpolate(dictionary.players.relationshipTags.teammateSharedEditions, {
+            editions: reason.editions.join(" / "),
+          });
+      }
+      break;
+    case "frequent_same_stage":
+      return interpolate(dictionary.players.relationshipTags.frequentSameStage, {
+        stage: getRelationStageLabel(dictionary, reason.stage),
+        count: reason.count,
+      });
+  }
 }
 
 export default async function PlayerDetailPage({ params }: PlayerDetailPageProps) {
@@ -230,7 +241,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
     return (a.race.leg ?? 999) - (b.race.leg ?? 999);
   });
-  const relatedRaceIds = player.raceResults.map((result) => result.raceId);
+  const relationPayload = await getPlayerRelations(player.id);
   const uniqueSources = Array.from(
     new Map(
       [...player.memberships, ...player.personalBests, ...player.raceResults]
@@ -240,77 +251,31 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     ).values(),
   );
 
-  const relatedPlayers = await prisma.person.findMany({
-    where: {
-      id: { not: player.id },
-      OR: [
-        {
+  const relatedPlayerIds = relationPayload.topRelations.slice(0, 6).map((entry: PlayerRelationEntry) => entry.relatedPersonId);
+  const relatedPlayers = relatedPlayerIds.length > 0
+    ? await prisma.person.findMany({
+        where: {
+          id: { in: relatedPlayerIds },
+        },
+        include: {
           memberships: {
-            some: {
-              organizationId: { in: [university?.organizationId, highSchool?.organizationId].filter(Boolean) as string[] },
-            },
+            include: { organization: true },
           },
         },
-        {
-          raceResults: {
-            some: {
-              raceId: { in: relatedRaceIds },
-            },
-          },
-        },
-      ],
-    },
-    orderBy: {
-      updatedAt: "desc",
-    },
-    include: {
-      memberships: {
-        include: { organization: true },
-      },
-      raceResults: {
-        select: { raceId: true },
-      },
-    },
-    take: 8,
-  });
-  const relatedPlayersWithTags = relatedPlayers.map((related) => {
-    const sameRaceCount = related.raceResults.filter((result) => relatedRaceIds.includes(result.raceId)).length;
-    const overlapLabels = {
-      overlap: dictionary.players.relationshipTags.overlap,
-      notOverlap: dictionary.players.relationshipTags.notOverlap,
-      unknown: dictionary.players.relationshipTags.unknownOverlap,
-    };
-    const tags = [
-      buildOrganizationRelationshipTag(
-        dictionary.players.relationshipTags.sameUniversity,
-        player.memberships,
-        related.memberships,
-        "university",
-        overlapLabels,
-      ),
-      buildOrganizationRelationshipTag(
-        dictionary.players.relationshipTags.sameHighSchool,
-        player.memberships,
-        related.memberships,
-        "high_school",
-        overlapLabels,
-      ),
-      buildOrganizationRelationshipTag(
-        dictionary.players.relationshipTags.sameCorporateTeam,
-        player.memberships,
-        related.memberships,
-        "corporate_team",
-        overlapLabels,
-      ),
-      sameRaceCount > 0
-        ? interpolate(dictionary.players.relationshipTags.sameRace, { count: sameRaceCount })
-        : null,
-    ].filter((tag) => tag !== null);
+      })
+    : [];
+  const relatedPlayersById = new Map(relatedPlayers.map((related) => [related.id, related]));
+  const relatedPlayersWithTags = relationPayload.topRelations.slice(0, 6).flatMap((entry: PlayerRelationEntry) => {
+    const related = relatedPlayersById.get(entry.relatedPersonId);
 
-    return {
-      ...related,
-      relationshipTags: tags,
-    };
+    if (!related) {
+      return [];
+    }
+
+    return [{
+        ...related,
+        relationshipTags: entry.reasons.map((reason: RelationReason) => formatRelationReason(dictionary, reason)),
+    }];
   });
   const hasPersonalBests = player.personalBests.length > 0;
   const hasRaceResults = sortedRaceResults.length > 0;
@@ -597,10 +562,10 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                   >
                     <p className="font-semibold">{related.displayNameJa}</p>
                     <p className="mt-1 text-sm text-[#59615c]">
-                      {related.memberships.map((membership) => membership.organization.nameJa).join(" / ")}
+                      {related.memberships.map((membership: (typeof related.memberships)[number]) => membership.organization.nameJa).join(" / ")}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {related.relationshipTags.map((tag) => (
+                      {related.relationshipTags.map((tag: string) => (
                         <span className="border border-[#ded8cc] px-2 py-1 text-xs text-[#8a1f2d]" key={tag}>
                           {tag}
                         </span>

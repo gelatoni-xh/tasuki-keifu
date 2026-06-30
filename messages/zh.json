@@ -86,16 +86,22 @@
     "raceMark": "成绩",
     "raceRank": "排名",
     "raceNotes": "备注",
-    "relatedPlayers": "相关人物",
-    "relatedPlayersEmpty": "还没有收录相关人物。",
+    "relatedPlayers": "与他关系最深的选手",
+    "relatedPlayersEmpty": "暂时还没有可展示的关系选手。",
     "relationshipTags": {
-      "sameUniversity": "同大学",
-      "sameHighSchool": "同高中",
-      "sameCorporateTeam": "同实业团",
-      "overlap": "同期",
-      "notOverlap": "时期不同",
-      "unknownOverlap": "时期未确认",
-      "sameRace": "同台竞技 {count}次"
+      "directEkiden": "在驿传中 {count} 次直接对位",
+      "directCrossStage": "从{start}到{end}共有 {count} 次同场对战",
+      "directSameStage": "共有 {count} 次同场直接对战",
+      "directLatestCompetition": "曾在{competition}直接对战",
+      "teammateOverlapYears": "曾有 {years} 年在同一队并肩作战",
+      "teammateSharedEditions": "曾在{editions}共同出场",
+      "frequentSameStage": "在{stage}阶段多次出现在同一舞台",
+      "stageGeneric": "同一时期",
+      "stages": {
+        "high_school": "高中",
+        "university": "大学",
+        "corporate_team": "实业团"
+      }
     },
     "dataSource": "数据来源",
     "source": "来源",
