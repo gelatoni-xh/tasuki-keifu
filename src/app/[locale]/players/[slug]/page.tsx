@@ -59,12 +59,13 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
   const highSchool = getHighSchoolMembership(player.memberships);
   const title = `${player.displayNameJa}の所属・記録・大会成績`;
   const descriptionParts = [
-    `${player.displayNameJa}の選手ページです。`,
+    `${player.displayNameJa}の所属、PB、大会成績を確認できる選手資料ページです。`,
     currentMembership?.organization.nameJa ? `現在の所属は${currentMembership.organization.nameJa}。` : null,
     university?.organization.nameJa ? `大学は${university.organization.nameJa}。` : null,
     highSchool?.organization.nameJa ? `出身校は${highSchool.organization.nameJa}。` : null,
     player.personalBests.length > 0 ? `主要PBを${player.personalBests.length}件収録。` : null,
     player.raceResults.length > 0 ? `大会成績を${player.raceResults.length}件収録。` : null,
+    "所属変遷、関連大会、データ出典もあわせて確認できます。",
   ].filter(Boolean);
 
   return {

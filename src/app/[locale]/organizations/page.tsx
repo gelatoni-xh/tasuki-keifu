@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { OrganizationType } from "@prisma/client";
@@ -6,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatOrganizationType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
+import { buildLocaleAlternates } from "@/lib/site";
 
 type OrganizationsPageProps = {
   params: Promise<{
@@ -17,6 +19,31 @@ type OrganizationsPageProps = {
     page?: string;
   }>;
 };
+
+export async function generateMetadata({ params }: Pick<OrganizationsPageProps, "params">): Promise<Metadata> {
+  const { locale: localeParam } = await params;
+
+  if (!isLocale(localeParam)) {
+    return {};
+  }
+
+  const title = "学校・実業団・連盟一覧";
+  const description = "学校、大学、実業団、連盟などの組織一覧ページです。所属選手や関連データを探す入口として使えます。";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${localeParam}/organizations`,
+      languages: buildLocaleAlternates("/organizations"),
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/${localeParam}/organizations`,
+    },
+  };
+}
 
 const allowedOrganizationTypes: OrganizationType[] = [
   "junior_high_school",
