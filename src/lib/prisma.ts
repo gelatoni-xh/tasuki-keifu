@@ -16,8 +16,10 @@ function createPrismaClient() {
   });
 }
 
+type AppPrismaClient = ReturnType<typeof createPrismaClient>;
+
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma: AppPrismaClient | undefined;
 };
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();

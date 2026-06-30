@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatCompetitionType, formatDate, formatDiscipline, formatRank } from "@/lib/format";
+import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRank } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { buildLocaleAlternates } from "@/lib/site";
 
@@ -257,7 +257,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                           </Link>
                           <div className="text-right text-sm text-[#59615c]">
                             <p>{formatRank(result.finalRank, locale) || dictionary.common.emptyDash}</p>
-                            <p>{result.finalMark ?? dictionary.common.emptyDash}</p>
+                            <p>{result.finalMark ? formatRaceMark(result.finalMark, locale) : dictionary.common.emptyDash}</p>
                           </div>
                         </div>
                       ))}
@@ -289,7 +289,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                           <span className="text-[#59615c]">
                             {formatRank(result.finalRank, locale) || dictionary.common.emptyDash}
                           </span>
-                          <span>{result.finalMark ?? dictionary.common.emptyDash}</span>
+                          <span>{result.finalMark ? formatRaceMark(result.finalMark, locale) : dictionary.common.emptyDash}</span>
                         </div>
                       ))}
                     </div>
@@ -335,8 +335,8 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                               <span className="text-[#59615c]">
                                 {formatRank(snapshot.cumulativeRank, locale) || dictionary.common.emptyDash}
                               </span>
-                              <span>{snapshot.cumulativeMark ?? dictionary.common.emptyDash}</span>
-                              <span>{snapshot.gapFromLeader ?? dictionary.common.emptyDash}</span>
+                              <span>{snapshot.cumulativeMark ? formatRaceMark(snapshot.cumulativeMark, locale) : dictionary.common.emptyDash}</span>
+                              <span>{snapshot.gapFromLeader ? formatRaceMark(snapshot.gapFromLeader, locale) : dictionary.common.emptyDash}</span>
                             </div>
                           )),
                       )}
@@ -437,7 +437,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                                     ) : (
                                       <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
                                     )}
-                                    <span>{result.mark ?? dictionary.common.notEntered}</span>
+                                    <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
                                     <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
                                   </div>
                                 ))}

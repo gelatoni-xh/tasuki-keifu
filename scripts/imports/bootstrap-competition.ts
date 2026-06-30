@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -7,6 +5,9 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 import { bootstrapCompetition, type CompetitionBootstrapConfig } from "../lib/competition-bootstrap";
+import { loadWorkspaceEnv } from "../lib/load-env";
+
+loadWorkspaceEnv();
 
 const connectionString = process.env.DATABASE_URL;
 

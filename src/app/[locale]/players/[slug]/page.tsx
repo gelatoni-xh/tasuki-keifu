@@ -5,7 +5,7 @@ import type { Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRank, formatStatus } from "@/lib/format";
+import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRank, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import {
   formatMembershipPeriod,
@@ -457,7 +457,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                           {edition.shortName ?? edition.officialName}
                         </Link>
                         <span>{result.race.name}</span>
-                        <span>{result.mark ?? dictionary.common.notEntered}</span>
+                        <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
                         <span>{formatRank(result.rank, locale) || dictionary.common.emptyDash}</span>
                         <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
                         <span className="text-[#59615c]">
@@ -510,7 +510,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                       </div>
                       <div>
                         <dt className="text-xs font-medium text-[#8b938e]">{dictionary.players.raceMark}</dt>
-                        <dd className="mt-1 font-semibold">{result.mark ?? dictionary.common.notEntered}</dd>
+                        <dd className="mt-1 font-semibold">{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</dd>
                       </div>
                       <div>
                         <dt className="text-xs font-medium text-[#8b938e]">{dictionary.players.currentAffiliation}</dt>

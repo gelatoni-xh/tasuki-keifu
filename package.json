@@ -16,6 +16,7 @@
     "generate:izumo": "tsx scripts/imports/generate-izumo-payload.ts",
     "reset:izumo": "tsx scripts/imports/reset-izumo-edition.ts",
     "import:izumo": "tsx scripts/imports/run-izumo-import.ts",
+    "maint:audit-profile-coverage": "tsx scripts/maintenance/audit-profile-coverage.ts",
     "maint:backfill-hakone-team-results": "tsx scripts/maintenance/backfill-hakone-team-results.ts",
     "maint:recompute-player-relations": "tsx scripts/maintenance/recompute-player-relations.ts",
     "maint:recompute-person-types": "tsx scripts/maintenance/recompute-person-types.ts",

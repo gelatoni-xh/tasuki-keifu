@@ -1,7 +1,10 @@
-import { AuditAction, AuditActorType, AuditReasonType, DataStatus, MembershipType, type PrismaClient } from "@prisma/client";
+import { createHash } from "node:crypto";
+
+import { AuditAction, AuditActorType, AuditReasonType, DataStatus, MembershipType, OrganizationType, type NameVariantType, type PrismaClient } from "@prisma/client";
 
 import type { RaceImportPayload } from "./import-types";
 import { normalizeDisplayNameJa } from "./name-normalization";
+import { normalizeOrganizationLabel } from "./organization-normalization";
 
 function normalizeJaName(value: string) {
   return normalizeDisplayNameJa(value).replace(/ /g, "");
@@ -23,6 +26,21 @@ function reverseRomanOrder(value: string) {
   }
 
   return parts.slice().reverse().join(" ");
+}
+
+function slugifyFallback(value: string) {
+  const ascii = value
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .trim();
+
+  if (ascii) {
+    return ascii;
+  }
+
+  return createHash("sha1").update(value.normalize("NFKC")).digest("hex").slice(0, 12);
 }
 
 function getAcademicYearEndYear(referenceDate: Date) {
@@ -80,6 +98,63 @@ export function markToMilliseconds(mark: string) {
   const fractionValue = Number(fraction);
 
   return Number.isNaN(fractionValue) ? milliseconds : milliseconds + fractionValue;
+}
+
+export function normalizeMarkToCanonical(mark: string | null | undefined) {
+  if (!mark) {
+    return null;
+  }
+
+  const normalized = mark
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/：/g, ":")
+    .replace(/．/g, ".");
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (/^\d+(?::\d{1,2}){1,2}(?:\.\d+)?$/.test(normalized)) {
+    const [timePart, fractionPart] = normalized.split(".");
+    const segments = timePart.split(":").map((segment) => Number(segment));
+
+    if (segments.some((segment) => Number.isNaN(segment))) {
+      return normalized;
+    }
+
+    if (segments.length === 3) {
+      const [hours, minutes, seconds] = segments;
+      return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}${fractionPart ? `.${fractionPart}` : ""}`;
+    }
+
+    if (segments.length === 2) {
+      const [minutes, seconds] = segments;
+      return `${minutes}:${String(seconds).padStart(2, "0")}${fractionPart ? `.${fractionPart}` : ""}`;
+    }
+
+    return `${segments[0]}${fractionPart ? `.${fractionPart}` : ""}`;
+  }
+
+  const jpMatch = normalized.match(/^(?:(\d+)時間)?(?:(\d+)分)?(?:(\d+)秒)?(?:\.(\d+))?$/);
+  if (!jpMatch) {
+    return normalized;
+  }
+
+  const hours = Number(jpMatch[1] ?? 0);
+  const minutes = Number(jpMatch[2] ?? 0);
+  const seconds = Number(jpMatch[3] ?? 0);
+  const fraction = jpMatch[4] ?? null;
+
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}${fraction ? `.${fraction}` : ""}`;
+  }
+
+  if (jpMatch[2] || jpMatch[3]) {
+    return `${minutes}:${String(seconds).padStart(2, "0")}${fraction ? `.${fraction}` : ""}`;
+  }
+
+  return normalized;
 }
 
 export type PersonalBestCandidateSource = {
@@ -206,7 +281,8 @@ export async function upsertPersonalBestSnapshot(prisma: PrismaClient, input: {
   notes: string;
   sourceId: string;
 }) {
-  const incomingMarkMillis = markToMilliseconds(input.mark);
+  const canonicalMark = normalizeMarkToCanonical(input.mark) ?? input.mark;
+  const incomingMarkMillis = markToMilliseconds(canonicalMark);
   const incomingSource = await prisma.source.findUnique({
     where: { id: input.sourceId },
     select: {
@@ -241,7 +317,7 @@ export async function upsertPersonalBestSnapshot(prisma: PrismaClient, input: {
       data: {
         personId: input.personId,
         discipline: input.discipline as never,
-        mark: input.mark,
+        mark: canonicalMark,
         markMillis: incomingMarkMillis,
         status: DataStatus.pending,
         notes: input.notes,
@@ -301,7 +377,7 @@ export async function upsertPersonalBestSnapshot(prisma: PrismaClient, input: {
   await prisma.personalBest.update({
     where: { id: existing.id },
     data: {
-      mark: input.mark,
+      mark: canonicalMark,
       markMillis: incomingMarkMillis,
       status: DataStatus.pending,
       notes: input.notes,
@@ -379,8 +455,8 @@ export async function validateRaceImportDuplicates(prisma: PrismaClient, entries
 
   for (const entry of entries) {
     const normalizedJa = normalizeJaName(entry.displayNameJa);
-    const normalizedRoman = normalizeRoman(entry.displayNameRoman);
-    const reversedRoman = reverseRomanOrder(entry.displayNameRoman);
+    const normalizedRoman = entry.displayNameRoman ? normalizeRoman(entry.displayNameRoman) : null;
+    const reversedRoman = entry.displayNameRoman ? reverseRomanOrder(entry.displayNameRoman) : null;
 
     const jaSeenSlug = seenByNormalizedJa.get(normalizedJa);
     if (jaSeenSlug && jaSeenSlug !== entry.slug) {
@@ -390,20 +466,22 @@ export async function validateRaceImportDuplicates(prisma: PrismaClient, entries
     }
     seenByNormalizedJa.set(normalizedJa, entry.slug);
 
-    const romanSeenSlug = seenByRoman.get(normalizedRoman);
-    if (romanSeenSlug && romanSeenSlug !== entry.slug) {
-      throw new Error(
-        `Duplicate payload person by romanized name: ${entry.displayNameRoman} (${romanSeenSlug} / ${entry.slug})`,
-      );
+    if (normalizedRoman) {
+      const romanSeenSlug = seenByRoman.get(normalizedRoman);
+      if (romanSeenSlug && romanSeenSlug !== entry.slug) {
+        throw new Error(
+          `Duplicate payload person by romanized name: ${entry.displayNameRoman} (${romanSeenSlug} / ${entry.slug})`,
+        );
+      }
+      seenByRoman.set(normalizedRoman, entry.slug);
     }
-    seenByRoman.set(normalizedRoman, entry.slug);
 
     const conflictingPeople = await prisma.person.findMany({
       where: {
         slug: { not: entry.slug },
         OR: [
           { displayNameJa: entry.displayNameJa },
-          { displayNameRoman: entry.displayNameRoman },
+          ...(entry.displayNameRoman ? [{ displayNameRoman: entry.displayNameRoman }] : []),
         ],
       },
       select: {
@@ -425,7 +503,7 @@ export async function validateRaceImportDuplicates(prisma: PrismaClient, entries
       );
     }
 
-    const romanConflicts = conflictingPeople.filter((person) => {
+    const romanConflicts = normalizedRoman ? conflictingPeople.filter((person) => {
       if (!person.displayNameRoman) {
         return false;
       }
@@ -433,7 +511,7 @@ export async function validateRaceImportDuplicates(prisma: PrismaClient, entries
       const existingRoman = normalizeRoman(person.displayNameRoman);
 
       return existingRoman === normalizedRoman || existingRoman === reversedRoman;
-    });
+    }) : [];
 
     if (romanConflicts.length > 0) {
       throw new Error(
@@ -445,14 +523,195 @@ export async function validateRaceImportDuplicates(prisma: PrismaClient, entries
   }
 }
 
-export async function upsertRaceEntry(prisma: PrismaClient, input: {
+async function findOrganizationByName(prisma: PrismaClient, input: {
+  nameJa: string;
+  type?: OrganizationType;
+}) {
+  const normalizedTarget = normalizeOrganizationLabel(input.nameJa);
+
+  const organizations = await prisma.organization.findMany({
+    where: {
+      ...(input.type ? { type: input.type } : {}),
+      OR: [
+        {
+          nameVariants: {
+            some: {
+              value: input.nameJa,
+            },
+          },
+        },
+        {
+          nameJa: input.nameJa,
+        },
+      ],
+    },
+    select: {
+      id: true,
+      slug: true,
+      nameJa: true,
+      type: true,
+    },
+  });
+
+  const matchedByPrimaryName = organizations.find(
+    (organization) => normalizeOrganizationLabel(organization.nameJa) === normalizedTarget,
+  );
+  if (matchedByPrimaryName) {
+    return matchedByPrimaryName;
+  }
+
+  const variants = await prisma.nameVariant.findMany({
+    where: {
+      organizationId: { not: null },
+      ...(input.type
+        ? {
+            organization: {
+              type: input.type,
+            },
+          }
+        : {}),
+    },
+    select: {
+      value: true,
+      organization: {
+        select: {
+          id: true,
+          slug: true,
+          nameJa: true,
+          type: true,
+        },
+      },
+    },
+  });
+
+  const matchedByVariant = variants.find(
+    (variant) =>
+      variant.organization &&
+      normalizeOrganizationLabel(variant.value) === normalizedTarget,
+  );
+
+  return matchedByVariant?.organization ?? null;
+}
+
+async function ensureOrganizationAlias(prisma: PrismaClient, input: {
+  organizationId: string;
+  alias: string;
+  sourceId?: string;
+  type?: NameVariantType;
+}) {
+  const normalizedAlias = normalizeOrganizationLabel(input.alias);
+  if (!normalizedAlias) {
+    return;
+  }
+
+  const existingVariants = await prisma.nameVariant.findMany({
+    where: {
+      organizationId: input.organizationId,
+    },
+    select: {
+      id: true,
+      value: true,
+    },
+  });
+
+  const hasAlias = existingVariants.some(
+    (variant) => normalizeOrganizationLabel(variant.value) === normalizedAlias,
+  );
+
+  if (hasAlias) {
+    return;
+  }
+
+  await prisma.nameVariant.create({
+    data: {
+      organizationId: input.organizationId,
+      value: input.alias,
+      type: input.type ?? "media",
+      sourceId: input.sourceId,
+    },
+  });
+}
+
+async function ensureOrganization(prisma: PrismaClient, input: {
+  slug: string | null | undefined;
+  nameJa: string | null | undefined;
+  type: OrganizationType;
+  sourceId: string;
+}) {
+  if (!input.nameJa) {
+    return null;
+  }
+
+  if (input.slug) {
+    const bySlug = await prisma.organization.findUnique({
+      where: { slug: input.slug },
+    });
+    if (bySlug) {
+      await ensureOrganizationAlias(prisma, {
+        organizationId: bySlug.id,
+        alias: input.nameJa,
+        sourceId: input.sourceId,
+      });
+      return bySlug;
+    }
+  }
+
+  const byName = await findOrganizationByName(prisma, {
+    nameJa: input.nameJa,
+    type: input.type,
+  });
+  if (byName) {
+    await ensureOrganizationAlias(prisma, {
+      organizationId: byName.id,
+      alias: input.nameJa,
+      sourceId: input.sourceId,
+    });
+    return byName;
+  }
+
+  const fallbackSlug =
+    input.slug ??
+    `${input.type === OrganizationType.high_school ? "hs" : "org"}-${slugifyFallback(input.nameJa) || Date.now().toString()}`;
+
+  return prisma.organization.create({
+    data: {
+      slug: fallbackSlug,
+      nameJa: input.nameJa,
+      type: input.type,
+      status: DataStatus.pending,
+      nameVariants: {
+        create: [
+          {
+            value: input.nameJa,
+            type: "official",
+            sourceId: input.sourceId,
+            isPrimary: true,
+          },
+        ],
+      },
+      sourceReferences: {
+        create: {
+          sourceId: input.sourceId,
+          sourceEntityType: "organization",
+          sourceEntityKey: fallbackSlug,
+          metadata: {
+            importedNameJa: input.nameJa,
+          },
+        },
+      },
+    },
+  });
+}
+
+export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
   batchId: string;
   sourceId: string;
   raceId: string;
-  pbNotes: string;
-  protectedProfileSlugs: Set<string>;
-  entry: RaceImportPayload["entries"][number];
+  teamResult: RaceImportPayload["teamResults"][number];
 }) {
+  const canonicalFinalMark = normalizeMarkToCanonical(input.teamResult.finalMark);
+  const canonicalCumulativeMark = normalizeMarkToCanonical(input.teamResult.snapshot.cumulativeMark);
+  const canonicalGapFromLeader = normalizeMarkToCanonical(input.teamResult.snapshot.gapFromLeader);
   const race = await prisma.race.findUnique({
     where: { id: input.raceId },
     include: {
@@ -464,27 +723,150 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     throw new Error(`Missing race for raceId=${input.raceId}`);
   }
 
-  const university = await prisma.organization.findUnique({
-    where: { slug: input.entry.universitySlug },
-  });
-  const highSchool = await prisma.organization.findUnique({
-    where: { slug: input.entry.highSchoolSlug },
+  const organization = await ensureOrganization(prisma, {
+    slug: input.teamResult.organizationSlug,
+    nameJa: input.teamResult.organizationNameJa,
+    type: input.teamResult.organizationType === "club" ? OrganizationType.club : OrganizationType.university,
+    sourceId: input.sourceId,
   });
 
-  if (!university || !highSchool) {
+  if (!organization) {
+    throw new Error(`Missing organization for team result ${input.teamResult.organizationNameJa}`);
+  }
+
+  const teamResult = await prisma.teamCompetitionResult.upsert({
+    where: {
+      competitionEditionId_organizationId: {
+        competitionEditionId: race.competitionEditionId,
+        organizationId: organization.id,
+      },
+    },
+    update: {
+      finalRank: input.teamResult.finalRank ?? undefined,
+      finalMark: canonicalFinalMark ?? undefined,
+      finalMarkMillis: canonicalFinalMark ? markToMilliseconds(canonicalFinalMark) : undefined,
+      notes: input.teamResult.notes ?? undefined,
+      status: DataStatus.pending,
+      sourceId: input.sourceId,
+    },
+    create: {
+      competitionEditionId: race.competitionEditionId,
+      organizationId: organization.id,
+      finalRank: input.teamResult.finalRank ?? null,
+      finalMark: canonicalFinalMark ?? null,
+      finalMarkMillis: canonicalFinalMark ? markToMilliseconds(canonicalFinalMark) : null,
+      notes: input.teamResult.notes ?? null,
+      status: DataStatus.pending,
+      sourceId: input.sourceId,
+    },
+  });
+
+  await prisma.teamCompetitionLegSnapshot.upsert({
+    where: {
+      teamCompetitionResultId_leg: {
+        teamCompetitionResultId: teamResult.id,
+        leg: input.teamResult.snapshot.leg,
+      },
+    },
+    update: {
+      cumulativeRank: input.teamResult.snapshot.cumulativeRank ?? undefined,
+      cumulativeMark: canonicalCumulativeMark ?? undefined,
+      cumulativeMarkMillis: canonicalCumulativeMark ? markToMilliseconds(canonicalCumulativeMark) : undefined,
+      gapFromLeader: canonicalGapFromLeader ?? undefined,
+      gapFromLeaderMillis: canonicalGapFromLeader ? markToMilliseconds(canonicalGapFromLeader) : undefined,
+      notes: input.teamResult.snapshot.notes ?? undefined,
+      status: DataStatus.pending,
+      sourceId: input.sourceId,
+    },
+    create: {
+      teamCompetitionResultId: teamResult.id,
+      leg: input.teamResult.snapshot.leg,
+      cumulativeRank: input.teamResult.snapshot.cumulativeRank ?? null,
+      cumulativeMark: canonicalCumulativeMark ?? null,
+      cumulativeMarkMillis: canonicalCumulativeMark ? markToMilliseconds(canonicalCumulativeMark) : null,
+      gapFromLeader: canonicalGapFromLeader ?? null,
+      gapFromLeaderMillis: canonicalGapFromLeader ? markToMilliseconds(canonicalGapFromLeader) : null,
+      notes: input.teamResult.snapshot.notes ?? null,
+      status: DataStatus.pending,
+      sourceId: input.sourceId,
+    },
+  });
+
+  await writeAuditLog(prisma, {
+    entityType: "TeamCompetitionResult",
+    entityId: teamResult.id,
+    fieldName: "finalMark",
+    oldValue: null,
+    newValue: {
+      finalRank: teamResult.finalRank,
+      finalMark: teamResult.finalMark,
+      leg: input.teamResult.snapshot.leg,
+      cumulativeRank: input.teamResult.snapshot.cumulativeRank,
+    },
+    sourceId: input.sourceId,
+    batchId: input.batchId,
+    reasonNote: `Imported team result for ${input.teamResult.organizationNameJa}`,
+  });
+}
+
+export async function upsertRaceEntry(prisma: PrismaClient, input: {
+  batchId: string;
+  sourceId: string;
+  raceId: string;
+  pbNotes: string;
+  protectedProfileSlugs: Set<string>;
+  entry: RaceImportPayload["entries"][number];
+}) {
+  const canonicalMark = normalizeMarkToCanonical(input.entry.mark) ?? input.entry.mark;
+  const race = await prisma.race.findUnique({
+    where: { id: input.raceId },
+    include: {
+      competitionEdition: true,
+    },
+  });
+
+  if (!race) {
+    throw new Error(`Missing race for raceId=${input.raceId}`);
+  }
+
+  const raceOrganization = await ensureOrganization(prisma, {
+    slug: input.entry.raceOrganizationSlug,
+    nameJa: input.entry.raceOrganizationNameJa,
+    type: input.entry.raceOrganizationType === "club" ? OrganizationType.club : OrganizationType.university,
+    sourceId: input.sourceId,
+  });
+  const university = await ensureOrganization(prisma, {
+    slug: input.entry.universitySlug,
+    nameJa: input.entry.universityNameJa ?? (input.entry.raceOrganizationType === "university" ? input.entry.raceOrganizationNameJa : null),
+    type: OrganizationType.university,
+    sourceId: input.sourceId,
+  });
+  const highSchool = await ensureOrganization(prisma, {
+    slug: input.entry.highSchoolSlug,
+    nameJa: input.entry.highSchoolNameJa,
+    type: OrganizationType.high_school,
+    sourceId: input.sourceId,
+  });
+
+  if (!raceOrganization) {
     throw new Error(`Missing organization for ${input.entry.displayNameJa}`);
   }
 
-  const isCompetitionOnlyTeam = input.entry.universitySlug === "kanto-student-union";
+  const isCompetitionOnlyTeam = input.entry.raceOrganizationSlug === "kanto-student-union";
   const normalizedDisplayNameJa = normalizeDisplayNameJa(input.entry.displayNameJa);
 
   const person = await prisma.person.upsert({
     where: { slug: input.entry.slug },
-    update: {},
+    update: {
+      displayNameJa: normalizedDisplayNameJa,
+      ...(input.entry.displayNameKana ? { displayNameKana: input.entry.displayNameKana } : {}),
+      ...(input.entry.displayNameRoman ? { displayNameRoman: input.entry.displayNameRoman } : {}),
+    },
     create: {
       slug: input.entry.slug,
       displayNameJa: normalizedDisplayNameJa,
-      displayNameRoman: input.entry.displayNameRoman,
+      displayNameKana: input.entry.displayNameKana ?? null,
+      displayNameRoman: input.entry.displayNameRoman ?? null,
       type: "athlete",
       status: DataStatus.pending,
     },
@@ -494,9 +876,15 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     race.startsAt ??
     race.competitionEdition.startsOn ??
     new Date(`${race.competitionEdition.year}-01-01T00:00:00.000Z`);
-  const dates = academicDatesForGrade(input.entry.grade, referenceDate);
+  const dates = input.entry.grade ? academicDatesForGrade(input.entry.grade, referenceDate) : null;
 
-  if (!input.protectedProfileSlugs.has(input.entry.slug) && !isCompetitionOnlyTeam) {
+  if (
+    dates &&
+    !input.protectedProfileSlugs.has(input.entry.slug) &&
+    !isCompetitionOnlyTeam &&
+    university &&
+    highSchool
+  ) {
     await ensureMembership(prisma, {
       personId: person.id,
       organizationId: university.id,
@@ -517,7 +905,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
       endYear: dates.highSchoolEnd.getFullYear(),
       sourceId: input.sourceId,
     });
-  } else if (isCompetitionOnlyTeam) {
+  } else if (dates && highSchool) {
     const existingMemberships = await prisma.membership.findMany({
       where: { personId: person.id },
       include: {
@@ -527,13 +915,14 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
 
     const hasHighSchoolMembership = existingMemberships.some(
       (membership) =>
+        highSchool !== null &&
         membership.organizationId === highSchool.id &&
         membership.type === MembershipType.enrolled,
     );
 
-    // 関東学生連合 is a temporary race-day representation, not a core timeline organization.
-    // Keep the athlete's existing main memberships untouched and only backfill high school if missing.
-    if (!hasHighSchoolMembership) {
+    // Temporary race-day teams may not reveal the athlete's home university on the source page.
+    // In that case only backfill the confirmed high school membership.
+    if (!hasHighSchoolMembership && highSchool) {
       await ensureMembership(prisma, {
         personId: person.id,
         organizationId: highSchool.id,
@@ -576,13 +965,15 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
   const raceResult = await prisma.raceResult.create({
     data: {
       personId: person.id,
-      organizationId: university.id,
+      organizationId: raceOrganization.id,
       raceId: input.raceId,
       isEntry: true,
       isStarter: true,
-      mark: input.entry.mark,
+      mark: canonicalMark,
+      markMillis: markToMilliseconds(canonicalMark),
       rank: input.entry.rank,
-      gradeAtRace: input.entry.grade,
+      teamRank: input.entry.teamRank ?? null,
+      gradeAtRace: input.entry.grade ?? null,
       status: DataStatus.pending,
       notes: input.entry.notes,
       sourceId: input.sourceId,
@@ -599,10 +990,11 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     },
     update: {
       personId: person.id,
-      sourceUrl: input.entry.sourceUrl ?? null,
+        sourceUrl: input.entry.sourceUrl ?? null,
       metadata: {
         displayNameJa: input.entry.displayNameJa,
-        displayNameRoman: input.entry.displayNameRoman,
+        displayNameKana: input.entry.displayNameKana ?? null,
+        displayNameRoman: input.entry.displayNameRoman ?? null,
       },
     },
     create: {
@@ -613,7 +1005,8 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
       personId: person.id,
       metadata: {
         displayNameJa: input.entry.displayNameJa,
-        displayNameRoman: input.entry.displayNameRoman,
+        displayNameKana: input.entry.displayNameKana ?? null,
+        displayNameRoman: input.entry.displayNameRoman ?? null,
       },
     },
   });

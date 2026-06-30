@@ -1,0 +1,952 @@
+{
+  "batchKey": "izumo-36-leg-1-20260630",
+  "sourceId": "source-izumo-ekiden-36-official-record",
+  "raceSlug": "izumo-ekiden-36-leg-1",
+  "summary": "第36回出雲駅伝 1区 官方結果導入",
+  "pbNotes": "第36回出雲駅伝 選手紹介ページの自己最高記録摘要。正式 PB の大会別確認は後続タスクで再確認。",
+  "entries": [
+    {
+      "slug": "tsurukawa-masaya",
+      "displayNameJa": "鶴川 正也",
+      "displayNameKana": "ツルカワ マサヤ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "aoyama-gakuin-university",
+      "raceOrganizationNameJa": "青山学院大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "aoyama-gakuin-university",
+      "universityNameJa": "青山学院大学",
+      "highSchoolSlug": "hs-e4b99de5b79ee5ada6e999a2",
+      "highSchoolNameJa": "九州学院",
+      "grade": 4,
+      "mark": "23:40",
+      "rank": 1,
+      "teamRank": 1,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:30.48"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:18.51"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-3-leg-1-tsurukawa-masaya",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/03.html"
+    },
+    {
+      "slug": "person-kieran-tuntivate",
+      "displayNameJa": "キーラン トゥンティベイト",
+      "displayNameKana": "キーラン トゥンティベイト",
+      "displayNameRoman": "Kieran Tuntivate",
+      "raceOrganizationSlug": "org-e382a2e382a4e38393e383bc",
+      "raceOrganizationNameJa": "アイビーリーグ選抜",
+      "raceOrganizationType": "club",
+      "universitySlug": null,
+      "universityNameJa": null,
+      "highSchoolSlug": null,
+      "highSchoolNameJa": null,
+      "grade": null,
+      "mark": "23:48",
+      "rank": 2,
+      "teamRank": 2,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:17.14"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:08.41"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-21-leg-1-person-kieran-tuntivate",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/21.html"
+    },
+    {
+      "slug": "rui-aoki",
+      "displayNameJa": "青木 瑠郁",
+      "displayNameKana": "アオキ ルイ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "kokugakuin-university",
+      "raceOrganizationNameJa": "國學院大學",
+      "raceOrganizationType": "university",
+      "universitySlug": "kokugakuin-university",
+      "universityNameJa": "國學院大學",
+      "highSchoolSlug": "hs-e581a5e5a4a7e9ab98e5b48e",
+      "highSchoolNameJa": "健大高崎",
+      "grade": 3,
+      "mark": "23:48",
+      "rank": 3,
+      "teamRank": 3,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:02.00"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:48.61"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-7-leg-1-rui-aoki",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/07.html"
+    },
+    {
+      "slug": "yamanaka-hiroki",
+      "displayNameJa": "山中 博生",
+      "displayNameKana": "ヤマナカ ヒロキ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "teikyo-university",
+      "raceOrganizationNameJa": "帝京大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "teikyo-university",
+      "universityNameJa": "帝京大学",
+      "highSchoolSlug": "hs-e88d89e6b4a5e69db1",
+      "highSchoolNameJa": "草津東",
+      "grade": 4,
+      "mark": "23:53",
+      "rank": 4,
+      "teamRank": 4,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:04.54"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:25.26"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-11-leg-1-yamanaka-hiroki",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/11.html"
+    },
+    {
+      "slug": "kihiro-irihama",
+      "displayNameJa": "入濵 輝大",
+      "displayNameKana": "イリハマ キヒロ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "daito-bunka-university",
+      "raceOrganizationNameJa": "大東文化大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "daito-bunka-university",
+      "universityNameJa": "大東文化大学",
+      "highSchoolSlug": "hs-e7938ae6b5a6",
+      "highSchoolNameJa": "瓊浦",
+      "grade": 3,
+      "mark": "23:54",
+      "rank": 5,
+      "teamRank": 5,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:13.80"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:55.22"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-12-leg-1-kihiro-irihama",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/12.html"
+    },
+    {
+      "slug": "shunsuke-kuwata",
+      "displayNameJa": "桑田 駿介",
+      "displayNameKana": "クワタ シュンスケ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "komazawa-university",
+      "raceOrganizationNameJa": "駒澤大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "komazawa-university",
+      "universityNameJa": "駒澤大学",
+      "highSchoolSlug": "hs-e58089e695b7",
+      "highSchoolNameJa": "倉敷",
+      "grade": 1,
+      "mark": "23:55",
+      "rank": 6,
+      "teamRank": 6,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:59.87"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:46.75"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-4-leg-1-shunsuke-kuwata",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/04.html"
+    },
+    {
+      "slug": "ogata-renato",
+      "displayNameJa": "緒方 澪那斗",
+      "displayNameKana": "オガタ レナト",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "toyo-university",
+      "raceOrganizationNameJa": "東洋大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "toyo-university",
+      "universityNameJa": "東洋大学",
+      "highSchoolSlug": "hs-e5b882e7ab8be888b9e6a98b",
+      "highSchoolNameJa": "市立船橋",
+      "grade": 3,
+      "mark": "23:56",
+      "rank": 7,
+      "teamRank": 7,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:36.67"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:54.45"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-6-leg-1-ogata-renato",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/06.html"
+    },
+    {
+      "slug": "person-e4b8ade69d9120e58589e7a8",
+      "displayNameJa": "中村 光稀",
+      "displayNameKana": "ナカムラ コウキ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e4baace983bde794a3e6a5ad",
+      "raceOrganizationNameJa": "京都産業大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "org-e4baace983bde794a3e6a5ad",
+      "universityNameJa": "京都産業大学",
+      "highSchoolSlug": "hs-e5928ce6ad8ce5b1b1e58c97",
+      "highSchoolNameJa": "和歌山北",
+      "grade": 4,
+      "mark": "24:02",
+      "rank": 8,
+      "teamRank": 8,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:55.22"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:51.50"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-15-leg-1-person-e4b8ade69d9120e58589e7a8",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/15.html"
+    },
+    {
+      "slug": "fumiya-oshima",
+      "displayNameJa": "大島 史也",
+      "displayNameKana": "オオシマ フミヤ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "hosei-university",
+      "raceOrganizationNameJa": "法政大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "hosei-university",
+      "universityNameJa": "法政大学",
+      "highSchoolSlug": "hs-e5b082e5a4a7e69dbee688b8",
+      "highSchoolNameJa": "専大松戸",
+      "grade": 3,
+      "mark": "24:03",
+      "rank": 9,
+      "teamRank": 9,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:53.14"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:50.04"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-8-leg-1-fumiya-oshima",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/08.html"
+    },
+    {
+      "slug": "junna-ishimaru",
+      "displayNameJa": "石丸 惇那",
+      "displayNameKana": "イシマル ジュンナ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "soka-university",
+      "raceOrganizationNameJa": "創価大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "soka-university",
+      "universityNameJa": "創価大学",
+      "highSchoolSlug": "hs-e587bae6b0b4e4b8ade5a4ae",
+      "highSchoolNameJa": "出水中央",
+      "grade": 3,
+      "mark": "24:06",
+      "rank": 10,
+      "teamRank": 10,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:27.87"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:45.04"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-10-leg-1-junna-ishimaru",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/10.html"
+    },
+    {
+      "slug": "saito-shoya",
+      "displayNameJa": "斎藤 将也",
+      "displayNameKana": "サイトウ ショウヤ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "josai-university",
+      "raceOrganizationNameJa": "城西大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "josai-university",
+      "universityNameJa": "城西大学",
+      "highSchoolSlug": "hs-e695a6e8b380e6b097e6af94",
+      "highSchoolNameJa": "敦賀気比",
+      "grade": 3,
+      "mark": "24:06",
+      "rank": 11,
+      "teamRank": 11,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "27:59.68"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:33.39"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-5-leg-1-saito-shoya",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/05.html"
+    },
+    {
+      "slug": "yamaguchi-tomonori",
+      "displayNameJa": "山口 智規",
+      "displayNameKana": "ヤマグチ トモノリ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "waseda-university",
+      "raceOrganizationNameJa": "早稲田大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "waseda-university",
+      "universityNameJa": "早稲田大学",
+      "highSchoolSlug": "hs-e5ada6e6b395e79fb3e5b79d",
+      "highSchoolNameJa": "学法石川",
+      "grade": 3,
+      "mark": "24:09",
+      "rank": 12,
+      "teamRank": 12,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "28:17.87"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:30.19"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-9-leg-1-yamaguchi-tomonori",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/09.html"
+    },
+    {
+      "slug": "person-e6b2b3efa89120e686b2e7a5",
+      "displayNameJa": "河﨑 憲祐",
+      "displayNameKana": "カワサキ ケンスケ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e5908de58fa4e5b18be5a4a7",
+      "raceOrganizationNameJa": "名古屋大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "org-e5908de58fa4e5b18be5a4a7",
+      "universityNameJa": "名古屋大学",
+      "highSchoolSlug": "hs-e5a4a7e6b4a5e7b791e6b48b",
+      "highSchoolNameJa": "大津緑洋",
+      "grade": null,
+      "mark": "24:14",
+      "rank": 13,
+      "teamRank": 13,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:46.99"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:20.17"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-14-leg-1-person-e6b2b3efa89120e686b2e7a5",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/14.html"
+    },
+    {
+      "slug": "person-e5a4a7e6a3ae20e58b87e8bc",
+      "displayNameJa": "大森 勇輝",
+      "displayNameKana": "オオモリ ユウキ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e5ba83e5b3b6e5a4a7e5ada6",
+      "raceOrganizationNameJa": "広島大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "org-e5ba83e5b3b6e5a4a7e5ada6",
+      "universityNameJa": "広島大学",
+      "highSchoolSlug": "hs-e585b5e5baabe79c8ce7ab8b",
+      "highSchoolNameJa": "兵庫県立大附属",
+      "grade": null,
+      "mark": "24:25",
+      "rank": 14,
+      "teamRank": 14,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "32:03.35"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:12.53"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-19-leg-1-person-e5a4a7e6a3ae20e58b87e8bc",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/19.html"
+    },
+    {
+      "slug": "person-e8b0b7e69d9120e68192e699",
+      "displayNameJa": "谷村 恒晟",
+      "displayNameKana": "タニムラ コウセイ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e996a2e8a5bfe5a4a7e5ada6",
+      "raceOrganizationNameJa": "関西大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "org-e996a2e8a5bfe5a4a7e5ada6",
+      "universityNameJa": "関西大学",
+      "highSchoolSlug": "hs-e6849be79fa5",
+      "highSchoolNameJa": "愛知",
+      "grade": 3,
+      "mark": "24:26",
+      "rank": 15,
+      "teamRank": 15,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:24.55"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "13:56.12"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-16-leg-1-person-e8b0b7e69d9120e68192e699",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/16.html"
+    },
+    {
+      "slug": "person-e8a5bfe5a19a20e79283e7b4",
+      "displayNameJa": "西塚 璃純",
+      "displayNameKana": "ニシヅカ リジュン",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e58c97e6b5b7e98193e5ada6",
+      "raceOrganizationNameJa": "北海道学連選抜",
+      "raceOrganizationType": "club",
+      "universitySlug": null,
+      "universityNameJa": null,
+      "highSchoolSlug": "hs-e585abe688b8e5ada6e999a2",
+      "highSchoolNameJa": "八戸学院光星",
+      "grade": 3,
+      "mark": "24:31",
+      "rank": 16,
+      "teamRank": 16,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m5000",
+          "mark": "14:18.73"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-1-leg-1-person-e8a5bfe5a19a20e79283e7b4",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/01.html"
+    },
+    {
+      "slug": "person-e4b8ade688b820e58583e8b2",
+      "displayNameJa": "中戸 元貴",
+      "displayNameKana": "ナカト ゲンキ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e58c97e4bfa1e8b68ae5ada6",
+      "raceOrganizationNameJa": "北信越学連選抜",
+      "raceOrganizationType": "club",
+      "universitySlug": null,
+      "universityNameJa": null,
+      "highSchoolSlug": "hs-e9bb92e6b2a2e5b0bbe58c97",
+      "highSchoolNameJa": "黒沢尻北",
+      "grade": 3,
+      "mark": "24:32",
+      "rank": 17,
+      "teamRank": 17,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:08.73"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:32.78"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-13-leg-1-person-e4b8ade688b820e58583e8b2",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/13.html"
+    },
+    {
+      "slug": "person-e79fb3e98d8b20e9a2afe4b8",
+      "displayNameJa": "石鍋 颯一",
+      "displayNameKana": "イシナベ ソウイチ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e5b2a1e5b1b1e5a4a7e5ada6",
+      "raceOrganizationNameJa": "岡山大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "org-e5b2a1e5b1b1e5a4a7e5ada6",
+      "universityNameJa": "岡山大学",
+      "highSchoolSlug": "hs-e98e8ce58089e5ada6e59c92",
+      "highSchoolNameJa": "鎌倉学園",
+      "grade": 4,
+      "mark": "24:47",
+      "rank": 18,
+      "teamRank": 18,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:36.91"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:08.79"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-18-leg-1-person-e79fb3e98d8b20e9a2afe4b8",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/18.html"
+    },
+    {
+      "slug": "person-e69db120e7a780e5a4aa",
+      "displayNameJa": "東 秀太",
+      "displayNameKana": "アヅマ シュウタ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e5ba83e5b3b6e7b58ce6b888",
+      "raceOrganizationNameJa": "広島経済大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "org-e5ba83e5b3b6e7b58ce6b888",
+      "universityNameJa": "広島経済大学",
+      "highSchoolSlug": "hs-e4b889e794b0e69dbee88196",
+      "highSchoolNameJa": "三田松聖",
+      "grade": 3,
+      "mark": "25:02",
+      "rank": 19,
+      "teamRank": 19,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:17.63"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:16.20"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-17-leg-1-person-e69db120e7a780e5a4aa",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/17.html"
+    },
+    {
+      "slug": "person-e5a4a7e59c9220e580abe5a4",
+      "displayNameJa": "大園 倫太郎",
+      "displayNameKana": "オオゾノ リンタロウ",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e9b9bfe5b18be4bd93e882b2",
+      "raceOrganizationNameJa": "鹿屋体育大学",
+      "raceOrganizationType": "university",
+      "universitySlug": "org-e9b9bfe5b18be4bd93e882b2",
+      "universityNameJa": "鹿屋体育大学",
+      "highSchoolSlug": "hs-e9b9bfe58590e5b3b6e4b8ad",
+      "highSchoolNameJa": "鹿児島中央",
+      "grade": 4,
+      "mark": "25:08",
+      "rank": 20,
+      "teamRank": 20,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "30:02.75"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:09.23"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-20-leg-1-person-e5a4a7e59c9220e580abe5a4",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/20.html"
+    },
+    {
+      "slug": "person-e59089e794b020e5a58fe696",
+      "displayNameJa": "吉田 奏斗",
+      "displayNameKana": "ヨシダ カナト",
+      "displayNameRoman": null,
+      "raceOrganizationSlug": "org-e69db1e58c97e5ada6e980a3",
+      "raceOrganizationNameJa": "東北学連選抜",
+      "raceOrganizationType": "club",
+      "universitySlug": null,
+      "universityNameJa": null,
+      "highSchoolSlug": "hs-e69db1e58c97",
+      "highSchoolNameJa": "東北",
+      "grade": 2,
+      "mark": "26:23",
+      "rank": 21,
+      "teamRank": 21,
+      "notes": null,
+      "pbs": [
+        {
+          "discipline": "m10000",
+          "mark": "29:48.91"
+        },
+        {
+          "discipline": "m5000",
+          "mark": "14:23.14"
+        }
+      ],
+      "sourceEntityKey": "izumo-36-team-2-leg-1-person-e59089e794b020e5a58fe696",
+      "sourceUrl": "https://www.izumo-ekiden.jp/36/runner/order/02.html"
+    }
+  ],
+  "teamResults": [
+    {
+      "organizationSlug": "aoyama-gakuin-university",
+      "organizationNameJa": "青山学院大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 1,
+        "cumulativeMark": "23:40",
+        "gapFromLeader": null,
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e382a2e382a4e38393e383bc",
+      "organizationNameJa": "アイビーリーグ選抜",
+      "organizationType": "club",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 2,
+        "cumulativeMark": "23:48",
+        "gapFromLeader": "0:08",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "kokugakuin-university",
+      "organizationNameJa": "國學院大學",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 3,
+        "cumulativeMark": "23:48",
+        "gapFromLeader": "0:08",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "teikyo-university",
+      "organizationNameJa": "帝京大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 4,
+        "cumulativeMark": "23:53",
+        "gapFromLeader": "0:13",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "daito-bunka-university",
+      "organizationNameJa": "大東文化大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 5,
+        "cumulativeMark": "23:54",
+        "gapFromLeader": "0:14",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "komazawa-university",
+      "organizationNameJa": "駒澤大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 6,
+        "cumulativeMark": "23:55",
+        "gapFromLeader": "0:15",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "toyo-university",
+      "organizationNameJa": "東洋大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 7,
+        "cumulativeMark": "23:56",
+        "gapFromLeader": "0:16",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e4baace983bde794a3e6a5ad",
+      "organizationNameJa": "京都産業大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 8,
+        "cumulativeMark": "24:02",
+        "gapFromLeader": "0:22",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "hosei-university",
+      "organizationNameJa": "法政大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 9,
+        "cumulativeMark": "24:03",
+        "gapFromLeader": "0:23",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "soka-university",
+      "organizationNameJa": "創価大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 10,
+        "cumulativeMark": "24:06",
+        "gapFromLeader": "0:26",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "josai-university",
+      "organizationNameJa": "城西大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 11,
+        "cumulativeMark": "24:06",
+        "gapFromLeader": "0:26",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "waseda-university",
+      "organizationNameJa": "早稲田大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 12,
+        "cumulativeMark": "24:09",
+        "gapFromLeader": "0:29",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e5908de58fa4e5b18be5a4a7",
+      "organizationNameJa": "名古屋大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 13,
+        "cumulativeMark": "24:14",
+        "gapFromLeader": "0:34",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e5ba83e5b3b6e5a4a7e5ada6",
+      "organizationNameJa": "広島大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 14,
+        "cumulativeMark": "24:25",
+        "gapFromLeader": "0:45",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e996a2e8a5bfe5a4a7e5ada6",
+      "organizationNameJa": "関西大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 15,
+        "cumulativeMark": "24:26",
+        "gapFromLeader": "0:46",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e58c97e6b5b7e98193e5ada6",
+      "organizationNameJa": "北海道学連選抜",
+      "organizationType": "club",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 16,
+        "cumulativeMark": "24:31",
+        "gapFromLeader": "0:51",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e58c97e4bfa1e8b68ae5ada6",
+      "organizationNameJa": "北信越学連選抜",
+      "organizationType": "club",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 17,
+        "cumulativeMark": "24:32",
+        "gapFromLeader": "0:52",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e5b2a1e5b1b1e5a4a7e5ada6",
+      "organizationNameJa": "岡山大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 18,
+        "cumulativeMark": "24:47",
+        "gapFromLeader": "1:07",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e5ba83e5b3b6e7b58ce6b888",
+      "organizationNameJa": "広島経済大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 19,
+        "cumulativeMark": "25:02",
+        "gapFromLeader": "1:22",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e9b9bfe5b18be4bd93e882b2",
+      "organizationNameJa": "鹿屋体育大学",
+      "organizationType": "university",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 20,
+        "cumulativeMark": "25:08",
+        "gapFromLeader": "1:28",
+        "notes": null
+      }
+    },
+    {
+      "organizationSlug": "org-e69db1e58c97e5ada6e980a3",
+      "organizationNameJa": "東北学連選抜",
+      "organizationType": "club",
+      "finalRank": null,
+      "finalMark": null,
+      "notes": null,
+      "snapshot": {
+        "leg": 1,
+        "cumulativeRank": 21,
+        "cumulativeMark": "26:23",
+        "gapFromLeader": "2:43",
+        "notes": null
+      }
+    }
+  ]
+}
