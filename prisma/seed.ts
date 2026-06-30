@@ -50,7 +50,6 @@ type SeedPlayer = {
   birthDate: Date | null;
   hometown: string | null;
   nationality: string | null;
-  registeredPrefecture: string | null;
   university: Organization;
   highSchool: Organization;
   currentTeam: Organization | null;
@@ -309,7 +308,6 @@ async function upsertSeedPerson(input: {
   birthDate?: Date | null;
   hometown?: string | null;
   nationality?: string | null;
-  registeredPrefecture?: string | null;
   status?: DataStatus;
 }) {
   const existing = await prisma.person.findUnique({
@@ -326,7 +324,6 @@ async function upsertSeedPerson(input: {
         birthDate: input.birthDate ?? null,
         hometown: input.hometown ?? null,
         nationality: input.nationality ?? null,
-        registeredPrefecture: input.registeredPrefecture ?? null,
         type: "athlete",
         status: input.status ?? DataStatus.pending,
       },
@@ -339,7 +336,6 @@ async function upsertSeedPerson(input: {
   if (!existing.birthDate && input.birthDate) patch.birthDate = input.birthDate;
   if (!existing.hometown && input.hometown) patch.hometown = input.hometown;
   if (!existing.nationality && input.nationality) patch.nationality = input.nationality;
-  if (!existing.registeredPrefecture && input.registeredPrefecture) patch.registeredPrefecture = input.registeredPrefecture;
 
   if (Object.keys(patch).length === 0) {
     return existing;
@@ -1661,7 +1657,6 @@ async function main() {
       birthDate: new Date("2004-03-10"),
       hometown: "岡山県",
       nationality: "JPN",
-      registeredPrefecture: "岡山",
       university: aogaku,
       highSchool: tamano,
       currentTeam: gmo,
@@ -1790,7 +1785,6 @@ async function main() {
       birthDate: null,
       hometown: null,
       nationality: null,
-      registeredPrefecture: null,
       university: kokugakuin,
       highSchool: mikata,
       currentTeam: null,
@@ -1818,7 +1812,6 @@ async function main() {
       birthDate: new Date("2004-11-10"),
       hometown: "千葉県",
       nationality: null,
-      registeredPrefecture: null,
       university: waseda,
       highSchool: yachiyoShoin,
       currentTeam: null,
@@ -1987,7 +1980,6 @@ async function main() {
       birthDate: null,
       hometown: null,
       nationality: null,
-      registeredPrefecture: null,
       university: chuo,
       highSchool: sendaiIkuei,
       currentTeam: null,
@@ -2116,7 +2108,6 @@ async function main() {
       birthDate: player.birthDate,
       hometown: player.hometown,
       nationality: player.nationality,
-      registeredPrefecture: player.registeredPrefecture,
       status: player.profileStatus ?? DataStatus.pending,
     });
 

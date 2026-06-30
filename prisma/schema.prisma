@@ -144,8 +144,6 @@ model Person {
   hometown             String?
   /// 国籍
   nationality          String?
-  /// 登録陸協 / 注册都道府县
-  registeredPrefecture String?
   /// 身高，单位 cm
   heightCm             Int?
   /// 体重，单位 kg
