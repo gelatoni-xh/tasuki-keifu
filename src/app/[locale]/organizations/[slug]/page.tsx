@@ -16,7 +16,8 @@ type OrganizationDetailPageProps = {
 };
 
 export async function generateMetadata({ params }: OrganizationDetailPageProps): Promise<Metadata> {
-  const { locale: localeParam, slug } = await params;
+  const { locale: localeParam, slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
 
   if (!isLocale(localeParam)) {
     return {};
@@ -65,7 +66,8 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
 }
 
 export default async function OrganizationDetailPage({ params }: OrganizationDetailPageProps) {
-  const { locale: localeParam, slug } = await params;
+  const { locale: localeParam, slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
 
   if (!isLocale(localeParam)) {
     notFound();
