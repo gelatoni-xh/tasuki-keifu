@@ -1,14 +1,41 @@
+import type { Metadata } from "next";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { getDictionary, isLocale } from "@/lib/i18n";
+import { buildLocaleAlternates } from "@/lib/site";
 
 type HomePageProps = {
   params: Promise<{
     locale: string;
   }>;
 };
+
+export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
+  const { locale: localeParam } = await params;
+
+  if (!isLocale(localeParam)) {
+    return {};
+  }
+
+  const title = "駅伝選手・学校・大会データベース";
+  const description = "駅伝選手、所属、出身校、PB、大会成績を調べられる駅伝データベースです。";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${localeParam}`,
+      languages: buildLocaleAlternates(),
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/${localeParam}`,
+    },
+  };
+}
 
 export default async function HomePage({ params }: HomePageProps) {
   const { locale: localeParam } = await params;
@@ -79,6 +106,8 @@ export default async function HomePage({ params }: HomePageProps) {
             <form
               className="flex max-w-2xl items-center gap-3 border border-[#cfc7b8] bg-white px-4 py-3 shadow-sm"
               action={`/${locale}/players`}
+              data-analytics-event="home_search_submit"
+              data-analytics-form="home_search"
             >
               <Search className="h-5 w-5 text-[#8a1f2d]" aria-hidden="true" />
               <input
@@ -107,6 +136,8 @@ export default async function HomePage({ params }: HomePageProps) {
               <Link
                 className="inline-flex items-center gap-2 border border-[#ded8cc] bg-white px-4 py-2 text-sm font-medium text-[#8a1f2d]"
                 href={`/${locale}/players/asahi-kuroda`}
+                data-analytics-event="player_profile_view"
+                data-analytics-link-type="featured_player"
               >
                 黒田 朝日
               </Link>
@@ -123,6 +154,12 @@ export default async function HomePage({ params }: HomePageProps) {
                       className="grid gap-2 py-4 text-sm transition hover:bg-white sm:grid-cols-[1fr_1fr_auto]"
                       href={entry.href}
                       key={entry.title}
+                      data-analytics-event={
+                        entry.scope === dictionary.home.confirmedEntryType.player
+                          ? "player_profile_view"
+                          : "player_to_competition_click"
+                      }
+                      data-analytics-link-type="home_confirmed_entry"
                     >
                       <span className="flex items-center gap-2 font-semibold">
                         <span>{entry.title}</span>

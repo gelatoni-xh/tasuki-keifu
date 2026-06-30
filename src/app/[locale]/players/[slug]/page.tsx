@@ -94,6 +94,8 @@ function SourceLink({ source }: { source: Pick<Source, "name" | "url"> }) {
   return (
     <a
       className="inline-flex items-center gap-1 text-[#8a1f2d] underline-offset-4 hover:underline"
+      data-analytics-event="source_outbound_click"
+      data-analytics-link-type="source_reference"
       href={source.url}
       rel="noreferrer"
       target="_blank"
@@ -469,6 +471,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                         <span className="text-[#59615c]">{raceDate || dictionary.common.emptyDash}</span>
                         <Link
                           className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                          data-analytics-event="player_to_competition_click"
+                          data-analytics-link-type="player_race_record"
                           href={`/${locale}/competitions/${edition.slug}`}
                         >
                           {edition.shortName ?? edition.officialName}
@@ -507,6 +511,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                         <h3 className="mt-1 font-semibold">
                           <Link
                             className="text-[#8a1f2d] underline-offset-4 hover:underline"
+                            data-analytics-event="player_to_competition_click"
+                            data-analytics-link-type="player_race_record_mobile"
                             href={`/${locale}/competitions/${edition.slug}`}
                           >
                             {edition.shortName ?? edition.officialName}
@@ -565,6 +571,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 relatedPlayersWithTags.map((related) => (
                   <Link
                     className="border border-[#e7e1d8] p-3 transition hover:border-[#8a1f2d]"
+                    data-analytics-event="player_to_related_player_click"
+                    data-analytics-link-type="related_player"
                     href={`/${locale}/players/${related.slug}`}
                     key={related.id}
                   >
@@ -594,6 +602,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 source.url ? (
                   <a
                     className="flex items-center gap-2 underline-offset-4 hover:text-[#8a1f2d] hover:underline"
+                    data-analytics-event="source_outbound_click"
+                    data-analytics-link-type="source_directory"
                     href={source.url}
                     key={source.id}
                     rel="noreferrer"

@@ -153,6 +153,8 @@ export default async function CompetitionEditionPage({ params }: CompetitionEdit
                   {race.source?.url ? (
                     <a
                       className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                      data-analytics-event="source_outbound_click"
+                      data-analytics-link-type="competition_source"
                       href={race.source.url}
                       rel="noreferrer"
                       target="_blank"
@@ -184,6 +186,8 @@ export default async function CompetitionEditionPage({ params }: CompetitionEdit
                             </span>
                             <Link
                               className="font-semibold text-[#8a1f2d] underline-offset-4 hover:underline"
+                              data-analytics-event="player_profile_view"
+                              data-analytics-link-type="competition_result_player"
                               href={`/${locale}/players/${result.person.slug}`}
                             >
                               {result.person.displayNameJa}
@@ -191,6 +195,8 @@ export default async function CompetitionEditionPage({ params }: CompetitionEdit
                             {result.organization ? (
                               <Link
                                 className="text-[#59615c] underline-offset-4 hover:text-[#8a1f2d] hover:underline"
+                                data-analytics-event="player_to_organization_click"
+                                data-analytics-link-type="competition_result_organization"
                                 href={`/${locale}/organizations/${result.organization.slug}`}
                               >
                                 {result.organization.nameJa}

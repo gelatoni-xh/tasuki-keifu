@@ -131,6 +131,8 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
               {organization.websiteUrl ? (
                 <a
                   className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                  data-analytics-event="source_outbound_click"
+                  data-analytics-link-type="organization_website"
                   href={organization.websiteUrl}
                   rel="noreferrer"
                   target="_blank"
@@ -150,6 +152,8 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                   {currentMemberships.map((membership) => (
                     <Link
                       className="grid gap-2 py-3 text-sm transition hover:text-[#8a1f2d] sm:grid-cols-[1fr_auto]"
+                      data-analytics-event="player_profile_view"
+                      data-analytics-link-type="organization_current_player"
                       href={`/${locale}/players/${membership.person.slug}`}
                       key={membership.id}
                     >
@@ -172,6 +176,8 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                   {formerMemberships.map((membership) => (
                     <Link
                       className="grid gap-2 py-3 text-sm transition hover:text-[#8a1f2d] sm:grid-cols-[1fr_auto]"
+                      data-analytics-event="player_profile_view"
+                      data-analytics-link-type="organization_former_player"
                       href={`/${locale}/players/${membership.person.slug}`}
                       key={membership.id}
                     >

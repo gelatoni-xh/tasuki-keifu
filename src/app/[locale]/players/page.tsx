@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { DataStatus, OrganizationType, Prisma } from "@prisma/client";
@@ -7,6 +8,7 @@ import { CascadingOrganizationFilters } from "@/components/cascading-organizatio
 import { prisma } from "@/lib/prisma";
 import { formatDiscipline, formatOrganizationType, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
+import { buildLocaleAlternates } from "@/lib/site";
 import {
   getCurrentMembership,
   getHighSchoolMembership,
@@ -25,6 +27,31 @@ type PlayersPageProps = {
     page?: string;
   }>;
 };
+
+export async function generateMetadata({ params }: Pick<PlayersPageProps, "params">): Promise<Metadata> {
+  const { locale: localeParam } = await params;
+
+  if (!isLocale(localeParam)) {
+    return {};
+  }
+
+  const title = "駅伝選手一覧・所属・PB検索";
+  const description = "駅伝選手を名前、学校、所属、状態から検索できる一覧ページです。所属、出身校、PBの確認入口として使えます。";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${localeParam}/players`,
+      languages: buildLocaleAlternates("/players"),
+    },
+    openGraph: {
+      title,
+      description,
+      url: `/${localeParam}/players`,
+    },
+  };
+}
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const pageSize = 10;
@@ -215,7 +242,12 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             </div>
           </header>
 
-          <form className="border border-[#ded8cc] bg-white p-4" action={`/${locale}/players`}>
+          <form
+            className="border border-[#ded8cc] bg-white p-4"
+            action={`/${locale}/players`}
+            data-analytics-event={hasActiveFilters ? "players_filter_apply" : "players_search_submit"}
+            data-analytics-form="players_search"
+          >
             <div className="grid gap-3 lg:grid-cols-[1.35fr_0.8fr_0.95fr_0.75fr_auto_auto]">
               <label className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
                 <Search className="h-4 w-4 shrink-0 text-[#8a1f2d]" aria-hidden="true" />
@@ -301,6 +333,8 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                       className="grid gap-3 px-4 py-4 transition hover:bg-[#fbfaf7] md:grid-cols-[1.1fr_1fr_1fr_1.2fr_0.7fr]"
                       href={`/${locale}/players/${player.slug}`}
                       key={player.id}
+                      data-analytics-event="player_profile_view"
+                      data-analytics-link-type="players_list"
                     >
                       <span>
                         <strong className="block font-semibold">{player.displayNameJa}</strong>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AnalyticsEvents } from "@/components/analytics-events";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -41,6 +42,7 @@ export default function RootLayout({
     <html lang="ja" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <GoogleAnalytics measurementId={measurementId} />
+        <AnalyticsEvents />
         {children}
       </body>
     </html>
