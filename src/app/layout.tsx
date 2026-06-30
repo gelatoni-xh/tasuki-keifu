@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AnalyticsEvents } from "@/components/analytics-events";
 import { GoogleAnalytics } from "@/components/google-analytics";
@@ -42,7 +43,9 @@ export default function RootLayout({
     <html lang="ja" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <GoogleAnalytics measurementId={measurementId} />
-        <AnalyticsEvents />
+        <Suspense fallback={null}>
+          <AnalyticsEvents />
+        </Suspense>
         {children}
       </body>
     </html>
