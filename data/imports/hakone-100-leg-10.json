@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-100-leg-10-draft-20260629",
+  "batchKey": "hakone-100-leg-10-draft-20260630",
   "sourceId": "source-ntv-hakone-100-leg-10",
   "raceSlug": "hakone-ekiden-100-leg-10",
   "summary": "第100回箱根駅伝 10区 NTV 区間ページ draft 導入",
@@ -262,7 +262,7 @@
       "slug": "furui-kosuke",
       "displayNameJa": "古井 康介",
       "displayNameRoman": "FURUI Kosuke",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "hs-浜松日体高",
       "grade": 2,
       "mark": "1:11:42",
@@ -400,7 +400,7 @@
       "slug": "suzuki-shinya",
       "displayNameJa": "鈴木 伸弥",
       "displayNameRoman": "SUZUKI Shinya",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "suijo-high-school",
       "grade": 3,
       "mark": "1:10:40",
@@ -488,7 +488,7 @@
       "slug": "kubo-shunto",
       "displayNameJa": "久保 俊翔",
       "displayNameRoman": "KUBO Shunto",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-鹿児島高",
       "grade": 1,
       "mark": "1:10:27",
@@ -530,5 +530,9 @@
       "sourceEntityKey": "ntv-100-leg10-towa-urabe",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/10.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

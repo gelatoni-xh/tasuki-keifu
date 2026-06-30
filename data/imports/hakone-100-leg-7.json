@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-100-leg-7-draft-20260629",
+  "batchKey": "hakone-100-leg-7-draft-20260630",
   "sourceId": "source-ntv-hakone-100-leg-7",
   "raceSlug": "hakone-ekiden-100-leg-7",
   "summary": "第100回箱根駅伝 7区 NTV 区間ページ draft 導入",
@@ -262,7 +262,7 @@
       "slug": "ozaki-kento",
       "displayNameJa": "尾﨑 健斗",
       "displayNameRoman": "OZAKI Kento",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "hamamatsu-commercial-high-school",
       "grade": 3,
       "mark": "1:04:38",
@@ -400,7 +400,7 @@
       "slug": "segawa-shoma",
       "displayNameJa": "瀬川 翔誠",
       "displayNameRoman": "SEGAWA Shoma",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "saitama-sakae-high-school",
       "grade": 2,
       "mark": "1:03:51",
@@ -492,7 +492,7 @@
       "slug": "fujii-kudai",
       "displayNameJa": "藤井 空大",
       "displayNameRoman": "FUJII Kudai",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "nishiwaki-technical-high-school",
       "grade": 2,
       "mark": "1:05:39",
@@ -534,5 +534,9 @@
       "sourceEntityKey": "ntv-100-leg7-tokuda-shuto",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/7.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

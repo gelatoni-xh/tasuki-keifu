@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-99-leg-6-draft-20260629",
+  "batchKey": "hakone-99-leg-6-draft-20260630",
   "sourceId": "source-ntv-hakone-99-leg-6",
   "raceSlug": "hakone-ekiden-99-leg-6",
   "summary": "第99回箱根駅伝 6区 NTV 区間ページ draft 導入",
@@ -75,7 +75,7 @@
       "displayNameJa": "西村 真周",
       "displayNameRoman": "NISHIMURA Mashu",
       "universitySlug": "toyo-university",
-      "highSchoolSlug": "hs-自由ヶ丘高",
+      "highSchoolSlug": "jiyugaoka-high-school",
       "grade": 1,
       "mark": "1:00:13",
       "rank": 13,
@@ -254,7 +254,7 @@
       "slug": "hori-sosuke",
       "displayNameJa": "堀 颯介",
       "displayNameRoman": "HORI Sosuke",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "sendai-ikuei-high-school",
       "grade": 1,
       "mark": "59:33",
@@ -438,7 +438,7 @@
       "slug": "nakajima-kota",
       "displayNameJa": "中島 弘太",
       "displayNameRoman": "NAKAJIMA Kota",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "hs-城西大城西高",
       "grade": 2,
       "mark": "1:02:12",
@@ -480,5 +480,9 @@
       "sourceEntityKey": "ntv-99-leg6-hatae-ryuto",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/6.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

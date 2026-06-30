@@ -1,4 +1,4 @@
-import type { EventDiscipline, OrganizationType } from "@prisma/client";
+import type { CompetitionType, EventDiscipline, MembershipRole, OrganizationType, PersonType } from "@prisma/client";
 import type { Locale } from "@/lib/i18n";
 import { getDictionary } from "@/lib/i18n";
 
@@ -14,6 +14,18 @@ export function formatStatus(status: string, locale: Locale = "ja") {
 
 export function formatOrganizationType(type: OrganizationType, locale: Locale = "ja") {
   return getDictionary(locale).organizationType[type] ?? type;
+}
+
+export function formatPersonType(type: PersonType, locale: Locale = "ja") {
+  return getDictionary(locale).personType[type] ?? type;
+}
+
+export function formatMembershipRole(role: MembershipRole, locale: Locale = "ja") {
+  return getDictionary(locale).membershipRole[role] ?? role;
+}
+
+export function formatCompetitionType(type: CompetitionType, locale: Locale = "ja") {
+  return getDictionary(locale).competitionType[type] ?? type;
 }
 
 export function formatDate(date: Date | null | undefined) {

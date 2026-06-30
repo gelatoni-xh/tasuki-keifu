@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-99-leg-10-draft-20260629",
+  "batchKey": "hakone-99-leg-10-draft-20260630",
   "sourceId": "source-ntv-hakone-99-leg-10",
   "raceSlug": "hakone-ekiden-99-leg-10",
   "summary": "第99回箱根駅伝 10区 NTV 区間ページ draft 導入",
@@ -254,7 +254,7 @@
       "slug": "urushibata-ryuto",
       "displayNameJa": "漆畑 瑠人",
       "displayNameRoman": "URUSHIBATA Ryuto",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "kagoshima-josei-high-school",
       "grade": 4,
       "mark": "1:11:53",
@@ -438,7 +438,7 @@
       "slug": "kawakatsu-yuga",
       "displayNameJa": "川勝 悠雅",
       "displayNameRoman": "KAWAKATSU Yuga",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "rakunan-high-school",
       "grade": 1,
       "mark": "1:11:47",
@@ -480,5 +480,9 @@
       "sourceEntityKey": "ntv-99-leg10-kaigawa-yusuke",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/10.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

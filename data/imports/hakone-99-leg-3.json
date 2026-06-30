@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-99-leg-3-draft-20260629",
+  "batchKey": "hakone-99-leg-3-draft-20260630",
   "sourceId": "source-ntv-hakone-99-leg-3",
   "raceSlug": "hakone-ekiden-99-leg-3",
   "summary": "第99回箱根駅伝 3区 NTV 区間ページ draft 導入",
@@ -171,7 +171,7 @@
       "displayNameJa": "山本 歩夢",
       "displayNameRoman": "YAMAMOTO Ayumu",
       "universitySlug": "kokugakuin-university",
-      "highSchoolSlug": "hs-自由ヶ丘高",
+      "highSchoolSlug": "jiyugaoka-high-school",
       "grade": 2,
       "mark": "1:02:07",
       "rank": 5,
@@ -262,7 +262,7 @@
       "slug": "morishita-shota",
       "displayNameJa": "森下 翔太",
       "displayNameRoman": "MORISHITA Shota",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "sera-high-school",
       "grade": 1,
       "mark": "1:02:05",
@@ -286,7 +286,7 @@
       "displayNameJa": "Ｖ.キムタイ",
       "displayNameRoman": "VICTOR Kimutai",
       "universitySlug": "josai-university",
-      "highSchoolSlug": "hs-ケニア／マウ高",
+      "highSchoolSlug": "mau-high-school",
       "grade": 1,
       "mark": "1:02:41",
       "rank": 11,
@@ -442,7 +442,7 @@
       "slug": "yamamoto-ryushin",
       "displayNameJa": "山本 龍神",
       "displayNameRoman": "YAMAMOTO Ryushin",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "hs-米子松蔭高",
       "grade": 3,
       "mark": "1:04:40",
@@ -484,5 +484,9 @@
       "sourceEntityKey": "ntv-99-leg3-uchino-risei",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/3.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

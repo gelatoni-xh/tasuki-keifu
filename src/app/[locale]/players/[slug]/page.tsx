@@ -5,7 +5,7 @@ import type { OrganizationType, Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatDiscipline, formatOrganizationType, formatRank, formatStatus } from "@/lib/format";
+import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRank, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import {
   formatMembershipPeriod,
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
   const highSchool = getHighSchoolMembership(player.memberships);
   const title = `${player.displayNameJa}の所属・記録・大会成績`;
   const descriptionParts = [
-    `${player.displayNameJa}の所属、PB、大会成績を確認できる選手資料ページです。`,
+    `${player.displayNameJa}の所属、記録、大会成績を確認できる人物資料ページです。`,
     currentMembership?.organization.nameJa ? `現在の所属は${currentMembership.organization.nameJa}。` : null,
     university?.organization.nameJa ? `大学は${university.organization.nameJa}。` : null,
     highSchool?.organization.nameJa ? `出身校は${highSchool.organization.nameJa}。` : null,
@@ -312,6 +312,9 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
       relationshipTags: tags,
     };
   });
+  const hasPersonalBests = player.personalBests.length > 0;
+  const hasRaceResults = sortedRaceResults.length > 0;
+  const shouldShowPerformanceSections = player.type === "athlete" || hasPersonalBests || hasRaceResults;
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -331,12 +334,17 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 </p>
                 <h1 className="mt-3 text-4xl font-semibold">{player.displayNameJa}</h1>
                 <p className="mt-2 text-[#59615c]">
-                  {player.displayNameKana} / {player.displayNameRoman}
+                  {[player.displayNameKana, player.displayNameRoman].filter(Boolean).join(" / ") || dictionary.common.emptyDash}
                 </p>
               </div>
-              <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#8a1f2d]">
-                {formatStatus(player.status, locale)}
-              </span>
+              <div className="flex flex-wrap gap-2">
+                <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#59615c]">
+                  {dictionary.players.personType}: {formatPersonType(player.type, locale)}
+                </span>
+                <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#8a1f2d]">
+                  {formatStatus(player.status, locale)}
+                </span>
+              </div>
             </div>
           </header>
 
@@ -397,31 +405,37 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
               </dl>
             </div>
 
-            <div className="border border-[#ded8cc] bg-white p-5">
-              <h2 className="text-lg font-semibold">{dictionary.players.personalBest}</h2>
-              <div className="mt-4 divide-y divide-[#e7e1d8]">
-                {player.personalBests.map((pb) => (
-                  <div className="py-4 text-sm" key={pb.id}>
-                    <div className="flex items-baseline justify-between gap-4">
-                      <p className="text-[#59615c]">{formatDiscipline(pb.discipline, locale)}</p>
-                      <p className="text-xl font-semibold text-[#1f2421]">{pb.mark}</p>
-                    </div>
-                    <div className="mt-2 space-y-1 text-xs leading-5 text-[#59615c]">
-                      <p>
-                        {[formatDate(pb.achievedOn), pb.competitionName, pb.venue].filter(Boolean).join(" / ") ||
-                          dictionary.common.emptyDash}
-                      </p>
-                      {isPublicSource(pb.source) ? (
-                        <p>
-                          <span className="mr-2 text-[#8b938e]">{dictionary.players.source}</span>
-                          <SourceLink source={pb.source} />
-                        </p>
-                      ) : null}
-                    </div>
+            {shouldShowPerformanceSections ? (
+              <div className="border border-[#ded8cc] bg-white p-5">
+                <h2 className="text-lg font-semibold">{dictionary.players.personalBest}</h2>
+                {hasPersonalBests ? (
+                  <div className="mt-4 divide-y divide-[#e7e1d8]">
+                    {player.personalBests.map((pb) => (
+                      <div className="py-4 text-sm" key={pb.id}>
+                        <div className="flex items-baseline justify-between gap-4">
+                          <p className="text-[#59615c]">{formatDiscipline(pb.discipline, locale)}</p>
+                          <p className="text-xl font-semibold text-[#1f2421]">{pb.mark}</p>
+                        </div>
+                        <div className="mt-2 space-y-1 text-xs leading-5 text-[#59615c]">
+                          <p>
+                            {[formatDate(pb.achievedOn), pb.competitionName, pb.venue].filter(Boolean).join(" / ") ||
+                              dictionary.common.emptyDash}
+                          </p>
+                          {isPublicSource(pb.source) ? (
+                            <p>
+                              <span className="mr-2 text-[#8b938e]">{dictionary.players.source}</span>
+                              <SourceLink source={pb.source} />
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <p className="mt-4 text-sm text-[#59615c]">{dictionary.common.emptyDash}</p>
+                )}
               </div>
-            </div>
+            ) : null}
           </section>
 
           <section className="border border-[#ded8cc] bg-white p-5">
@@ -441,8 +455,11 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
             </div>
           </section>
 
-          <section className="border border-[#ded8cc] bg-white p-5">
-            <h2 className="text-lg font-semibold">{dictionary.players.raceRecord}</h2>
+          {shouldShowPerformanceSections ? (
+            <section className="border border-[#ded8cc] bg-white p-5">
+              <h2 className="text-lg font-semibold">{dictionary.players.raceRecord}</h2>
+              {hasRaceResults ? (
+                <>
             <div className="mt-4 hidden md:block">
               <div>
                 <div className="grid grid-cols-[0.8fr_1.45fr_1.1fr_0.8fr_0.55fr_1.35fr_1.1fr_1.25fr] border-b border-[#ded8cc] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
@@ -559,7 +576,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 );
               })}
             </div>
-          </section>
+                </>
+              ) : (
+                <p className="mt-4 text-sm text-[#59615c]">{dictionary.common.emptyDash}</p>
+              )}
+            </section>
+          ) : null}
 
           <section className="border border-[#ded8cc] bg-white p-5">
             <h2 className="text-lg font-semibold">{dictionary.players.relatedPlayers}</h2>

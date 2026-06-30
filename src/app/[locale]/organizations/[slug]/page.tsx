@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatOrganizationType } from "@/lib/format";
+import { formatDate, formatMembershipRole, formatOrganizationType, formatRank } from "@/lib/format";
 import { getDictionary, isLocale } from "@/lib/i18n";
+import { groupMembershipsByRole, isCurrentMembership } from "@/lib/membership";
 import { buildLocaleAlternates } from "@/lib/site";
 
 type OrganizationDetailPageProps = {
@@ -40,11 +41,11 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
     return {};
   }
 
-  const title = `${organization.nameJa}の所属選手・関連データ`;
+  const title = `${organization.nameJa}の所属人物・関連データ`;
   const description = [
     `${organization.nameJa}の組織ページです。`,
     `${formatOrganizationType(organization.type, locale)}として収録しています。`,
-    organization._count.memberships > 0 ? `関連選手を${organization._count.memberships}件収録。` : null,
+    organization._count.memberships > 0 ? `関連人物を${organization._count.memberships}件収録。` : null,
     organization.location ?? organization.prefecture ? `所在地は${organization.location ?? organization.prefecture}。` : null,
   ]
     .filter(Boolean)
@@ -84,6 +85,19 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
         },
         orderBy: [{ startDate: "desc" }, { startYear: "desc" }],
       },
+      teamCompetitionResults: {
+        include: {
+          competitionEdition: {
+            include: {
+              competition: true,
+            },
+          },
+        },
+        orderBy: [
+          { competitionEdition: { year: "desc" } },
+          { finalRank: "asc" },
+        ],
+      },
     },
   });
 
@@ -92,19 +106,25 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
   }
 
   const now = new Date();
-  const currentMemberships = organization.memberships.filter((membership) => {
-    const startsBeforeNow = !membership.startDate || membership.startDate <= now;
-    const hasNotEnded = !membership.endDate || membership.endDate >= now;
-
-    return startsBeforeNow && hasNotEnded;
-  });
+  const currentMemberships = organization.memberships.filter((membership) => isCurrentMembership(membership, now));
   const formerMemberships = organization.memberships.filter((membership) => !currentMemberships.includes(membership));
+  const currentByRole = groupMembershipsByRole(currentMemberships);
+  const formerByRole = groupMembershipsByRole(formerMemberships);
+  const ekidenResults = organization.teamCompetitionResults.filter((result) =>
+    result.competitionEdition.competition.type?.includes("ekiden"),
+  );
   const formatMembershipSummary = (startDate: Date | null, startYear: number | null, endDate: Date | null, endYear: number | null) => {
     const start = formatDate(startDate) || startYear?.toString() || dictionary.common.emptyDash;
     const end = formatDate(endDate) || endYear?.toString() || dictionary.common.present;
 
     return `${start} - ${end}`;
   };
+
+  const membershipSections = [
+    { key: "athlete", label: formatMembershipRole("athlete", locale), current: currentByRole.athlete, former: formerByRole.athlete },
+    { key: "coach", label: formatMembershipRole("coach", locale), current: currentByRole.coach, former: formerByRole.coach },
+    { key: "staff", label: formatMembershipRole("staff", locale), current: currentByRole.staff, former: formerByRole.staff },
+  ];
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -148,52 +168,106 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
 
           <section className="grid gap-5 lg:grid-cols-2">
             <div className="border border-[#ded8cc] bg-white p-5">
-              <h2 className="text-lg font-semibold">{dictionary.organizations.currentPlayers}</h2>
+              <h2 className="text-lg font-semibold">{dictionary.organizations.currentPeople}</h2>
               {currentMemberships.length > 0 ? (
-                <div className="mt-4 divide-y divide-[#e7e1d8]">
-                  {currentMemberships.map((membership) => (
-                    <Link
-                      className="grid gap-2 py-3 text-sm transition hover:text-[#8a1f2d] sm:grid-cols-[1fr_auto]"
-                      data-analytics-event="player_profile_view"
-                      data-analytics-link-type="organization_current_player"
-                      href={`/${locale}/players/${membership.person.slug}`}
-                      key={membership.id}
-                    >
-                      <span className="font-semibold">{membership.person.displayNameJa}</span>
-                      <span className="text-[#59615c]">
-                        {formatMembershipSummary(membership.startDate, membership.startYear, membership.endDate, membership.endYear)}
-                      </span>
-                    </Link>
-                  ))}
+                <div className="mt-4 space-y-5">
+                  {membershipSections.map((section) =>
+                    section.current.length > 0 ? (
+                      <div key={section.key}>
+                        <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">{section.label}</h3>
+                        <div className="mt-2 divide-y divide-[#e7e1d8]">
+                          {section.current.map((membership) => (
+                            <Link
+                              className="grid gap-2 py-3 text-sm transition hover:text-[#8a1f2d] sm:grid-cols-[1fr_auto]"
+                              data-analytics-event="player_profile_view"
+                              data-analytics-link-type="organization_current_player"
+                              href={`/${locale}/players/${membership.person.slug}`}
+                              key={membership.id}
+                            >
+                              <span className="font-semibold">{membership.person.displayNameJa}</span>
+                              <span className="text-[#59615c]">
+                                {formatMembershipSummary(membership.startDate, membership.startYear, membership.endDate, membership.endYear)}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null,
+                  )}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-[#59615c]">{dictionary.organizations.emptyPlayers}</p>
+                <p className="mt-4 text-sm text-[#59615c]">{dictionary.organizations.emptyPeople}</p>
               )}
             </div>
 
             <div className="border border-[#ded8cc] bg-white p-5">
-              <h2 className="text-lg font-semibold">{dictionary.organizations.formerPlayers}</h2>
+              <h2 className="text-lg font-semibold">{dictionary.organizations.formerPeople}</h2>
               {formerMemberships.length > 0 ? (
-                <div className="mt-4 divide-y divide-[#e7e1d8]">
-                  {formerMemberships.map((membership) => (
-                    <Link
-                      className="grid gap-2 py-3 text-sm transition hover:text-[#8a1f2d] sm:grid-cols-[1fr_auto]"
-                      data-analytics-event="player_profile_view"
-                      data-analytics-link-type="organization_former_player"
-                      href={`/${locale}/players/${membership.person.slug}`}
-                      key={membership.id}
-                    >
-                      <span className="font-semibold">{membership.person.displayNameJa}</span>
-                      <span className="text-[#59615c]">
-                        {formatMembershipSummary(membership.startDate, membership.startYear, membership.endDate, membership.endYear)}
-                      </span>
-                    </Link>
-                  ))}
+                <div className="mt-4 space-y-5">
+                  {membershipSections.map((section) =>
+                    section.former.length > 0 ? (
+                      <div key={section.key}>
+                        <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">{section.label}</h3>
+                        <div className="mt-2 divide-y divide-[#e7e1d8]">
+                          {section.former.map((membership) => (
+                            <Link
+                              className="grid gap-2 py-3 text-sm transition hover:text-[#8a1f2d] sm:grid-cols-[1fr_auto]"
+                              data-analytics-event="player_profile_view"
+                              data-analytics-link-type="organization_former_player"
+                              href={`/${locale}/players/${membership.person.slug}`}
+                              key={membership.id}
+                            >
+                              <span className="font-semibold">{membership.person.displayNameJa}</span>
+                              <span className="text-[#59615c]">
+                                {formatMembershipSummary(membership.startDate, membership.startYear, membership.endDate, membership.endYear)}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null,
+                  )}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-[#59615c]">{dictionary.organizations.emptyPlayers}</p>
+                <p className="mt-4 text-sm text-[#59615c]">{dictionary.organizations.emptyPeople}</p>
               )}
             </div>
+          </section>
+
+          <section className="border border-[#ded8cc] bg-white p-5">
+            <h2 className="text-lg font-semibold">{dictionary.organizations.ekidenResults}</h2>
+            {ekidenResults.length > 0 ? (
+              <div className="mt-4 overflow-x-auto">
+                <div className="min-w-[640px]">
+                  <div className="grid grid-cols-[1.2fr_1.3fr_120px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                    <span>{dictionary.organizations.competition}</span>
+                    <span>{dictionary.organizations.edition}</span>
+                    <span>{dictionary.organizations.finalRank}</span>
+                    <span>{dictionary.organizations.finalMark}</span>
+                  </div>
+                  <div className="divide-y divide-[#e7e1d8]">
+                    {ekidenResults.map((result) => (
+                      <Link
+                        className="grid grid-cols-[1.2fr_1.3fr_120px_140px] px-3 py-3 text-sm transition hover:bg-[#fbfaf7]"
+                        href={`/${locale}/competitions/${result.competitionEdition.slug}`}
+                        key={result.id}
+                      >
+                        <span>{result.competitionEdition.competition.nameJa}</span>
+                        <span className="font-medium text-[#8a1f2d]">
+                          {result.competitionEdition.shortName ?? result.competitionEdition.officialName}
+                        </span>
+                        <span className="text-[#59615c]">
+                          {formatRank(result.finalRank, locale) || dictionary.common.emptyDash}
+                        </span>
+                        <span className="text-[#59615c]">{result.finalMark ?? dictionary.common.emptyDash}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-4 text-sm text-[#59615c]">{dictionary.organizations.emptyEkidenResults}</p>
+            )}
           </section>
         </div>
       </main>

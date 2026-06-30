@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-100-leg-2-draft-20260629",
+  "batchKey": "hakone-100-leg-2-draft-20260630",
   "sourceId": "source-ntv-hakone-100-leg-2",
   "raceSlug": "hakone-ekiden-100-leg-2",
   "summary": "第100回箱根駅伝 2区 NTV 区間ページ draft 導入",
@@ -171,7 +171,7 @@
       "displayNameJa": "Ｓ.ムチーニ",
       "displayNameRoman": "STEPHEN Muthini",
       "universitySlug": "soka-university",
-      "highSchoolSlug": "hs-ﾐｸﾕﾆ高",
+      "highSchoolSlug": "mikuyuni-high-school",
       "grade": 1,
       "mark": "1:06:43",
       "rank": 5,
@@ -258,7 +258,7 @@
       "slug": "kodama-masaki",
       "displayNameJa": "児玉 真輝",
       "displayNameRoman": "KODAMA Masaki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "kamakura-gakuen-high-school",
       "grade": 4,
       "mark": "1:11:15",
@@ -328,7 +328,7 @@
       "displayNameJa": "Ｓ.キップケメイ",
       "displayNameRoman": "SHADRACK Kipkemei",
       "universitySlug": "nihon-university",
-      "highSchoolSlug": "hs-ｲﾘｷﾞﾀﾃｨ高",
+      "highSchoolSlug": "irigitati-high-school",
       "grade": 1,
       "mark": "1:07:31",
       "rank": 10,
@@ -396,8 +396,8 @@
       "slug": "peter-kamau",
       "displayNameJa": "Ｐ.カマウ",
       "displayNameRoman": "PETER Kamau",
-      "universitySlug": "kanto-student-union",
-      "highSchoolSlug": "hs-ｶｷﾞﾗ高",
+      "universitySlug": "kokushikan-university",
+      "highSchoolSlug": "kagira-high-school",
       "grade": 3,
       "mark": "1:08:22",
       "rank": 17,
@@ -488,7 +488,7 @@
       "slug": "niiyama-toshimune",
       "displayNameJa": "新山 舜心",
       "displayNameRoman": "NIIYAMA Toshimune",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-鹿児島高",
       "grade": 4,
       "mark": "1:10:13",
@@ -512,7 +512,7 @@
       "displayNameJa": "Ｂ.キピエゴ",
       "displayNameRoman": "BRIAN Kipyegon",
       "universitySlug": "yamanashi-gakuin-university",
-      "highSchoolSlug": "hs-ｶﾌﾟｶﾃｯﾄ高",
+      "highSchoolSlug": "kapkatet-high-school",
       "grade": 1,
       "mark": "1:07:22",
       "rank": 9,
@@ -530,5 +530,9 @@
       "sourceEntityKey": "ntv-100-leg2-brian-kipyegon",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/2.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

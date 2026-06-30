@@ -1,8 +1,8 @@
-import type { Membership, Organization } from "@prisma/client";
+import type { Membership, MembershipRole, Organization, PersonType } from "@prisma/client";
 import type { Locale } from "@/lib/i18n";
 import { getDictionary } from "@/lib/i18n";
 
-type MembershipWithOrganization = Membership & {
+export type MembershipWithOrganization = Membership & {
   organization: Organization;
 };
 
@@ -19,16 +19,8 @@ export function sortMembershipsByStartDate(memberships: MembershipWithOrganizati
 
 export function getCurrentMembership(memberships: MembershipWithOrganization[], now = new Date()) {
   return (
-    memberships.find((membership) => {
-      if (!membership.startDate && !membership.endDate) {
-        return false;
-      }
-
-      const startsBeforeNow = !membership.startDate || membership.startDate <= now;
-      const hasNotEnded = !membership.endDate || membership.endDate >= now;
-
-      return startsBeforeNow && hasNotEnded;
-    }) ?? null
+    getCurrentMemberships(memberships, now)
+      .sort((left, right) => getMembershipRolePriority(right.role) - getMembershipRolePriority(left.role))[0] ?? null
   );
 }
 
@@ -44,6 +36,60 @@ export function getUniversityMembership(memberships: MembershipWithOrganization[
     memberships.find((membership) => membership.organization.type === "university") ??
     null
   );
+}
+
+export function isCurrentMembership(
+  membership: Pick<Membership, "startDate" | "endDate">,
+  now = new Date(),
+) {
+  const startsBeforeNow = !membership.startDate || membership.startDate <= now;
+  const hasNotEnded = !membership.endDate || membership.endDate >= now;
+
+  return startsBeforeNow && hasNotEnded;
+}
+
+export function getCurrentMemberships(memberships: MembershipWithOrganization[], now = new Date()) {
+  return memberships.filter((membership) => isCurrentMembership(membership, now));
+}
+
+export function getMembershipRolePriority(role: MembershipRole | null | undefined) {
+  switch (role) {
+    case "coach":
+      return 3;
+    case "staff":
+      return 2;
+    case "athlete":
+    default:
+      return 1;
+  }
+}
+
+export function groupMembershipsByRole<T extends Pick<Membership, "role">>(memberships: T[]) {
+  return {
+    athlete: memberships.filter((membership) => membership.role === "athlete"),
+    coach: memberships.filter((membership) => membership.role === "coach"),
+    staff: memberships.filter((membership) => membership.role === "staff"),
+  };
+}
+
+export function derivePersonTypeFromMemberships(
+  memberships: Array<Pick<Membership, "role" | "startDate" | "endDate">>,
+  fallback: PersonType = "athlete",
+  now = new Date(),
+): PersonType {
+  const currentMemberships = memberships.filter((membership) => isCurrentMembership(membership, now));
+
+  if (currentMemberships.length > 0) {
+    return [...currentMemberships].sort(
+      (left, right) => getMembershipRolePriority(right.role) - getMembershipRolePriority(left.role),
+    )[0]?.role ?? fallback;
+  }
+
+  const latestHistoricalMembership = [...memberships]
+    .filter((membership) => membership.endDate)
+    .sort((left, right) => (right.endDate?.getTime() ?? 0) - (left.endDate?.getTime() ?? 0))[0];
+
+  return latestHistoricalMembership?.role ?? fallback;
 }
 
 function getAcademicYearStartYear(date: Date) {

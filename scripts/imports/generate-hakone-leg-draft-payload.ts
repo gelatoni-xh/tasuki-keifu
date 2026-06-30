@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import vm from "node:vm";
 
 import { OrganizationType } from "@prisma/client";
 
@@ -19,6 +20,12 @@ import {
 } from "../lib/hakone";
 import { normalizeDisplayNameJa } from "../lib/name-normalization";
 import { prisma } from "../lib/prisma";
+
+type HakoneLegResultSnapshot = {
+  rank: number | null;
+  mark: string;
+  notes: string | null;
+};
 
 function normalizeRoman(value: string) {
   return value
@@ -56,7 +63,11 @@ const preferredSlugByNormalizedJa = new Map<string, string>([
 
 function normalizeSchoolLabel(value: string) {
   return value
+    .normalize("NFKC")
     .replace(/[ 　]/g, "")
+    .replace(/ヶ/g, "ケ")
+    .replace(/[／/]/g, "・")
+    .replace(/^ケニア・/g, "")
     .replace(/^[^・]+・/g, "")
     .replace(/学校高等部/g, "高校")
     .replace(/高等学校/g, "高校")
@@ -82,6 +93,104 @@ function extractRank(rankSection: string) {
 function extractMark(block: string) {
   const match = block.match(/区間タイム<\/span>\s*([^<]+)/);
   return match?.[1]?.trim() ?? "";
+}
+
+function decodeNuxtRef(payload: unknown[], ref: unknown, seen = new Map<number, unknown>()): unknown {
+  if (typeof ref !== "number" || !Number.isInteger(ref) || ref < 0 || ref >= payload.length) {
+    return ref;
+  }
+
+  if (seen.has(ref)) {
+    return seen.get(ref);
+  }
+
+  const target = payload[ref];
+
+  if (Array.isArray(target)) {
+    const out: unknown[] = [];
+    seen.set(ref, out);
+    for (const item of target) {
+      out.push(decodeNuxtRef(payload, item, seen));
+    }
+    return out;
+  }
+
+  if (target && typeof target === "object") {
+    const out: Record<string, unknown> = {};
+    seen.set(ref, out);
+    for (const [key, value] of Object.entries(target)) {
+      out[key] = decodeNuxtRef(payload, value, seen);
+    }
+    return out;
+  }
+
+  return target;
+}
+
+async function loadHakoneSogouLegResults(edition: number, leg: number) {
+  const sogouPath = buildHakoneHtmlPath(edition, 0).replace(/-leg-0\.html$/, "-sougou.html");
+  const html = await readFile(sogouPath, "utf8");
+  const matched = html.match(/<script[^>]*id="__NUXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (!matched) {
+    return new Map<string, HakoneLegResultSnapshot>();
+  }
+
+  const payload = vm.runInNewContext(matched[1]) as unknown[];
+  const dataRoot = payload[2] as { ["sokuhou-top"]?: number };
+  const sokuhouRef = dataRoot["sokuhou-top"];
+  const sokuhou = decodeNuxtRef(payload, sokuhouRef) as {
+    RECORD?: {
+      TSUKA?: Array<{
+        RUNNER_NAME?: string;
+        KUKAN_TIME?: string;
+        KOJIN_JUNI?: string | number;
+        KUKAN_SHIN_FLG?: string | number;
+        KOUSIKI_FLG?: string | number;
+      }>;
+    };
+    TSUKA?: Array<{
+      RUNNER_NAME?: string;
+      KUKAN_TIME?: string;
+      KOJIN_JUNI?: string | number;
+      KUKAN_SHIN_FLG?: string | number;
+      KOUSIKI_FLG?: string | number;
+    }>;
+  } | null;
+
+  const tsuka = sokuhou?.RECORD?.TSUKA ?? sokuhou?.TSUKA;
+  if (!Array.isArray(tsuka)) {
+    return new Map<string, HakoneLegResultSnapshot>();
+  }
+
+  const map = new Map<string, HakoneLegResultSnapshot>();
+  for (const entry of tsuka) {
+    const name = normalizeJa(String(entry.RUNNER_NAME ?? ""));
+    if (!name) {
+      continue;
+    }
+
+    const rankValue = String(entry.KOJIN_JUNI ?? "");
+    const rank = rankValue === "OP" ? null : Number(rankValue);
+    const isOp = String(entry.KOUSIKI_FLG ?? "") === "3" || rankValue === "OP";
+    const tokens: string[] = [];
+    if (isOp) {
+      tokens.push("OP");
+    }
+    if (rank === 1 && !isOp) {
+      tokens.push("区間賞");
+    }
+    if (String(entry.KUKAN_SHIN_FLG ?? "") === "1") {
+      tokens.push("区間新");
+    }
+
+    map.set(name, {
+      rank: Number.isFinite(rank) ? rank : null,
+      mark: String(entry.KUKAN_TIME ?? "").trim(),
+      notes: tokens.length > 0 ? tokens.join(" / ") : null,
+    });
+  }
+
+  return map;
 }
 
 function extractGradeAndSchool(block: string) {
@@ -176,6 +285,13 @@ function resolveOrganizationSlug(
     normalized.replace(/高知農業高$/, "高知農高"),
     normalized.replace(/東農大三高$/, "東京農業大学第三高校"),
     normalized.replace(/市船橋高$/, "市立船橋高校"),
+    normalized.replace(/^県立/, ""),
+    normalized.replace(/法大二高$/, "法政二高"),
+    normalized.replace(/自由ヶ丘高$/, "自由ヶ丘高校"),
+    normalized.replace(/上伊那農業高$/, "上伊那農業高校"),
+    normalized.replace(/自由ヶ丘/, "自由ケ丘"),
+    normalized.replace(/上伊那農業高校$/, "上伊那農高"),
+    normalized.replace(/上伊那農業高$/, "上伊那農高"),
   ]);
 
   if (
@@ -287,6 +403,7 @@ async function main() {
 
   const universityAliasMap = buildOrganizationAliasMap(universities);
   const highSchoolAliasMap = buildOrganizationAliasMap(highSchools);
+  const sogouResultsByName = edition <= 97 ? await loadHakoneSogouLegResults(edition, leg) : new Map<string, HakoneLegResultSnapshot>();
 
   const entries = [];
   const missingUniversityNames = new Set<string>();
@@ -294,7 +411,12 @@ async function main() {
 
   for (const block of extractRunnerBlocks(html, leg)) {
     const runner = extractRunner(block);
-    if (!runner.displayNameJa || !runner.displayNameRoman || !runner.teamName || !runner.mark) {
+    const sogouResult = sogouResultsByName.get(normalizeJa(runner.displayNameJa));
+    const effectiveMark = runner.mark || sogouResult?.mark || "";
+    const effectiveRank = runner.rank ?? sogouResult?.rank ?? null;
+    const effectiveNotes = runner.notes ?? sogouResult?.notes ?? null;
+
+    if (!runner.displayNameJa || !runner.displayNameRoman || !runner.teamName || !effectiveMark) {
       continue;
     }
 
@@ -319,9 +441,9 @@ async function main() {
       universitySlug: universitySlug ?? `missing-university-${slug}`,
       highSchoolSlug: highSchoolSlug ?? `missing-high-school-${slug}`,
       grade: runner.grade,
-      mark: runner.mark,
-      rank: runner.rank,
-      notes: runner.notes,
+      mark: effectiveMark,
+      rank: effectiveRank,
+      notes: effectiveNotes,
       pbs: runner.pbs satisfies HakonePbEntry[],
       sourceEntityKey: `ntv-${edition}-leg${leg}-${slug}`,
       sourceUrl: source.url ?? undefined,

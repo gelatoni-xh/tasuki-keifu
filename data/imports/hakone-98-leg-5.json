@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-98-leg-5-draft-20260629",
+  "batchKey": "hakone-98-leg-5-draft-20260630",
   "sourceId": "source-ntv-hakone-98-leg-5",
   "raceSlug": "hakone-ekiden-98-leg-5",
   "summary": "第98回箱根駅伝 5区 NTV 区間ページ draft 導入",
@@ -219,7 +219,7 @@
       "slug": "shimojo-daisuke",
       "displayNameJa": "下條 乃將",
       "displayNameRoman": "SHIMOJO Daisuke",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "tokyo-jitsugyo-high-school",
       "grade": 3,
       "mark": "1:14:54",
@@ -376,7 +376,7 @@
       "slug": "nagai-ryuji",
       "displayNameJa": "永井 竜二",
       "displayNameRoman": "NAGAI Ryuji",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "musashi-ogose-high-school",
       "grade": 3,
       "mark": "1:16:59",
@@ -422,7 +422,7 @@
       "slug": "yamamoto-raiga",
       "displayNameJa": "山本 雷我",
       "displayNameRoman": "YAMAMOTO Raiga",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "tsuruga-kehi-high-school",
       "grade": 2,
       "mark": "1:13:50",
@@ -460,5 +460,9 @@
       "sourceEntityKey": "ntv-98-leg5-fukutani-sota",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/5.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

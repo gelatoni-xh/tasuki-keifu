@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-98-leg-4-draft-20260629",
+  "batchKey": "hakone-98-leg-4-draft-20260630",
   "sourceId": "source-ntv-hakone-98-leg-4",
   "raceSlug": "hakone-ekiden-98-leg-4",
   "summary": "第98回箱根駅伝 4区 NTV 区間ページ draft 導入",
@@ -227,7 +227,7 @@
       "slug": "ozawa-daiki",
       "displayNameJa": "小澤 大輝",
       "displayNameRoman": "OZAWA Daiki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "hs-韮山高",
       "grade": 3,
       "mark": "1:02:23",
@@ -388,7 +388,7 @@
       "slug": "imai-takao",
       "displayNameJa": "今井 隆生",
       "displayNameRoman": "IMAI Takao",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-都立大泉高",
       "grade": 4,
       "mark": "1:06:58",
@@ -434,7 +434,7 @@
       "slug": "mishiro-kazuya",
       "displayNameJa": "三代 和弥",
       "displayNameRoman": "MISHIRO Kazuya",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "oita-tomei-high-school",
       "grade": 4,
       "mark": "1:03:09",
@@ -476,5 +476,9 @@
       "sourceEntityKey": "ntv-98-leg4-murakami-kodai",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/4.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

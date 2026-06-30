@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-99-leg-2-draft-20260629",
+  "batchKey": "hakone-99-leg-2-draft-20260630",
   "sourceId": "source-ntv-hakone-99-leg-2",
   "raceSlug": "hakone-ekiden-99-leg-2",
   "summary": "第99回箱根駅伝 2区 NTV 区間ページ draft 導入",
@@ -144,7 +144,7 @@
       "displayNameJa": "Ｐ.ムルワ",
       "displayNameRoman": "PHILIP Mulwa",
       "universitySlug": "soka-university",
-      "highSchoolSlug": "hs-ケニア／キテタボーイズ高",
+      "highSchoolSlug": "kiteta-boys-high-school",
       "grade": 4,
       "mark": "1:07:29",
       "rank": 6,
@@ -163,7 +163,7 @@
       "displayNameJa": "平林 清澄",
       "displayNameRoman": "HIRABAYASHI Kiyoto",
       "universitySlug": "kokugakuin-university",
-      "highSchoolSlug": "hs-県立美方高",
+      "highSchoolSlug": "mikata-high-school",
       "grade": 2,
       "mark": "1:07:32",
       "rank": 7,
@@ -209,7 +209,7 @@
       "displayNameJa": "内田 隼太",
       "displayNameRoman": "UCHIDA Shunta",
       "universitySlug": "hosei-university",
-      "highSchoolSlug": "hs-法大二高",
+      "highSchoolSlug": "hs-法政二高",
       "grade": 4,
       "mark": "1:07:53",
       "rank": 8,
@@ -254,7 +254,7 @@
       "slug": "ozawa-daiki",
       "displayNameJa": "小澤 大輝",
       "displayNameRoman": "OZAWA Daiki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "hs-韮山高",
       "grade": 4,
       "mark": "1:08:43",
@@ -370,7 +370,7 @@
       "displayNameJa": "Ｂ.ムルア",
       "displayNameRoman": "BONIFACE Mulwa",
       "universitySlug": "yamanashi-gakuin-university",
-      "highSchoolSlug": "hs-ケニア／キトゥムラ高",
+      "highSchoolSlug": "kitumula-high-school",
       "grade": 4,
       "mark": "1:07:22",
       "rank": 5,
@@ -438,8 +438,8 @@
       "slug": "peter-kamau",
       "displayNameJa": "Ｐ.カマウ",
       "displayNameRoman": "PETER Kamau",
-      "universitySlug": "kanto-student-union",
-      "highSchoolSlug": "hs-ケニア／カギラ高",
+      "universitySlug": "kokushikan-university",
+      "highSchoolSlug": "kagira-high-school",
       "grade": 2,
       "mark": "1:07:54",
       "rank": 9,
@@ -480,5 +480,9 @@
       "sourceEntityKey": "ntv-99-leg2-kudo-hiroto",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/2.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

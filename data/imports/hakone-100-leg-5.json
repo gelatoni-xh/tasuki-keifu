@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-100-leg-5-draft-20260629",
+  "batchKey": "hakone-100-leg-5-draft-20260630",
   "sourceId": "source-ntv-hakone-100-leg-5",
   "raceSlug": "hakone-ekiden-100-leg-5",
   "summary": "第100回箱根駅伝 5区 NTV 区間ページ draft 導入",
@@ -254,7 +254,7 @@
       "slug": "kikkawa-hibiki",
       "displayNameJa": "吉川 響",
       "displayNameRoman": "KIKKAWA Hibiki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "sera-high-school",
       "grade": 2,
       "mark": "1:15:13",
@@ -392,7 +392,7 @@
       "slug": "yamamoto-raiga",
       "displayNameJa": "山本 雷我",
       "displayNameRoman": "YAMAMOTO Raiga",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "tsuruga-kehi-high-school",
       "grade": 4,
       "mark": "1:12:18",
@@ -484,7 +484,7 @@
       "slug": "kurashima-keito",
       "displayNameJa": "倉島 啓人",
       "displayNameRoman": "KURASHIMA Keito",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-北越高",
       "grade": 2,
       "mark": "1:12:01",
@@ -522,5 +522,9 @@
       "sourceEntityKey": "ntv-100-leg5-yuge-masayoshi",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/5.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

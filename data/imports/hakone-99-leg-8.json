@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-99-leg-8-draft-20260629",
+  "batchKey": "hakone-99-leg-8-draft-20260630",
   "sourceId": "source-ntv-hakone-99-leg-8",
   "raceSlug": "hakone-ekiden-99-leg-8",
   "summary": "第99回箱根駅伝 8区 NTV 区間ページ draft 導入",
@@ -258,7 +258,7 @@
       "slug": "kato-taisei",
       "displayNameJa": "加藤 大誠",
       "displayNameRoman": "KATO Taisei",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "kagoshima-jitsugyo-high-school",
       "grade": 4,
       "mark": "1:05:06",
@@ -442,7 +442,7 @@
       "slug": "suzuki-shinya",
       "displayNameJa": "鈴木 伸弥",
       "displayNameRoman": "SUZUKI Shinya",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "suijo-high-school",
       "grade": 2,
       "mark": "1:06:08",
@@ -484,5 +484,9 @@
       "sourceEntityKey": "ntv-99-leg8-sato-aoi",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/8.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

@@ -18,7 +18,13 @@ enum DataStatus {
 enum PersonType {
   athlete
   coach
-  manager
+  staff
+}
+
+/// 组织关系中的人物角色
+enum MembershipRole {
+  athlete
+  coach
   staff
 }
 
@@ -79,6 +85,17 @@ enum EventDiscipline {
   half_marathon
   marathon
   ekiden_leg
+}
+
+/// 赛事系列类型
+enum CompetitionType {
+  university_ekiden
+  high_school_ekiden
+  corporate_ekiden
+  mixed_ekiden
+  track_meet
+  road_race
+  marathon
 }
 
 /// 审计动作类型
@@ -212,6 +229,7 @@ model Organization {
   memberships  Membership[]
   /// 代表该组织参赛的结果
   raceResults  RaceResult[]
+  teamCompetitionResults TeamCompetitionResult[]
   /// 名称变体
   nameVariants NameVariant[]
   /// 外部来源映射
@@ -242,8 +260,8 @@ model Membership {
   department     String?
   /// 期/代
   cohort         String?
-  /// 队内角色，例如主将、主务
-  role           String?
+  /// 该段组织关系中的身份
+  role           MembershipRole @default(athlete)
   /// 数据确认状态
   status         DataStatus     @default(pending)
   /// 备注
@@ -305,7 +323,7 @@ model Competition {
   nameRoman   String?
   nameZh      String?
   nameEn      String?
-  type        String?
+  type        CompetitionType?
   organizer   String?
   region      String?
   websiteUrl  String?
@@ -337,10 +355,58 @@ model CompetitionEdition {
   competition   Competition  @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   source        Source?      @relation(fields: [sourceId], references: [id])
   races         Race[]
+  teamCompetitionResults TeamCompetitionResult[]
   sourceReferences SourceReference[]
 
   @@index([competitionId])
   @@index([year])
+}
+
+/// 队伍在某届赛事中的最终结果
+model TeamCompetitionResult {
+  id                   String                    @id @default(cuid())
+  competitionEditionId String
+  organizationId       String
+  finalRank            Int?
+  finalMark            String?
+  finalMarkMillis      Int?
+  status               DataStatus                @default(pending)
+  notes                String?
+  sourceId             String?
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
+
+  competitionEdition   CompetitionEdition        @relation(fields: [competitionEditionId], references: [id], onDelete: Cascade)
+  organization         Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  source               Source?                   @relation(fields: [sourceId], references: [id])
+  legSnapshots         TeamCompetitionLegSnapshot[]
+
+  @@unique([competitionEditionId, organizationId])
+  @@index([competitionEditionId, finalRank])
+  @@index([organizationId, competitionEditionId])
+}
+
+/// 队伍在第 N 区结束后的累计状态
+model TeamCompetitionLegSnapshot {
+  id                      String                 @id @default(cuid())
+  teamCompetitionResultId String
+  leg                     Int
+  cumulativeRank          Int?
+  cumulativeMark          String?
+  cumulativeMarkMillis    Int?
+  gapFromLeader           String?
+  gapFromLeaderMillis     Int?
+  status                  DataStatus             @default(pending)
+  notes                   String?
+  sourceId                String?
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+
+  teamCompetitionResult   TeamCompetitionResult  @relation(fields: [teamCompetitionResultId], references: [id], onDelete: Cascade)
+  source                  Source?                @relation(fields: [sourceId], references: [id])
+
+  @@unique([teamCompetitionResultId, leg])
+  @@index([leg, cumulativeRank])
 }
 
 /// 比赛单元表：某届赛事下的具体区间、项目、组别
@@ -459,6 +525,8 @@ model Source {
   editions      CompetitionEdition[]
   races         Race[]
   raceResults   RaceResult[]
+  teamCompetitionResults TeamCompetitionResult[]
+  teamCompetitionLegSnapshots TeamCompetitionLegSnapshot[]
   nameVariants  NameVariant[]
   auditLogs     AuditLog[]
   sourceReferences SourceReference[]

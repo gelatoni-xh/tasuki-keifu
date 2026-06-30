@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-98-leg-3-draft-20260629",
+  "batchKey": "hakone-98-leg-3-draft-20260630",
   "sourceId": "source-ntv-hakone-98-leg-3",
   "raceSlug": "hakone-ekiden-98-leg-3",
   "summary": "第98回箱根駅伝 3区 NTV 区間ページ draft 導入",
@@ -227,7 +227,7 @@
       "slug": "kodama-masaki",
       "displayNameJa": "児玉 真輝",
       "displayNameRoman": "KODAMA Masaki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "kamakura-gakuen-high-school",
       "grade": 2,
       "mark": "1:03:39",
@@ -388,7 +388,7 @@
       "slug": "machida-kosei",
       "displayNameJa": "町田 康誠",
       "displayNameRoman": "MACHIDA Kosei",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hakuohdai-ashikaga-high-school",
       "grade": 3,
       "mark": "1:03:35",
@@ -434,7 +434,7 @@
       "slug": "ogihara-rikuto",
       "displayNameJa": "荻原 陸斗",
       "displayNameRoman": "OGIHARA Rikuto",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "seibudai-chiba-high-school",
       "grade": 4,
       "mark": "1:04:06",
@@ -476,5 +476,9 @@
       "sourceEntityKey": "ntv-98-leg3-saito-shunsuke",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/3.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

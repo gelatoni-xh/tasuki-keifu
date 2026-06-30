@@ -1,0 +1,3 @@
+-- Superseded by 20260630190500_drop_registered_prefecture.
+-- Kept as an explicit no-op so `prisma migrate deploy` can traverse
+-- the full local migration history without failing on an empty directory.

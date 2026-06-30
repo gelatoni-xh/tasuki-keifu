@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-100-leg-4-draft-20260629",
+  "batchKey": "hakone-100-leg-4-draft-20260630",
   "sourceId": "source-ntv-hakone-100-leg-4",
   "raceSlug": "hakone-ekiden-100-leg-4",
   "summary": "第100回箱根駅伝 4区 NTV 区間ページ draft 導入",
@@ -10,7 +10,7 @@
       "displayNameJa": "山川 拓馬",
       "displayNameRoman": "YAMAKAWA Takuma",
       "universitySlug": "komazawa-university",
-      "highSchoolSlug": "kamiina-agriculture-high-school",
+      "highSchoolSlug": "hs-上伊那農高",
       "grade": 2,
       "mark": "1:02:32",
       "rank": 6,
@@ -258,7 +258,7 @@
       "slug": "morishita-shota",
       "displayNameJa": "森下 翔太",
       "displayNameRoman": "MORISHITA Shota",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "sera-high-school",
       "grade": 2,
       "mark": "1:05:46",
@@ -396,7 +396,7 @@
       "slug": "nishida-taichi",
       "displayNameJa": "西田 大智",
       "displayNameRoman": "NISHIDA Taichi",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "saitama-sakae-high-school",
       "grade": 3,
       "mark": "1:02:45",
@@ -488,7 +488,7 @@
       "slug": "tosen-taiga",
       "displayNameJa": "東泉 大河",
       "displayNameRoman": "TOSEN Taiga",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-東農大二高",
       "grade": 2,
       "mark": "1:02:52",
@@ -526,5 +526,9 @@
       "sourceEntityKey": "ntv-100-leg4-akito-wada",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/4.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

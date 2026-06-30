@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-98-leg-2-draft-20260629",
+  "batchKey": "hakone-98-leg-2-draft-20260630",
   "sourceId": "source-ntv-hakone-98-leg-2",
   "raceSlug": "hakone-ekiden-98-leg-2",
   "summary": "第98回箱根駅伝 2区 NTV 区間ページ draft 導入",
@@ -29,7 +29,7 @@
       "displayNameJa": "Ｐ.ムルワ",
       "displayNameRoman": "PHILIP Mulwa",
       "universitySlug": "soka-university",
-      "highSchoolSlug": "hs-ケニア・キテタボーイズ高",
+      "highSchoolSlug": "kiteta-boys-high-school",
       "grade": 3,
       "mark": "1:06:41",
       "rank": 2,
@@ -205,7 +205,7 @@
       "displayNameJa": "Ｙ.ヴィンセント",
       "displayNameRoman": "YEGON Vincent",
       "universitySlug": "tokyo-international-university",
-      "highSchoolSlug": "hs-ケニア・チェビルベレク高",
+      "highSchoolSlug": "chebilbelek-high-school",
       "grade": 3,
       "mark": "1:07:02",
       "rank": 5,
@@ -227,7 +227,7 @@
       "slug": "suzuki-kiyoto",
       "displayNameJa": "鈴木 聖人",
       "displayNameRoman": "SUZUKI Kiyoto",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "suijo-high-school",
       "grade": 4,
       "mark": "1:09:11",
@@ -297,7 +297,7 @@
       "displayNameJa": "Ｐ.オニエゴ",
       "displayNameRoman": "PAUL Onyiego",
       "universitySlug": "yamanashi-gakuin-university",
-      "highSchoolSlug": "hs-ケニア・モゴンガ高",
+      "highSchoolSlug": "mogonga-high-school",
       "grade": 4,
       "mark": "1:06:49",
       "rank": 4,
@@ -388,8 +388,8 @@
       "slug": "james-bunuka",
       "displayNameJa": "Ｊ.ブヌカ",
       "displayNameRoman": "JAMES Bunuka",
-      "universitySlug": "kanto-student-union",
-      "highSchoolSlug": "hs-ケニア・リルタセントラル高",
+      "universitySlug": "surugadai-university",
+      "highSchoolSlug": "lilta-central-high-school",
       "grade": 4,
       "mark": "1:10:19",
       "rank": 19,
@@ -434,8 +434,8 @@
       "slug": "raimoi-vincent",
       "displayNameJa": "Ｒ.ヴィンセント",
       "displayNameRoman": "RAIMOI Vincent",
-      "universitySlug": "kanto-student-union",
-      "highSchoolSlug": "hs-ケニア・モチョンゴイ高",
+      "universitySlug": "kokushikan-university",
+      "highSchoolSlug": "mochongoi-high-school",
       "grade": 4,
       "mark": "1:06:41",
       "rank": 2,
@@ -476,5 +476,9 @@
       "sourceEntityKey": "ntv-98-leg2-namiki-neo",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/2.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

@@ -38,18 +38,23 @@ export function buildHakonePayloadPath(edition: number, leg: number) {
 export function extractRunnerBlocks(html: string, leg: number) {
   const marker = `<div class="base-heading-subtitle" data-v-42f0980f>${leg}区 選手一覧</div>`;
   const start = html.indexOf(marker);
-  const candidateEnds = [
-    html.indexOf('<div class="sns-share"', start),
-    html.indexOf('<script type="application/json" data-nuxt-data', start),
-    html.indexOf("</main>", start),
-  ].filter((value) => value !== -1);
-  const end = candidateEnds.length > 0 ? Math.min(...candidateEnds) : html.length;
-  const section = html.slice(start, end);
+  if (start === -1) {
+    return [];
+  }
 
-  return section
-    .split('<div class="item" data-v-42f0980f><a class="team"')
-    .slice(1)
-    .map((part) => `<a class="team"${part}`);
+  const section = html.slice(start);
+  const starts = [...section.matchAll(/<div class="item" data-v-42f0980f>/g)].map((match) => match.index ?? -1);
+
+  return starts
+    .map((blockStart, index) => {
+      const blockEnd = starts[index + 1] ?? section.indexOf("<!--]--></div>", blockStart);
+      if (blockStart < 0 || blockEnd < 0 || blockEnd <= blockStart) {
+        return null;
+      }
+
+      return section.slice(blockStart, blockEnd);
+    })
+    .filter((block): block is string => Boolean(block));
 }
 
 export function extractPbsFromBlock(block: string): HakonePbEntry[] {

@@ -155,6 +155,7 @@ async function ensureMembership(prisma: PrismaClient, input: {
         personId: input.personId,
         organizationId: input.organizationId,
         type: input.type,
+        role: "athlete",
         startDate: input.startDate,
         endDate: input.endDate,
         startYear: input.startYear,

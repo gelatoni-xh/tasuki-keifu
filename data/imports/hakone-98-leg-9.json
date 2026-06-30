@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-98-leg-9-draft-20260629",
+  "batchKey": "hakone-98-leg-9-draft-20260630",
   "sourceId": "source-ntv-hakone-98-leg-9",
   "raceSlug": "hakone-ekiden-98-leg-9",
   "summary": "第98回箱根駅伝 9区 NTV 区間ページ draft 導入",
@@ -231,7 +231,7 @@
       "slug": "kato-taisei",
       "displayNameJa": "加藤 大誠",
       "displayNameRoman": "KATO Taisei",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "kagoshima-jitsugyo-high-school",
       "grade": 3,
       "mark": "1:10:26",
@@ -392,7 +392,7 @@
       "slug": "tajiri-ken",
       "displayNameJa": "田尻 健",
       "displayNameRoman": "TAJIRI Ken",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-開新高",
       "grade": 4,
       "mark": "1:11:11",
@@ -438,7 +438,7 @@
       "slug": "tsunashima-tatsuya",
       "displayNameJa": "綱島 辰弥",
       "displayNameRoman": "TSUNASHIMA Tatsuya",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "hs-湘南学院高",
       "grade": 3,
       "mark": "1:09:09",
@@ -480,5 +480,9 @@
       "sourceEntityKey": "ntv-98-leg9-takei-yuki",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/9.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

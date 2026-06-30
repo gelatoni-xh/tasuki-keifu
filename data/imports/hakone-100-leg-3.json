@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-100-leg-3-draft-20260629",
+  "batchKey": "hakone-100-leg-3-draft-20260630",
   "sourceId": "source-ntv-hakone-100-leg-3",
   "raceSlug": "hakone-ekiden-100-leg-3",
   "summary": "第100回箱根駅伝 3区 NTV 区間ページ draft 導入",
@@ -186,7 +186,7 @@
       "displayNameJa": "Ｖ.キムタイ",
       "displayNameRoman": "VICTOR Kimutai",
       "universitySlug": "josai-university",
-      "highSchoolSlug": "hs-ﾏｳ高",
+      "highSchoolSlug": "mau-high-school",
       "grade": 2,
       "mark": "1:01:29",
       "rank": 3,
@@ -254,7 +254,7 @@
       "slug": "sugi-safumi",
       "displayNameJa": "杉 彩文海",
       "displayNameRoman": "SUGI Safumi",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "tosu-technical-high-school",
       "grade": 4,
       "mark": "1:03:30",
@@ -392,7 +392,7 @@
       "slug": "ikoma-naoyuki",
       "displayNameJa": "生駒 直幸",
       "displayNameRoman": "IKOMA Naoyuki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "hs-花咲徳栄高",
       "grade": 2,
       "mark": "1:03:45",
@@ -484,7 +484,7 @@
       "slug": "kio-furuhashi",
       "displayNameJa": "古橋 希翁",
       "displayNameRoman": "FURUHASHI Kio",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "iga-hakuho-high-school",
       "grade": 1,
       "mark": "1:04:11",
@@ -526,5 +526,9 @@
       "sourceEntityKey": "ntv-100-leg3-takaki-shoei",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/3.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

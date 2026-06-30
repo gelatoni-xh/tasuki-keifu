@@ -1,4 +1,4 @@
-import { DataStatus, EventDiscipline, SourceType, type PrismaClient } from "@prisma/client";
+import { DataStatus, EventDiscipline, SourceType, type CompetitionType, type PrismaClient } from "@prisma/client";
 
 export type CompetitionBootstrapSource = {
   id: string;
@@ -41,7 +41,7 @@ export type CompetitionBootstrapConfig = {
     nameRoman?: string;
     nameZh?: string;
     nameEn?: string;
-    type?: string;
+    type?: CompetitionType;
     region?: string;
     websiteUrl?: string;
   };

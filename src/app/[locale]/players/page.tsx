@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CascadingOrganizationFilters } from "@/components/cascading-organization-filters";
 import { prisma } from "@/lib/prisma";
-import { formatDiscipline, formatOrganizationType, formatStatus } from "@/lib/format";
+import { formatDiscipline, formatOrganizationType, formatPersonType, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { buildLocaleAlternates } from "@/lib/site";
 import {
@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: Pick<PlayersPageProps, "param
     return {};
   }
 
-  const title = "駅伝選手一覧・所属・PB検索";
-  const description = "駅伝選手を名前、学校、所属、状態から検索できる一覧ページです。所属、出身校、PBの確認入口として使えます。";
+  const title = "駅伝人物一覧・所属・PB検索";
+  const description = "人物を名前、学校、所属、状態から検索できる一覧ページです。所属、出身校、PBの確認入口として使えます。";
 
   return {
     title,
@@ -128,9 +128,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
         where: {
           slug: organizationSlug,
           memberships: {
-            some: {
-              person: { type: "athlete" },
-            },
+            some: {},
           },
         },
       })
@@ -154,16 +152,13 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     where: {
       ...(organizationType ? { type: organizationType } : {}),
       memberships: {
-        some: {
-          person: { type: "athlete" },
-        },
+        some: {},
       },
     },
     orderBy: [{ type: "asc" }, { nameJa: "asc" }],
   });
 
   const playerWhere: Prisma.PersonWhereInput = {
-    type: "athlete",
     ...(status ? { status } : {}),
     ...(organizationSlug || organizationType
       ? {
@@ -339,6 +334,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                       <span>
                         <strong className="block font-semibold">{player.displayNameJa}</strong>
                         <span className="text-sm text-[#59615c]">{player.displayNameRoman}</span>
+                        <span className="mt-1 inline-flex border border-[#ded8cc] px-2 py-0.5 text-xs text-[#8a1f2d]">
+                          {formatPersonType(player.type, locale)}
+                        </span>
                       </span>
                       <span>
                         <span className="mb-1 block text-xs font-medium text-[#8b938e] md:hidden">

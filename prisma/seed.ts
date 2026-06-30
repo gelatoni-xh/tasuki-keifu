@@ -1,5 +1,6 @@
 import "dotenv/config";
 import {
+  CompetitionType,
   DataStatus,
   EventDiscipline,
   MembershipType,
@@ -151,7 +152,7 @@ async function upsertCompetition(input: {
   nameRoman?: string;
   nameZh?: string;
   nameEn?: string;
-  type?: string;
+  type?: CompetitionType;
   region?: string;
   websiteUrl?: string;
 }) {
@@ -270,6 +271,7 @@ async function ensureSeedMembership(input: {
         personId: input.personId,
         organizationId: input.organizationId,
         type: input.type,
+        role: "athlete",
         startDate: input.startDate ?? null,
         endDate: input.endDate ?? null,
         startYear: input.startYear ?? null,
@@ -1395,7 +1397,7 @@ async function main() {
     nameJa: "大阪マラソン",
     nameRoman: "Osaka Marathon",
     nameZh: "大阪马拉松",
-    type: "road_marathon",
+    type: "marathon",
     region: "大阪府",
     websiteUrl: "https://www.osaka-marathon.com/",
   });
@@ -1423,7 +1425,7 @@ async function main() {
     slug: "marugame-half-marathon",
     nameJa: "香川丸亀国際ハーフマラソン",
     nameRoman: "Kagawa Marugame International Half Marathon",
-    type: "road_half_marathon",
+    type: "road_race",
     region: "香川県",
     websiteUrl: "https://www.marugame-half.jp/",
   });
@@ -1451,7 +1453,7 @@ async function main() {
     slug: "tokyo-marathon",
     nameJa: "東京マラソン",
     nameRoman: "Tokyo Marathon",
-    type: "road_marathon",
+    type: "marathon",
     region: "東京都",
     websiteUrl: "https://www.marathon.tokyo/",
   });
@@ -1478,7 +1480,7 @@ async function main() {
     slug: "fisu-world-university-games",
     nameJa: "FISUワールドユニバーシティゲームズ",
     nameRoman: "FISU World University Games",
-    type: "international_multi_sport",
+    type: "road_race",
     region: "国際",
   });
   const fisuWorldUniversityGames2025 = await upsertCompetitionEdition({

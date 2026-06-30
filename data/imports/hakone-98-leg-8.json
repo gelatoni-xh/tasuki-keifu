@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-98-leg-8-draft-20260629",
+  "batchKey": "hakone-98-leg-8-draft-20260630",
   "sourceId": "source-ntv-hakone-98-leg-8",
   "raceSlug": "hakone-ekiden-98-leg-8",
   "summary": "第98回箱根駅伝 8区 NTV 区間ページ draft 導入",
@@ -235,7 +235,7 @@
       "slug": "kushida-yoshiki",
       "displayNameJa": "櫛田 佳希",
       "displayNameRoman": "KUSHIDA Yoshiki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "gakuho-ishikawa-high-school",
       "grade": 3,
       "mark": "1:06:01",
@@ -396,7 +396,7 @@
       "slug": "desen-ryunosuke",
       "displayNameJa": "出仙 龍之介",
       "displayNameRoman": "DESEN Ryunosuke",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-鯖江高",
       "grade": 3,
       "mark": "1:06:56",
@@ -442,7 +442,7 @@
       "slug": "yamamoto-ryushin",
       "displayNameJa": "山本 龍神",
       "displayNameRoman": "YAMAMOTO Ryushin",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "hs-米子松蔭高",
       "grade": 2,
       "mark": "1:06:44",
@@ -484,5 +484,9 @@
       "sourceEntityKey": "ntv-98-leg8-ono-haruto",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/98/team_kukan/8.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

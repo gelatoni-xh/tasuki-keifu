@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-99-leg-9-draft-20260629",
+  "batchKey": "hakone-99-leg-9-draft-20260630",
   "sourceId": "source-ntv-hakone-99-leg-9",
   "raceSlug": "hakone-ekiden-99-leg-9",
   "summary": "第99回箱根駅伝 9区 NTV 区間ページ draft 導入",
@@ -262,7 +262,7 @@
       "slug": "shimojo-daisuke",
       "displayNameJa": "下條 乃將",
       "displayNameRoman": "SHIMOJO Daisuke",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "tokyo-jitsugyo-high-school",
       "grade": 4,
       "mark": "1:10:53",
@@ -446,7 +446,7 @@
       "slug": "fukui-hiromu",
       "displayNameJa": "福井 大夢",
       "displayNameRoman": "FUKUI Hiromu",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "hs-水戸工業高",
       "grade": 4,
       "mark": "1:14:26",
@@ -488,5 +488,9 @@
       "sourceEntityKey": "ntv-99-leg9-minakawa-kazunori",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/9.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

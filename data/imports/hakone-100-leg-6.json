@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-100-leg-6-draft-20260629",
+  "batchKey": "hakone-100-leg-6-draft-20260630",
   "sourceId": "source-ntv-hakone-100-leg-6",
   "raceSlug": "hakone-ekiden-100-leg-6",
   "summary": "第100回箱根駅伝 6区 NTV 区間ページ draft 導入",
@@ -250,7 +250,7 @@
       "slug": "hori-sosuke",
       "displayNameJa": "堀 颯介",
       "displayNameRoman": "HORI Sosuke",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "sendai-ikuei-high-school",
       "grade": 2,
       "mark": "58:52",
@@ -384,7 +384,7 @@
       "slug": "katsube-aito",
       "displayNameJa": "勝部 愛大",
       "displayNameRoman": "KATSUBE Aito",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "hs-米子松蔭高",
       "grade": 2,
       "mark": "1:00:47",
@@ -476,7 +476,7 @@
       "slug": "shioji-yuki",
       "displayNameJa": "塩路 悠耀",
       "displayNameRoman": "SHIOJI Yuki",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "surugadai-university",
       "highSchoolSlug": "hs-田辺工業高",
       "grade": 2,
       "mark": "1:01:44",
@@ -518,5 +518,9 @@
       "sourceEntityKey": "ntv-100-leg6-takada-naoki",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/100/team_kukan/6.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }

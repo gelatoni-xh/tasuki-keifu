@@ -1,5 +1,5 @@
 {
-  "batchKey": "hakone-99-leg-7-draft-20260629",
+  "batchKey": "hakone-99-leg-7-draft-20260630",
   "sourceId": "source-ntv-hakone-99-leg-7",
   "raceSlug": "hakone-ekiden-99-leg-7",
   "summary": "第99回箱根駅伝 7区 NTV 区間ページ draft 導入",
@@ -258,7 +258,7 @@
       "slug": "sugi-safumi",
       "displayNameJa": "杉 彩文海",
       "displayNameRoman": "SUGI Safumi",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "meiji-university",
       "highSchoolSlug": "tosu-technical-high-school",
       "grade": 3,
       "mark": "1:02:43",
@@ -442,7 +442,7 @@
       "slug": "nishida-taichi",
       "displayNameJa": "西田 大智",
       "displayNameRoman": "NISHIDA Taichi",
-      "universitySlug": "kanto-student-union",
+      "universitySlug": "kokushikan-university",
       "highSchoolSlug": "saitama-sakae-high-school",
       "grade": 2,
       "mark": "1:06:07",
@@ -484,5 +484,9 @@
       "sourceEntityKey": "ntv-99-leg7-enomoto-kota",
       "sourceUrl": "https://www.ntv.co.jp/hakone/backnumber/99/team_kukan/7.html"
     }
-  ]
+  ],
+  "_draftMeta": {
+    "missingUniversityNames": [],
+    "missingHighSchoolNames": []
+  }
 }
