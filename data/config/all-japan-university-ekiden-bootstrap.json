@@ -1,0 +1,106 @@
+{
+  "competition": {
+    "slug": "all-japan-university-ekiden",
+    "nameJa": "全日本大学駅伝対校選手権大会",
+    "nameRoman": "All Japan University Ekiden",
+    "nameZh": "全日本大学驿传",
+    "type": "university_ekiden",
+    "region": "東海",
+    "websiteUrl": "https://daigaku-ekiden.com/"
+  },
+  "sources": [
+    {
+      "id": "source-all-japan-university-ekiden-57",
+      "name": "全日本大学駅伝公式 第57回大会成績PDF",
+      "url": "https://daigaku-ekiden.com/files/2025_result.pdf",
+      "type": "pdf",
+      "reliability": 5,
+      "notes": "第57回全日本大学駅伝の公式大会成績PDF。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "all-japan-university-ekiden-57",
+      "editionNumber": 57,
+      "year": 2025,
+      "officialName": "秩父宮賜杯 第57回全日本大学駅伝対校選手権大会",
+      "shortName": "第57回全日本大学駅伝",
+      "startsOn": "2025-11-02",
+      "sourceId": "source-all-japan-university-ekiden-57"
+    }
+  ],
+  "races": [
+    {
+      "slug": "all-japan-university-ekiden-57-leg-1",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "1区",
+      "discipline": "ekiden_leg",
+      "leg": 1,
+      "distanceMeters": 9500,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    },
+    {
+      "slug": "all-japan-university-ekiden-57-leg-2",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "2区",
+      "discipline": "ekiden_leg",
+      "leg": 2,
+      "distanceMeters": 11100,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    },
+    {
+      "slug": "all-japan-university-ekiden-57-leg-3",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "3区",
+      "discipline": "ekiden_leg",
+      "leg": 3,
+      "distanceMeters": 11900,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    },
+    {
+      "slug": "all-japan-university-ekiden-57-leg-4",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "4区",
+      "discipline": "ekiden_leg",
+      "leg": 4,
+      "distanceMeters": 11800,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    },
+    {
+      "slug": "all-japan-university-ekiden-57-leg-5",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "5区",
+      "discipline": "ekiden_leg",
+      "leg": 5,
+      "distanceMeters": 12400,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    },
+    {
+      "slug": "all-japan-university-ekiden-57-leg-6",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "6区",
+      "discipline": "ekiden_leg",
+      "leg": 6,
+      "distanceMeters": 12800,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    },
+    {
+      "slug": "all-japan-university-ekiden-57-leg-7",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "7区",
+      "discipline": "ekiden_leg",
+      "leg": 7,
+      "distanceMeters": 17600,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    },
+    {
+      "slug": "all-japan-university-ekiden-57-leg-8",
+      "editionSlug": "all-japan-university-ekiden-57",
+      "name": "8区",
+      "discipline": "ekiden_leg",
+      "leg": 8,
+      "distanceMeters": 19700,
+      "sourceId": "source-all-japan-university-ekiden-57"
+    }
+  ]
+}

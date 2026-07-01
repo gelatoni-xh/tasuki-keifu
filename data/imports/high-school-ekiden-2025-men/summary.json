@@ -1,0 +1,506 @@
+{
+  "schools": 58,
+  "prefectures": [
+    "愛知県",
+    "愛媛県",
+    "茨城県",
+    "岡山県",
+    "沖縄県",
+    "岩手県",
+    "岐阜県",
+    "宮崎県",
+    "宮城県",
+    "京都府",
+    "熊本県",
+    "群馬県",
+    "広島県",
+    "香川県",
+    "高知県",
+    "佐賀県",
+    "埼玉県",
+    "三重県",
+    "山形県",
+    "山口県",
+    "山梨県",
+    "滋賀県",
+    "鹿児島県",
+    "秋田県",
+    "新潟県",
+    "神奈川県",
+    "青森県",
+    "静岡県",
+    "石川県",
+    "千葉県",
+    "大阪府",
+    "大分県",
+    "長崎県",
+    "長野県",
+    "鳥取県",
+    "島根県",
+    "東京都",
+    "徳島県",
+    "栃木県",
+    "奈良県",
+    "富山県",
+    "福井県",
+    "福岡県",
+    "福島県",
+    "兵庫県",
+    "北海道",
+    "和歌山県"
+  ],
+  "prefectureCount": 47,
+  "generatedSchoolCount": 20,
+  "generatedSchools": [
+    {
+      "sourceNameJa": "西脇工",
+      "canonicalNameJa": "西脇工高校",
+      "prefecture": "兵庫県"
+    },
+    {
+      "sourceNameJa": "市船橋",
+      "canonicalNameJa": "市船橋高校",
+      "prefecture": "千葉県"
+    },
+    {
+      "sourceNameJa": "興國",
+      "canonicalNameJa": "興國高校",
+      "prefecture": "大阪府"
+    },
+    {
+      "sourceNameJa": "稲生",
+      "canonicalNameJa": "稲生高校",
+      "prefecture": "三重県"
+    },
+    {
+      "sourceNameJa": "智辯カレッジ",
+      "canonicalNameJa": "智辯カレッジ高校",
+      "prefecture": "奈良県"
+    },
+    {
+      "sourceNameJa": "東海大相模",
+      "canonicalNameJa": "東海大相模高校",
+      "prefecture": "神奈川県"
+    },
+    {
+      "sourceNameJa": "中越",
+      "canonicalNameJa": "中越高校",
+      "prefecture": "新潟県"
+    },
+    {
+      "sourceNameJa": "高知農",
+      "canonicalNameJa": "高知農高校",
+      "prefecture": "高知県"
+    },
+    {
+      "sourceNameJa": "長野日大",
+      "canonicalNameJa": "長野日大高校",
+      "prefecture": "長野県"
+    },
+    {
+      "sourceNameJa": "東海大札幌",
+      "canonicalNameJa": "東海大札幌高校",
+      "prefecture": "北海道"
+    },
+    {
+      "sourceNameJa": "平田",
+      "canonicalNameJa": "平田高校",
+      "prefecture": "島根県"
+    },
+    {
+      "sourceNameJa": "高岡向陵",
+      "canonicalNameJa": "高岡向陵高校",
+      "prefecture": "富山県"
+    },
+    {
+      "sourceNameJa": "美濃加茂",
+      "canonicalNameJa": "美濃加茂高校",
+      "prefecture": "岐阜県"
+    },
+    {
+      "sourceNameJa": "飯塚",
+      "canonicalNameJa": "飯塚高校",
+      "prefecture": "福岡県"
+    },
+    {
+      "sourceNameJa": "作新学院",
+      "canonicalNameJa": "作新学院高校",
+      "prefecture": "栃木県"
+    },
+    {
+      "sourceNameJa": "秋田工",
+      "canonicalNameJa": "秋田工高校",
+      "prefecture": "秋田県"
+    },
+    {
+      "sourceNameJa": "宇和",
+      "canonicalNameJa": "宇和高校",
+      "prefecture": "高知県"
+    },
+    {
+      "sourceNameJa": "遊学館",
+      "canonicalNameJa": "遊学館高校",
+      "prefecture": "石川県"
+    },
+    {
+      "sourceNameJa": "つるぎ",
+      "canonicalNameJa": "つるぎ高校",
+      "prefecture": "徳島県"
+    },
+    {
+      "sourceNameJa": "四学香川西",
+      "canonicalNameJa": "四学香川西高校",
+      "prefecture": "香川県"
+    }
+  ],
+  "representatives": [
+    {
+      "schoolName": "学法石川",
+      "prefecture": "福島県",
+      "representativeLabel": "福島",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "仙台育英",
+      "prefecture": "宮城県",
+      "representativeLabel": "宮城",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "倉敷",
+      "prefecture": "岡山県",
+      "representativeLabel": "岡山",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "鳥取城北",
+      "prefecture": "鳥取県",
+      "representativeLabel": "鳥取",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "八千代松陰",
+      "prefecture": "千葉県",
+      "representativeLabel": "南関東",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "西脇工",
+      "prefecture": "兵庫県",
+      "representativeLabel": "兵庫",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "拓大一",
+      "prefecture": "東京都",
+      "representativeLabel": "東京",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "豊川",
+      "prefecture": "愛知県",
+      "representativeLabel": "愛知",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "鳥栖工",
+      "prefecture": "佐賀県",
+      "representativeLabel": "佐賀",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "佐久長聖",
+      "prefecture": "長野県",
+      "representativeLabel": "長野",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "東農大二",
+      "prefecture": "群馬県",
+      "representativeLabel": "群馬",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "市船橋",
+      "prefecture": "千葉県",
+      "representativeLabel": "千葉",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "宮崎日大",
+      "prefecture": "宮崎県",
+      "representativeLabel": "南九州",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "札幌山の手",
+      "prefecture": "北海道",
+      "representativeLabel": "北海道",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "興國",
+      "prefecture": "大阪府",
+      "representativeLabel": "大阪",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "九州学院",
+      "prefecture": "熊本県",
+      "representativeLabel": "熊本",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "水城",
+      "prefecture": "茨城県",
+      "representativeLabel": "北関東",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "小林",
+      "prefecture": "宮崎県",
+      "representativeLabel": "宮崎",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "洛南",
+      "prefecture": "京都府",
+      "representativeLabel": "京都",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "須磨学園",
+      "prefecture": "兵庫県",
+      "representativeLabel": "近畿",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "稲生",
+      "prefecture": "三重県",
+      "representativeLabel": "三重",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "智辯カレッジ",
+      "prefecture": "奈良県",
+      "representativeLabel": "奈良",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "埼玉栄",
+      "prefecture": "埼玉県",
+      "representativeLabel": "埼玉",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "東海大相模",
+      "prefecture": "神奈川県",
+      "representativeLabel": "神奈川",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "福岡第一",
+      "prefecture": "福岡県",
+      "representativeLabel": "福岡",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "大分東明",
+      "prefecture": "大分県",
+      "representativeLabel": "大分",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "中越",
+      "prefecture": "新潟県",
+      "representativeLabel": "新潟",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "高知農",
+      "prefecture": "高知県",
+      "representativeLabel": "高知",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "青森山田",
+      "prefecture": "青森県",
+      "representativeLabel": "青森",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "世羅",
+      "prefecture": "広島県",
+      "representativeLabel": "広島",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "長野日大",
+      "prefecture": "長野県",
+      "representativeLabel": "北信越",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "東海大札幌",
+      "prefecture": "北海道",
+      "representativeLabel": "北海道",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "一関学院",
+      "prefecture": "岩手県",
+      "representativeLabel": "岩手",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "平田",
+      "prefecture": "島根県",
+      "representativeLabel": "島根",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "山梨学院",
+      "prefecture": "山梨県",
+      "representativeLabel": "山梨",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "酒田南",
+      "prefecture": "山形県",
+      "representativeLabel": "山形",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "高岡向陵",
+      "prefecture": "富山県",
+      "representativeLabel": "富山",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "美方",
+      "prefecture": "福井県",
+      "representativeLabel": "福井",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "美濃加茂",
+      "prefecture": "岐阜県",
+      "representativeLabel": "岐阜",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "鹿児島城西",
+      "prefecture": "鹿児島県",
+      "representativeLabel": "鹿児島",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "八戸学院光星",
+      "prefecture": "宮城県",
+      "representativeLabel": "東北",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "飯塚",
+      "prefecture": "福岡県",
+      "representativeLabel": "北九州",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "東洋大牛久",
+      "prefecture": "茨城県",
+      "representativeLabel": "茨城",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "愛知",
+      "prefecture": "愛知県",
+      "representativeLabel": "東海",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "浜松日体",
+      "prefecture": "静岡県",
+      "representativeLabel": "静岡",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "作新学院",
+      "prefecture": "栃木県",
+      "representativeLabel": "栃木",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "広島国際学院",
+      "prefecture": "広島県",
+      "representativeLabel": "中国",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "秋田工",
+      "prefecture": "秋田県",
+      "representativeLabel": "秋田",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "今治北",
+      "prefecture": "愛媛県",
+      "representativeLabel": "愛媛",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "滋賀学園",
+      "prefecture": "滋賀県",
+      "representativeLabel": "滋賀",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "鎮西学院",
+      "prefecture": "長崎県",
+      "representativeLabel": "長崎",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "宇和",
+      "prefecture": "高知県",
+      "representativeLabel": "四国",
+      "representativeType": "region"
+    },
+    {
+      "schoolName": "和歌山北",
+      "prefecture": "和歌山県",
+      "representativeLabel": "和歌山",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "宇部鴻城",
+      "prefecture": "山口県",
+      "representativeLabel": "山口",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "遊学館",
+      "prefecture": "石川県",
+      "representativeLabel": "石川",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "北山",
+      "prefecture": "沖縄県",
+      "representativeLabel": "沖縄",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "つるぎ",
+      "prefecture": "徳島県",
+      "representativeLabel": "徳島",
+      "representativeType": "prefecture"
+    },
+    {
+      "schoolName": "四学香川西",
+      "prefecture": "香川県",
+      "representativeLabel": "香川",
+      "representativeType": "prefecture"
+    }
+  ]
+}

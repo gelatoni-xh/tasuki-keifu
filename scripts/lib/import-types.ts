@@ -16,7 +16,7 @@ export const teamSnapshotSchema = z.object({
 export const teamResultSchema = z.object({
   organizationSlug: z.string().min(1),
   organizationNameJa: z.string().min(1),
-  organizationType: z.enum(["university", "high_school", "club"]).default("university"),
+  organizationType: z.enum(["university", "high_school", "club", "corporate_team"]).default("university"),
   organizationPrefecture: z.string().min(1).nullable().optional(),
   finalRank: z.number().int().positive().nullable().optional(),
   finalMark: z.string().min(1).nullable().optional(),
@@ -31,7 +31,7 @@ export const raceEntrySchema = z.object({
   displayNameRoman: z.string().min(1).nullable().optional(),
   raceOrganizationSlug: z.string().min(1),
   raceOrganizationNameJa: z.string().min(1),
-  raceOrganizationType: z.enum(["university", "high_school", "club"]).default("university"),
+  raceOrganizationType: z.enum(["university", "high_school", "club", "corporate_team"]).default("university"),
   raceOrganizationPrefecture: z.string().min(1).nullable().optional(),
   universitySlug: z.string().min(1).nullable().optional(),
   universityNameJa: z.string().min(1).nullable().optional(),

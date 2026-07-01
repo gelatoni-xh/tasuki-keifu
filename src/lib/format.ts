@@ -57,8 +57,14 @@ export function formatRankWithNotes(
   notes: string | null | undefined,
   locale: Locale = "ja",
 ) {
-  if (notes?.split("/").map((part) => part.trim()).includes("OP")) {
+  const noteParts = notes?.split("/").map((part) => part.trim()).filter(Boolean) ?? [];
+
+  if (noteParts.includes("OP")) {
     return "OP";
+  }
+
+  if (!rank && noteParts.includes("SDS")) {
+    return "SDS";
   }
 
   return formatRank(rank, locale);

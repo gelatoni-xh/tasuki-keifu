@@ -537,7 +537,7 @@ async function main() {
   const allJapanEkiden57Source = await upsertSourceById({
     id: "source-all-japan-university-ekiden-57",
     name: "全日本大学駅伝公式 第57回大会成績PDF",
-    url: "https://daigaku-ekiden.com/wp-content/uploads/2025/11/57_kiroku.pdf",
+    url: "https://daigaku-ekiden.com/files/2025_result.pdf",
     type: SourceType.pdf,
     reliability: 5,
     notes: "第57回全日本大学駅伝 8区、工藤慎作 56:54、区間1位の参照元。",
@@ -557,6 +557,22 @@ async function main() {
     type: SourceType.pdf,
     reliability: 5,
     notes: "第56回全日本大学駅伝 8区、工藤慎作 58:12、区間3位の公式PDF参照元。",
+  });
+  const nationalHighSchoolEkiden2025MenSource = await upsertSourceById({
+    id: "source-jaaf-koko-ekiden-2025-men-result",
+    name: "JAAF 第76回全国高等学校駅伝競走大会 男子総合成績PDF",
+    url: "https://www.jaaf.or.jp/files/upload/202512/21_150042.pdf",
+    type: SourceType.jaaf,
+    reliability: 5,
+    notes: "2025年12月21日開催、第76回全国高等学校駅伝競走大会 男子の公式総合成績PDF。",
+  });
+  const newYearEkiden69Source = await upsertSourceById({
+    id: "source-new-year-ekiden-69-result",
+    name: "JITA 第69回ニューイヤー駅伝大会成績PDF",
+    url: "https://www.jita-trackfield.jp/jita/wp-content/uploads/2025/01/2025_JITA_NewYearEKIDEN_Result_0101.pdf",
+    type: SourceType.pdf,
+    reliability: 5,
+    notes: "2025年1月1日開催、第69回全日本実業団対抗駅伝競走大会の公式成績PDF。",
   });
 
   const aogaku = await upsertOrganization({
@@ -1336,6 +1352,69 @@ async function main() {
     leg: 8,
     sourceId: allJapanEkiden57Source.id,
   });
+
+  const nationalHighSchoolEkiden = await upsertCompetition({
+    slug: "national-high-school-ekiden",
+    nameJa: "全国高等学校駅伝競走大会",
+    nameRoman: "National High School Ekiden",
+    nameZh: "全国高中驿传",
+    type: "high_school_ekiden",
+    region: "京都府",
+    websiteUrl: "https://www.jaaf.or.jp/competition/detail/1993/",
+  });
+  const newYearEkiden = await upsertCompetition({
+    slug: "new-year-ekiden",
+    nameJa: "全日本実業団対抗駅伝競走大会",
+    nameRoman: "New Year Ekiden",
+    nameZh: "全日本实业团对抗驿传",
+    type: "corporate_ekiden",
+    region: "群馬県",
+    websiteUrl: "https://www.jita-trackfield.jp/",
+  });
+  const newYearEkiden69 = await upsertCompetitionEdition({
+    slug: "new-year-ekiden-69",
+    competitionId: newYearEkiden.id,
+    editionNumber: 69,
+    year: 2025,
+    officialName: "第69回全日本実業団対抗駅伝競走大会",
+    shortName: "ニューイヤー駅伝2025",
+    startsOn: new Date("2025-01-01"),
+    sourceId: newYearEkiden69Source.id,
+  });
+  await Promise.all(
+    Array.from({ length: 7 }, (_, index) =>
+      upsertRace({
+        slug: `new-year-ekiden-69-leg-${index + 1}`,
+        competitionEditionId: newYearEkiden69.id,
+        name: `${index + 1}区`,
+        discipline: EventDiscipline.ekiden_leg,
+        leg: index + 1,
+        sourceId: newYearEkiden69Source.id,
+      }),
+    ),
+  );
+  const nationalHighSchoolEkiden2025Men = await upsertCompetitionEdition({
+    slug: "national-high-school-ekiden-2025-men",
+    competitionId: nationalHighSchoolEkiden.id,
+    editionNumber: 76,
+    year: 2025,
+    officialName: "男子第76回全国高等学校駅伝競走大会",
+    shortName: "全国高校駅伝2025 男子",
+    startsOn: new Date("2025-12-21"),
+    sourceId: nationalHighSchoolEkiden2025MenSource.id,
+  });
+  await Promise.all(
+    Array.from({ length: 7 }, (_, index) =>
+      upsertRace({
+        slug: `national-high-school-ekiden-2025-men-leg-${index + 1}`,
+        competitionEditionId: nationalHighSchoolEkiden2025Men.id,
+        name: `${index + 1}区`,
+        discipline: EventDiscipline.ekiden_leg,
+        leg: index + 1,
+        sourceId: nationalHighSchoolEkiden2025MenSource.id,
+      }),
+    ),
+  );
 
   const march = await upsertCompetition({
     slug: "march-taikosen",

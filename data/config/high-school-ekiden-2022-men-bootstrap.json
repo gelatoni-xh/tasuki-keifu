@@ -1,0 +1,99 @@
+{
+  "competition": {
+    "slug": "national-high-school-ekiden",
+    "nameJa": "全国高等学校駅伝競走大会",
+    "nameRoman": "National High School Ekiden",
+    "nameZh": "全国高中驿传",
+    "nameEn": "National High School Ekiden",
+    "type": "high_school_ekiden",
+    "region": "Japan",
+    "websiteUrl": "https://mainichi.jp/koukouekiden/"
+  },
+  "sources": [
+    {
+      "id": "source-mainichi-koko-ekiden-2022-men-archive",
+      "name": "Mainichi 全国高校駅伝 2022 男子大会記録",
+      "url": "https://koukouekiden-record.mainichi.jp/record/archive/m_73/all_record.html",
+      "type": "data_site",
+      "reliability": 5,
+      "notes": "National high school ekiden men archive with team, leg, and award-relevant records"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "national-high-school-ekiden-2022-men",
+      "editionNumber": 73,
+      "year": 2022,
+      "officialName": "男子第73回 全国高等学校駅伝競走大会",
+      "shortName": "全国高校駅伝2022 男子",
+      "startsOn": "2022-12-25T12:30:00.000Z",
+      "endsOn": "2022-12-25T14:30:00.000Z",
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    }
+  ],
+  "races": [
+    {
+      "slug": "national-high-school-ekiden-2022-men-leg-1",
+      "editionSlug": "national-high-school-ekiden-2022-men",
+      "name": "1区",
+      "discipline": "ekiden_leg",
+      "leg": 1,
+      "distanceMeters": 10000,
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    },
+    {
+      "slug": "national-high-school-ekiden-2022-men-leg-2",
+      "editionSlug": "national-high-school-ekiden-2022-men",
+      "name": "2区",
+      "discipline": "ekiden_leg",
+      "leg": 2,
+      "distanceMeters": 3000,
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    },
+    {
+      "slug": "national-high-school-ekiden-2022-men-leg-3",
+      "editionSlug": "national-high-school-ekiden-2022-men",
+      "name": "3区",
+      "discipline": "ekiden_leg",
+      "leg": 3,
+      "distanceMeters": 8107,
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    },
+    {
+      "slug": "national-high-school-ekiden-2022-men-leg-4",
+      "editionSlug": "national-high-school-ekiden-2022-men",
+      "name": "4区",
+      "discipline": "ekiden_leg",
+      "leg": 4,
+      "distanceMeters": 8087,
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    },
+    {
+      "slug": "national-high-school-ekiden-2022-men-leg-5",
+      "editionSlug": "national-high-school-ekiden-2022-men",
+      "name": "5区",
+      "discipline": "ekiden_leg",
+      "leg": 5,
+      "distanceMeters": 3000,
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    },
+    {
+      "slug": "national-high-school-ekiden-2022-men-leg-6",
+      "editionSlug": "national-high-school-ekiden-2022-men",
+      "name": "6区",
+      "discipline": "ekiden_leg",
+      "leg": 6,
+      "distanceMeters": 5000,
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    },
+    {
+      "slug": "national-high-school-ekiden-2022-men-leg-7",
+      "editionSlug": "national-high-school-ekiden-2022-men",
+      "name": "7区",
+      "discipline": "ekiden_leg",
+      "leg": 7,
+      "distanceMeters": 5000,
+      "sourceId": "source-mainichi-koko-ekiden-2022-men-archive"
+    }
+  ]
+}
