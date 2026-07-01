@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { getDictionary, isLocale } from "@/lib/i18n";
-import { buildLocaleAlternates } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/site";
 
 type HomePageProps = {
   params: Promise<{
@@ -22,19 +22,13 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
   const title = "駅伝選手・学校・大会データベース";
   const description = "駅伝選手、所属、出身校、PB、大会成績を調べられる駅伝データベースです。";
 
-  return {
+  return buildPageMetadata({
     title,
     description,
-    alternates: {
-      canonical: `/${localeParam}`,
-      languages: buildLocaleAlternates(),
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/${localeParam}`,
-    },
-  };
+    path: "",
+    locale: localeParam,
+    keywords: ["駅伝選手検索", "学校検索", "大会検索"],
+  });
 }
 
 export default async function HomePage({ params }: HomePageProps) {

@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
-import { buildLocaleAlternates } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/site";
 
 type CompetitionsPageProps = {
   params: Promise<{
@@ -28,19 +28,13 @@ export async function generateMetadata({ params }: Pick<CompetitionsPageProps, "
   const title = "駅伝大会一覧・結果検索";
   const description = "駅伝大会一覧ページです。大会名や開催年から大会を探し、各大会の結果、出場選手、区間情報の確認入口として使えます。";
 
-  return {
+  return buildPageMetadata({
     title,
     description,
-    alternates: {
-      canonical: `/${localeParam}/competitions`,
-      languages: buildLocaleAlternates("/competitions"),
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/${localeParam}/competitions`,
-    },
-  };
+    path: "/competitions",
+    locale: localeParam,
+    keywords: ["駅伝大会一覧", "駅伝結果", "大会検索"],
+  });
 }
 
 const pageSize = 10;

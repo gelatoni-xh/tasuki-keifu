@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRank, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
-import { buildLocaleAlternates } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/site";
 
 type CompetitionEditionPageProps = {
   params: Promise<{
@@ -18,6 +18,26 @@ type CompetitionEditionPageProps = {
     raceUnit?: string;
   }>;
 };
+
+function getCompetitionSeoTier({
+  raceCount,
+  resultCount,
+  teamResultCount,
+}: {
+  raceCount: number;
+  resultCount: number;
+  teamResultCount: number;
+}) {
+  if (raceCount >= 6 && resultCount >= 100 && teamResultCount >= 1) {
+    return "primary";
+  }
+
+  if (resultCount >= 10 || raceCount >= 2) {
+    return "secondary";
+  }
+
+  return "thin";
+}
 
 export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params;
@@ -31,6 +51,9 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
     where: { slug },
     include: {
       competition: true,
+      teamCompetitionResults: {
+        select: { id: true },
+      },
       races: {
         include: {
           _count: {
@@ -47,6 +70,8 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
 
   const raceCount = edition.races.length;
   const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
+  const teamResultCount = edition.teamCompetitionResults?.length ?? 0;
+  const seoTier = getCompetitionSeoTier({ raceCount, resultCount, teamResultCount });
   const title = `${edition.shortName ?? edition.officialName}の結果・出場選手`;
   const description = [
     `${edition.competition.nameJa}の届次ページです。`,
@@ -54,19 +79,31 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
     `${raceCount}件の競技単位と${resultCount}件の結果を収録しています。`,
   ].join(" ");
 
-  return {
+  const metadata = buildPageMetadata({
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/competitions/${slug}`,
-      languages: buildLocaleAlternates(`/competitions/${slug}`),
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/${locale}/competitions/${slug}`,
-    },
-  };
+    path: `/competitions/${slug}`,
+    locale,
+    keywords: [
+      edition.competition.nameJa,
+      edition.shortName ?? edition.officialName,
+      "駅伝結果",
+      "出場選手",
+    ],
+  });
+
+  if (seoTier === "thin") {
+    metadata.robots = {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
+
+  return metadata;
 }
 
 export default async function CompetitionEditionPage({ params, searchParams }: CompetitionEditionPageProps) {
@@ -114,6 +151,11 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const editionSlug = edition.slug;
 
   const resultCount = edition.races.reduce((sum, race) => sum + race.raceResults.length, 0);
+  const seoTier = getCompetitionSeoTier({
+    raceCount: edition.races.length,
+    resultCount,
+    teamResultCount: edition.teamCompetitionResults.length,
+  });
   const teamResults = [...edition.teamCompetitionResults].sort((left, right) => {
     const leftRank = left.finalRank ?? Number.MAX_SAFE_INTEGER;
     const rightRank = right.finalRank ?? Number.MAX_SAFE_INTEGER;
@@ -128,6 +170,11 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const hasEkidenTeamResults = teamResults.length > 0;
   const maxSnapshotLeg = Math.max(0, ...teamResults.flatMap((result) => result.legSnapshots.map((snapshot) => snapshot.leg)));
   const hasRaceUnits = edition.races.length > 0;
+  const leadingOrganizations = teamResults.slice(0, 5).map((result) => result.organization.nameJa);
+  const sampledAthletes = edition.races
+    .flatMap((race) => race.raceResults.slice(0, 3).map((result) => result.person.displayNameJa))
+    .filter((name, index, list) => list.indexOf(name) === index)
+    .slice(0, 8);
   const availableTabs = [
     { key: "overview", label: dictionary.competitions.tabOverview, enabled: true },
     { key: "team-results", label: dictionary.competitions.tabTeamResults, enabled: hasEkidenTeamResults },
@@ -177,8 +224,80 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     return `/${locale}/competitions/${editionSlug}?${params.toString()}`;
   }
 
+  const competitionSummary = [
+    `${edition.shortName ?? edition.officialName}は、${edition.competition.nameJa}の届次データページです。`,
+    `${edition.races.length}件の競技単位と${resultCount}件の結果を収録しています。`,
+    hasEkidenTeamResults ? `${teamResults.length}チームの成績を掲載しています。` : null,
+    leadingOrganizations.length > 0 ? `上位・主要チームとして${leadingOrganizations.join("、")}などを確認できます。` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const competitionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: edition.officialName,
+    alternateName: edition.shortName ?? undefined,
+    description: competitionSummary,
+    startDate: edition.startsOn?.toISOString(),
+    endDate: edition.endsOn?.toISOString() ?? edition.startsOn?.toISOString(),
+    eventStatus: "https://schema.org/EventCompleted",
+    sport: "Ekiden",
+    url: `https://tasukikeifu.com/${locale}/competitions/${edition.slug}`,
+    isPartOf: {
+      "@type": "SportsEvent",
+      name: edition.competition.nameJa,
+    },
+    competitor: teamResults.slice(0, 12).map((result) => ({
+      "@type": "SportsOrganization",
+      name: result.organization.nameJa,
+      url: `https://tasukikeifu.com/${locale}/organizations/${result.organization.slug}`,
+    })),
+    performer: sampledAthletes.map((name) => ({
+      "@type": "Person",
+      name,
+    })),
+    organizer: edition.competition.organizer
+      ? {
+          "@type": "Organization",
+          name: edition.competition.organizer,
+        }
+      : undefined,
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "襷の系譜",
+        item: `https://tasukikeifu.com/${locale}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "大会一覧",
+        item: `https://tasukikeifu.com/${locale}/competitions`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: edition.shortName ?? edition.officialName,
+        item: `https://tasukikeifu.com/${locale}/competitions/${edition.slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(competitionJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <SiteHeader locale={locale} path={`/competitions/${edition.slug}`} />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">
@@ -206,6 +325,9 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                   {formatDate(edition.startsOn) || dictionary.common.emptyDash}
                   {edition.endsOn ? ` - ${formatDate(edition.endsOn)}` : ""}
                 </p>
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
+                  {competitionSummary}
+                </p>
               </div>
               <div className="flex gap-3 text-sm text-[#59615c]">
                 <span className="border border-[#ded8cc] px-3 py-1">
@@ -213,6 +335,17 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 </span>
                 <span className="border border-[#ded8cc] px-3 py-1">
                   {dictionary.competitions.resultCountLabel}: {resultCount}
+                </span>
+                <span
+                  className={`border px-3 py-1 ${
+                    seoTier === "primary"
+                      ? "border-[#c9d7c6] bg-[#eef6ec] text-[#29543a]"
+                      : seoTier === "secondary"
+                        ? "border-[#d8cfbf] bg-[#f6f1e8] text-[#7a5d2d]"
+                        : "border-[#ded8cc] bg-white text-[#59615c]"
+                  }`}
+                >
+                  {seoTier === "primary" ? "Complete page" : seoTier === "secondary" ? "Growing page" : "Seed page"}
                 </span>
               </div>
             </div>

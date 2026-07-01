@@ -7,20 +7,38 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
+  applicationName: siteConfig.searchName,
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.searchName}`,
   },
   description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: siteConfig.authors,
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  category: "Sports",
+  referrer: "origin-when-cross-origin",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
-    siteName: siteConfig.name,
-    title: siteConfig.name,
+    locale: "ja_JP",
+    siteName: siteConfig.searchName,
+    title: siteConfig.searchName,
     description: siteConfig.description,
     url: siteConfig.siteUrl,
+  },
+  twitter: {
+    card: "summary",
+    title: siteConfig.searchName,
+    description: siteConfig.description,
   },
   robots: {
     index: true,

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { locales, type Locale } from "@/lib/i18n";
 
 const defaultSiteUrl = "https://tasukikeifu.com";
@@ -6,6 +7,17 @@ export const siteConfig = {
   name: "襷の系譜",
   searchName: "駅伝データベース 襷の系譜",
   description: "高校・大学・実業団をつなぐ駅伝データベース",
+  keywords: [
+    "駅伝",
+    "駅伝データベース",
+    "大学駅伝",
+    "箱根駅伝",
+    "全日本大学駅伝",
+    "出雲駅伝",
+    "駅伝選手",
+    "陸上長距離",
+  ],
+  authors: [{ name: "襷の系譜" }],
   defaultLocale: "ja" as Locale,
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? defaultSiteUrl,
 };
@@ -28,4 +40,49 @@ export function buildLocaleAlternates(path = "") {
   return Object.fromEntries(
     locales.map((locale) => [locale, buildLocalizedUrl(locale, path)]),
   );
+}
+
+type BuildMetadataInput = {
+  title: string;
+  description: string;
+  path: string;
+  locale: Locale;
+  keywords?: string[];
+  type?: "website" | "article";
+};
+
+export function buildPageMetadata({
+  title,
+  description,
+  path,
+  locale,
+  keywords = [],
+  type = "website",
+}: BuildMetadataInput): Metadata {
+  return {
+    title,
+    description,
+    keywords: [...siteConfig.keywords, ...keywords],
+    authors: siteConfig.authors,
+    creator: siteConfig.name,
+    publisher: siteConfig.name,
+    category: "Sports",
+    alternates: {
+      canonical: buildLocalizedPath(locale, path),
+      languages: buildLocaleAlternates(path),
+    },
+    openGraph: {
+      type,
+      locale: locale === "ja" ? "ja_JP" : locale,
+      siteName: siteConfig.searchName,
+      title,
+      description,
+      url: buildLocalizedPath(locale, path),
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
 }

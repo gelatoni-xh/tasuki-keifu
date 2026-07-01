@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { formatDiscipline, formatOrganizationType, formatPersonType, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
-import { buildLocaleAlternates } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/site";
 import {
   getCurrentMembership,
   getHighSchoolMembership,
@@ -41,19 +41,13 @@ export async function generateMetadata({ params }: Pick<PlayersPageProps, "param
   const title = "駅伝人物一覧・所属・PB検索";
   const description = "人物を名前、学校、所属、状態から検索できる一覧ページです。所属、出身校、PBの確認入口として使えます。";
 
-  return {
+  return buildPageMetadata({
     title,
     description,
-    alternates: {
-      canonical: `/${localeParam}/players`,
-      languages: buildLocaleAlternates("/players"),
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/${localeParam}/players`,
-    },
-  };
+    path: "/players",
+    locale: localeParam,
+    keywords: ["駅伝人物一覧", "駅伝選手一覧", "PB検索", "所属検索"],
+  });
 }
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];

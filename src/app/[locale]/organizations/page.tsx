@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { formatOrganizationType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
-import { buildLocaleAlternates } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/site";
 
 type OrganizationsPageProps = {
   params: Promise<{
@@ -33,19 +33,13 @@ export async function generateMetadata({ params }: Pick<OrganizationsPageProps, 
   const title = "学校・実業団・連盟一覧";
   const description = "学校、大学、実業団、連盟などの組織一覧ページです。所属選手や関連データを探す入口として使えます。";
 
-  return {
+  return buildPageMetadata({
     title,
     description,
-    alternates: {
-      canonical: `/${localeParam}/organizations`,
-      languages: buildLocaleAlternates("/organizations"),
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/${localeParam}/organizations`,
-    },
-  };
+    path: "/organizations",
+    locale: localeParam,
+    keywords: ["大学駅伝学校一覧", "実業団一覧", "連盟一覧"],
+  });
 }
 
 const allowedOrganizationTypes: OrganizationType[] = [

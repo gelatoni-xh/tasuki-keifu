@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { groupMembershipsByRole, isCurrentMembership } from "@/lib/membership";
-import { buildLocaleAlternates } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/site";
 
 type OrganizationDetailPageProps = {
   params: Promise<{
@@ -15,6 +15,26 @@ type OrganizationDetailPageProps = {
     slug: string;
   }>;
 };
+
+function getOrganizationSeoTier({
+  memberships,
+  raceResults,
+  teamResults,
+}: {
+  memberships: number;
+  raceResults: number;
+  teamResults: number;
+}) {
+  if (memberships >= 15 || raceResults >= 28 || teamResults >= 4) {
+    return "primary";
+  }
+
+  if (memberships >= 6 || raceResults >= 7 || teamResults >= 1) {
+    return "secondary";
+  }
+
+  return "thin";
+}
 
 export async function generateMetadata({ params }: OrganizationDetailPageProps): Promise<Metadata> {
   const { locale: localeParam, slug: rawSlug } = await params;
@@ -42,6 +62,11 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
   }
 
   const title = `${organization.nameJa}の所属人物・関連データ`;
+  const seoTier = getOrganizationSeoTier({
+    memberships: organization._count.memberships,
+    raceResults: organization._count.raceResults,
+    teamResults: 0,
+  });
   const description = [
     `${organization.nameJa}の組織ページです。`,
     `${formatOrganizationType(organization.type, locale)}として収録しています。`,
@@ -51,19 +76,31 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
     .filter(Boolean)
     .join(" ");
 
-  return {
+  const metadata = buildPageMetadata({
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/organizations/${slug}`,
-      languages: buildLocaleAlternates(`/organizations/${slug}`),
-    },
-    openGraph: {
-      title,
-      description,
-      url: `/${locale}/organizations/${slug}`,
-    },
-  };
+    path: `/organizations/${slug}`,
+    locale,
+    keywords: [
+      organization.nameJa,
+      formatOrganizationType(organization.type, locale),
+      "所属人物",
+      "駅伝チーム",
+    ],
+  });
+
+  if (seoTier === "thin") {
+    metadata.robots = {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
+
+  return metadata;
 }
 
 export default async function OrganizationDetailPage({ params }: OrganizationDetailPageProps) {
@@ -125,9 +162,79 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
     { key: "coach", label: formatMembershipRole("coach", locale), current: currentByRole.coach, former: formerByRole.coach },
     { key: "staff", label: formatMembershipRole("staff", locale), current: currentByRole.staff, former: formerByRole.staff },
   ];
+  const seoTier = getOrganizationSeoTier({
+    memberships: organization.memberships.length,
+    raceResults: 0,
+    teamResults: organization.teamCompetitionResults.length,
+  });
+  const highlightedEditions = ekidenResults.slice(0, 5).map((result) => result.competitionEdition.shortName ?? result.competitionEdition.officialName);
+  const highlightedPeople = organization.memberships
+    .slice(0, 8)
+    .map((membership) => membership.person.displayNameJa)
+    .filter((name, index, list) => list.indexOf(name) === index);
+  const organizationSummary = [
+    `${organization.nameJa}は、${formatOrganizationType(organization.type, locale)}として収録している組織ページです。`,
+    organization.memberships.length > 0 ? `現在までに${organization.memberships.length}件の所属関係を確認しています。` : null,
+    ekidenResults.length > 0 ? `駅伝大会では${ekidenResults.length}件のチーム成績を掲載しています。` : null,
+    highlightedEditions.length > 0 ? `主な関連大会として${highlightedEditions.join("、")}などを確認できます。` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SportsOrganization",
+    name: organization.nameJa,
+    alternateName: organization.shortName ?? undefined,
+    description: organizationSummary,
+    sport: "Ekiden",
+    url: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
+    location: organization.location ?? organization.prefecture ?? undefined,
+    sameAs: organization.websiteUrl ?? undefined,
+    member: highlightedPeople.map((name) => ({
+      "@type": "Person",
+      name,
+    })),
+    subjectOf: ekidenResults.slice(0, 8).map((result) => ({
+      "@type": "SportsEvent",
+      name: result.competitionEdition.shortName ?? result.competitionEdition.officialName,
+      url: `https://tasukikeifu.com/${locale}/competitions/${result.competitionEdition.slug}`,
+    })),
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "襷の系譜",
+        item: `https://tasukikeifu.com/${locale}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "組織一覧",
+        item: `https://tasukikeifu.com/${locale}/organizations`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: organization.nameJa,
+        item: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
+      },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <SiteHeader locale={locale} path={`/organizations/${organization.slug}`} />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">
@@ -149,20 +256,36 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                 <p className="mt-3 text-sm text-[#59615c]">
                   {organization.location ?? organization.prefecture ?? dictionary.common.emptyDash}
                 </p>
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
+                  {organizationSummary}
+                </p>
               </div>
-              {organization.websiteUrl ? (
-                <a
-                  className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
-                  data-analytics-event="source_outbound_click"
-                  data-analytics-link-type="organization_website"
-                  href={organization.websiteUrl}
-                  rel="noreferrer"
-                  target="_blank"
+              <div className="flex flex-col items-start gap-3">
+                <span
+                  className={`border px-3 py-1 text-sm ${
+                    seoTier === "primary"
+                      ? "border-[#c9d7c6] bg-[#eef6ec] text-[#29543a]"
+                      : seoTier === "secondary"
+                        ? "border-[#d8cfbf] bg-[#f6f1e8] text-[#7a5d2d]"
+                        : "border-[#ded8cc] bg-white text-[#59615c]"
+                  }`}
                 >
-                  {dictionary.organizations.website}
-                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                </a>
-              ) : null}
+                  {seoTier === "primary" ? "Complete page" : seoTier === "secondary" ? "Growing page" : "Seed page"}
+                </span>
+                {organization.websiteUrl ? (
+                  <a
+                    className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+                    data-analytics-event="source_outbound_click"
+                    data-analytics-link-type="organization_website"
+                    href={organization.websiteUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {dictionary.organizations.website}
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                ) : null}
+              </div>
             </div>
           </header>
 

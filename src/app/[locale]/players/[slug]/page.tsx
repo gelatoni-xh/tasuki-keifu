@@ -16,7 +16,7 @@ import {
   sortMembershipsByStartDate,
 } from "@/lib/membership";
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
-import { buildLocaleAlternates } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/site";
 import type { PlayerRelationEntry, RelationReason, RelationStageKey } from "@/lib/player-relations/types";
 
 type PlayerDetailPageProps = {
@@ -25,6 +25,26 @@ type PlayerDetailPageProps = {
     slug: string;
   }>;
 };
+
+function getPlayerSeoTier({
+  memberships,
+  personalBests,
+  results,
+}: {
+  memberships: number;
+  personalBests: number;
+  results: number;
+}) {
+  if (results >= 5 || memberships >= 3 || personalBests >= 3) {
+    return "primary";
+  }
+
+  if ((results >= 2 && memberships >= 1) || personalBests >= 1 || memberships >= 2) {
+    return "secondary";
+  }
+
+  return "thin";
+}
 
 export async function generateMetadata({ params }: PlayerDetailPageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params;
@@ -58,6 +78,11 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
   const currentMembership = getCurrentMembership(player.memberships);
   const university = getUniversityMembership(player.memberships);
   const highSchool = getHighSchoolMembership(player.memberships);
+  const seoTier = getPlayerSeoTier({
+    memberships: player.memberships.length,
+    personalBests: player.personalBests.length,
+    results: player.raceResults.length,
+  });
   const title = `${player.displayNameJa}の所属・記録・大会成績`;
   const descriptionParts = [
     `${player.displayNameJa}の所属、記録、大会成績を確認できる人物資料ページです。`,
@@ -69,19 +94,35 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
     "所属変遷、関連大会、データ出典もあわせて確認できます。",
   ].filter(Boolean);
 
-  return {
+  const metadata = buildPageMetadata({
     title,
     description: descriptionParts.join(" "),
-    alternates: {
-      canonical: `/${locale}/players/${slug}`,
-      languages: buildLocaleAlternates(`/players/${slug}`),
-    },
-    openGraph: {
-      title,
-      description: descriptionParts.join(" "),
-      url: `/${locale}/players/${slug}`,
-    },
-  };
+    path: `/players/${slug}`,
+    locale,
+    keywords: [
+      player.displayNameJa,
+      player.displayNameKana ?? "",
+      currentMembership?.organization.nameJa ?? "",
+      university?.organization.nameJa ?? "",
+      highSchool?.organization.nameJa ?? "",
+      "駅伝選手",
+      "大会成績",
+      "PB",
+    ].filter(Boolean),
+  });
+
+  if (seoTier === "thin") {
+    metadata.robots = {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
+
+  return metadata;
 }
 
 function isPublicSource<T extends Pick<Source, "id">>(source: T | null): source is T {
@@ -280,9 +321,93 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
   const hasPersonalBests = player.personalBests.length > 0;
   const hasRaceResults = sortedRaceResults.length > 0;
   const shouldShowPerformanceSections = player.type === "athlete" || hasPersonalBests || hasRaceResults;
+  const seoTier = getPlayerSeoTier({
+    memberships: player.memberships.length,
+    personalBests: player.personalBests.length,
+    results: sortedRaceResults.length,
+  });
+  const keyCompetitionNames = sortedRaceResults
+    .slice(0, 5)
+    .map((result) => result.race.competitionEdition.shortName ?? result.race.competitionEdition.officialName)
+    .filter((name, index, list) => list.indexOf(name) === index);
+  const playerSummary = [
+    `${player.displayNameJa}の人物データページです。`,
+    currentMembership?.organization.nameJa ? `現在の所属は${currentMembership.organization.nameJa}です。` : null,
+    university?.organization.nameJa ? `大学は${university.organization.nameJa}。` : null,
+    highSchool?.organization.nameJa ? `高校は${highSchool.organization.nameJa}。` : null,
+    player.personalBests.length > 0 ? `主要PBを${player.personalBests.length}件掲載しています。` : null,
+    sortedRaceResults.length > 0 ? `大会成績を${sortedRaceResults.length}件掲載しています。` : null,
+    keyCompetitionNames.length > 0 ? `主な大会として${keyCompetitionNames.join("、")}などを確認できます。` : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const playerJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: player.displayNameJa,
+    alternateName: [player.displayNameKana, player.displayNameRoman, player.displayNameZh, player.displayNameEn].filter(Boolean),
+    description: playerSummary,
+    birthDate: player.birthDate?.toISOString(),
+    nationality: player.nationality ?? undefined,
+    homeLocation: player.hometown
+      ? {
+          "@type": "Place",
+          name: player.hometown,
+        }
+      : undefined,
+    memberOf: [...new Map(player.memberships.map((membership) => [membership.organization.id, membership.organization])).values()]
+      .slice(0, 6)
+      .map((organization) => ({
+        "@type": "SportsOrganization",
+        name: organization.nameJa,
+        url: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
+      })),
+    subjectOf: keyCompetitionNames.map((name, index) => {
+      const result = sortedRaceResults.find((item) => (item.race.competitionEdition.shortName ?? item.race.competitionEdition.officialName) === name);
+
+      return result ? {
+        "@type": "SportsEvent",
+        name,
+        url: `https://tasukikeifu.com/${locale}/competitions/${result.race.competitionEdition.slug}`,
+      } : null;
+    }).filter(Boolean),
+    url: `https://tasukikeifu.com/${locale}/players/${player.slug}`,
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "襷の系譜",
+        item: `https://tasukikeifu.com/${locale}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "人物一覧",
+        item: `https://tasukikeifu.com/${locale}/players`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: player.displayNameJa,
+        item: `https://tasukikeifu.com/${locale}/players/${player.slug}`,
+      },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(playerJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <SiteHeader locale={locale} path={`/players/${player.slug}`} />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">
@@ -301,6 +426,9 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 <p className="mt-2 text-[#59615c]">
                   {[player.displayNameKana, player.displayNameRoman].filter(Boolean).join(" / ") || dictionary.common.emptyDash}
                 </p>
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
+                  {playerSummary}
+                </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#59615c]">
@@ -308,6 +436,17 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 </span>
                 <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#8a1f2d]">
                   {formatStatus(player.status, locale)}
+                </span>
+                <span
+                  className={`border px-3 py-1 text-sm ${
+                    seoTier === "primary"
+                      ? "border-[#c9d7c6] bg-[#eef6ec] text-[#29543a]"
+                      : seoTier === "secondary"
+                        ? "border-[#d8cfbf] bg-[#f6f1e8] text-[#7a5d2d]"
+                        : "border-[#ded8cc] bg-white text-[#59615c]"
+                  }`}
+                >
+                  {seoTier === "primary" ? "Complete page" : seoTier === "secondary" ? "Growing page" : "Seed page"}
                 </span>
               </div>
             </div>
