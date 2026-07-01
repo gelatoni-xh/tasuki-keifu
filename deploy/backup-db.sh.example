@@ -12,7 +12,6 @@ mkdir -p "$OUTPUT_DIR"
 
 cd "$APP_DIR"
 
-# Run pg_dump from inside the Postgres container so the host only needs Docker access.
 sudo docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T postgres \
   sh -lc 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB"' \
   | gzip -c > "$OUTPUT_DIR/tasuki-keifu-$TIMESTAMP.sql.gz"

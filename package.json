@@ -19,6 +19,7 @@
     "generate:izumo": "tsx scripts/imports/generate-izumo-payload.ts",
     "reset:izumo": "tsx scripts/imports/reset-izumo-edition.ts",
     "import:izumo": "tsx scripts/imports/run-izumo-import.ts",
+    "maint:pull-production-backup": "bash scripts/local/pull-production-backup.sh",
     "maint:audit-profile-coverage": "tsx scripts/maintenance/audit-profile-coverage.ts",
     "maint:backfill-organization-prefectures": "tsx scripts/maintenance/backfill-organization-prefectures.ts",
     "maint:backfill-hakone-team-results": "tsx scripts/maintenance/backfill-hakone-team-results.ts",
