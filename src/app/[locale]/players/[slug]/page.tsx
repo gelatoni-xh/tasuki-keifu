@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { getCachedValue } from "@/lib/server-cache";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRankWithNotes, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
@@ -27,6 +28,8 @@ type PlayerDetailPageProps = {
 };
 
 const raceResultsPageSize = 30;
+const PLAYER_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
+const PLAYER_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
 
 function getPlayerSeoTier({
   memberships,
@@ -56,24 +59,26 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
   }
 
   const locale = localeParam;
-  const player = await prisma.person.findUnique({
-    where: { slug },
-    include: {
-      memberships: {
-        include: {
-          organization: true,
+  const player = await getCachedValue(`player:metadata:${slug}`, PLAYER_METADATA_CACHE_TTL_MS, async () =>
+    prisma.person.findUnique({
+      where: { slug },
+      include: {
+        memberships: {
+          include: {
+            organization: true,
+          },
+        },
+        personalBests: {
+          select: { id: true },
+        },
+        _count: {
+          select: {
+            raceResults: true,
+          },
         },
       },
-      personalBests: {
-        select: { id: true },
-      },
-      _count: {
-        select: {
-          raceResults: true,
-        },
-      },
-    },
-  });
+    }),
+  );
 
   if (!player) {
     return {};
@@ -236,51 +241,57 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
   const locale = localeParam;
   const dictionary = getDictionary(locale);
-  const player = await prisma.person.findUnique({
-    where: { slug },
-    include: {
-      memberships: {
-        include: {
-          organization: true,
-          source: true,
+  const player = await getCachedValue(`player:detail:${slug}:profile`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
+    prisma.person.findUnique({
+      where: { slug },
+      include: {
+        memberships: {
+          include: {
+            organization: true,
+            source: true,
+          },
+        },
+        personalBests: {
+          include: { source: true },
+          orderBy: { discipline: "asc" },
         },
       },
-      personalBests: {
-        include: { source: true },
-        orderBy: { discipline: "asc" },
-      },
-    },
-  });
+    }),
+  );
 
   if (!player) {
     notFound();
   }
 
-  const raceResults = await prisma.raceResult.findMany({
-    where: {
-      personId: player.id,
-    },
-    include: {
-      race: {
-        include: {
-          competitionEdition: {
-            include: {
-              competition: true,
+  const raceResults = await getCachedValue(`player:detail:${player.id}:race-results:${raceResultsPageSize}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
+    prisma.raceResult.findMany({
+      where: {
+        personId: player.id,
+      },
+      include: {
+        race: {
+          include: {
+            competitionEdition: {
+              include: {
+                competition: true,
+              },
             },
           },
         },
+        organization: true,
+        source: true,
       },
-      organization: true,
-      source: true,
-    },
-    orderBy: [{ race: { startsAt: "desc" } }, { race: { competitionEdition: { startsOn: "desc" } } }, { race: { leg: "asc" } }],
-    take: raceResultsPageSize,
-  });
-  const totalRaceResults = await prisma.raceResult.count({
-    where: {
-      personId: player.id,
-    },
-  });
+      orderBy: [{ race: { startsAt: "desc" } }, { race: { competitionEdition: { startsOn: "desc" } } }, { race: { leg: "asc" } }],
+      take: raceResultsPageSize,
+    }),
+  );
+  const totalRaceResults = await getCachedValue(`player:detail:${player.id}:race-results-count`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
+    prisma.raceResult.count({
+      where: {
+        personId: player.id,
+      },
+    }),
+  );
 
   const sortedMemberships = sortMembershipsByStartDate(player.memberships);
   const currentMembership = getCurrentMembership(player.memberships);
@@ -311,16 +322,18 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
   const relatedPlayerIds = relationPayload.topRelations.slice(0, 6).map((entry: PlayerRelationEntry) => entry.relatedPersonId);
   const relatedPlayers = relatedPlayerIds.length > 0
-    ? await prisma.person.findMany({
-        where: {
-          id: { in: relatedPlayerIds },
-        },
-        include: {
-          memberships: {
-            include: { organization: true },
+    ? await getCachedValue(`player:detail:${player.id}:related:${relatedPlayerIds.join(",")}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
+        prisma.person.findMany({
+          where: {
+            id: { in: relatedPlayerIds },
           },
-        },
-      })
+          include: {
+            memberships: {
+              include: { organization: true },
+            },
+          },
+        }),
+      )
     : [];
   const relatedPlayersById = new Map(relatedPlayers.map((related) => [related.id, related]));
   const relatedPlayersWithTags = relationPayload.topRelations.slice(0, 6).flatMap((entry: PlayerRelationEntry) => {

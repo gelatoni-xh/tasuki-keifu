@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
+import { getCachedValue } from "@/lib/server-cache";
 import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRank, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { buildPageMetadata } from "@/lib/site";
@@ -18,6 +19,9 @@ type CompetitionEditionPageProps = {
     raceUnit?: string;
   }>;
 };
+
+const COMPETITION_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
+const COMPETITION_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
 
 function getCompetitionSeoTier({
   raceCount,
@@ -47,22 +51,24 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
   }
 
   const locale = localeParam;
-  const edition = await prisma.competitionEdition.findUnique({
-    where: { slug },
-    include: {
-      competition: true,
-      teamCompetitionResults: {
-        select: { id: true },
-      },
-      races: {
-        include: {
-          _count: {
-            select: { raceResults: true },
+  const edition = await getCachedValue(`competition:metadata:${slug}`, COMPETITION_METADATA_CACHE_TTL_MS, async () =>
+    prisma.competitionEdition.findUnique({
+      where: { slug },
+      include: {
+        competition: true,
+        teamCompetitionResults: {
+          select: { id: true },
+        },
+        races: {
+          include: {
+            _count: {
+              select: { raceResults: true },
+            },
           },
         },
       },
-    },
-  });
+    }),
+  );
 
   if (!edition) {
     return {};
@@ -116,30 +122,32 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
 
   const locale = localeParam;
   const dictionary = getDictionary(locale);
-  const edition = await prisma.competitionEdition.findUnique({
-    where: { slug },
-    include: {
-      competition: true,
-      source: true,
-      races: {
-        select: {
-          id: true,
-          slug: true,
-          name: true,
-          discipline: true,
-          leg: true,
-          startsAt: true,
-          source: true,
-          _count: {
-            select: {
-              raceResults: true,
+  const edition = await getCachedValue(`competition:detail:${slug}:base`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+    prisma.competitionEdition.findUnique({
+      where: { slug },
+      include: {
+        competition: true,
+        source: true,
+        races: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            discipline: true,
+            leg: true,
+            startsAt: true,
+            source: true,
+            _count: {
+              select: {
+                raceResults: true,
+              },
             },
           },
+          orderBy: [{ leg: "asc" }, { startsAt: "asc" }, { name: "asc" }],
         },
-        orderBy: [{ leg: "asc" }, { startsAt: "asc" }, { name: "asc" }],
       },
-    },
-  });
+    }),
+  );
 
   if (!edition) {
     notFound();
@@ -148,24 +156,28 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const editionSlug = edition.slug;
 
   const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
-  const teamResultCount = await prisma.teamCompetitionResult.count({
-    where: {
-      competitionEditionId: edition.id,
-    },
-  });
-  const latestSnapshot = await prisma.teamCompetitionLegSnapshot.findFirst({
-    where: {
-      teamCompetitionResult: {
+  const teamResultCount = await getCachedValue(`competition:detail:${edition.id}:team-result-count`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+    prisma.teamCompetitionResult.count({
+      where: {
         competitionEditionId: edition.id,
       },
-    },
-    orderBy: {
-      leg: "desc",
-    },
-    select: {
-      leg: true,
-    },
-  });
+    }),
+  );
+  const latestSnapshot = await getCachedValue(`competition:detail:${edition.id}:latest-snapshot`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+    prisma.teamCompetitionLegSnapshot.findFirst({
+      where: {
+        teamCompetitionResult: {
+          competitionEditionId: edition.id,
+        },
+      },
+      orderBy: {
+        leg: "desc",
+      },
+      select: {
+        leg: true,
+      },
+    }),
+  );
   const seoTier = getCompetitionSeoTier({
     raceCount: edition.races.length,
     resultCount,
@@ -191,65 +203,71 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const needsTeamResults = activeTab === "overview" || activeTab === "team-results" || activeTab === "snapshots";
   const needsSnapshots = activeTab === "overview" || activeTab === "snapshots";
   const teamResults = needsTeamResults
-    ? await prisma.teamCompetitionResult.findMany({
-        where: {
-          competitionEditionId: edition.id,
-        },
-        include: {
-          organization: true,
-          ...(needsSnapshots
-            ? {
-                legSnapshots: {
-                  orderBy: {
-                    leg: "asc",
+    ? await getCachedValue(`competition:detail:${edition.id}:team-results:${needsSnapshots ? "with-snapshots" : "summary"}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+        prisma.teamCompetitionResult.findMany({
+          where: {
+            competitionEditionId: edition.id,
+          },
+          include: {
+            organization: true,
+            ...(needsSnapshots
+              ? {
+                  legSnapshots: {
+                    orderBy: {
+                      leg: "asc",
+                    },
                   },
-                },
-              }
-            : {}),
-        },
-        orderBy: [{ finalRank: "asc" }, { organization: { nameJa: "asc" } }],
-      })
+                }
+              : {}),
+          },
+          orderBy: [{ finalRank: "asc" }, { organization: { nameJa: "asc" } }],
+        }),
+      )
     : [];
   const totalTeamSnapshotCount = needsSnapshots
     ? teamResults.reduce((sum, result) => sum + ("legSnapshots" in result ? result.legSnapshots.length : 0), 0)
     : 0;
   const leadingOrganizations = teamResults.slice(0, 5).map((result) => result.organization.nameJa);
-  const sampledAthleteRows = await prisma.raceResult.findMany({
-    where: {
-      race: {
-        competitionEditionId: edition.id,
-      },
-    },
-    distinct: ["personId"],
-    orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
-    take: 8,
-    select: {
-      person: {
-        select: {
-          displayNameJa: true,
+  const sampledAthleteRows = await getCachedValue(`competition:detail:${edition.id}:sampled-athletes`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+    prisma.raceResult.findMany({
+      where: {
+        race: {
+          competitionEditionId: edition.id,
         },
       },
-    },
-  });
+      distinct: ["personId"],
+      orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
+      take: 8,
+      select: {
+        person: {
+          select: {
+            displayNameJa: true,
+          },
+        },
+      },
+    }),
+  );
   const sampledAthletes = sampledAthleteRows.map((entry) => entry.person.displayNameJa);
   const selectedRaceUnitDetails =
     activeTab === "race-units" && selectedRaceUnit
-      ? await prisma.race.findUnique({
-          where: {
-            id: selectedRaceUnit.id,
-          },
-          include: {
-            source: true,
-            raceResults: {
-              include: {
-                person: true,
-                organization: true,
-                source: true,
-              },
-              orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
+      ? await getCachedValue(`competition:detail:${edition.id}:race-unit:${selectedRaceUnit.id}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+          prisma.race.findUnique({
+            where: {
+              id: selectedRaceUnit.id,
             },
-          },
-        })
+            include: {
+              source: true,
+              raceResults: {
+                include: {
+                  person: true,
+                  organization: true,
+                  source: true,
+                },
+                orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
+              },
+            },
+          }),
+        )
       : null;
 
   function formatRepresentativeLabel(notes: string | null | undefined, prefecture: string | null | undefined) {
