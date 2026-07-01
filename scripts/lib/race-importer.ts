@@ -1,6 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { type RaceImportPayload } from "./import-types";
+import { bumpCacheInvalidationScope } from "./cache-invalidation";
 import {
   createOrStartImportBatch,
   finalizeImportBatch,
@@ -52,6 +53,8 @@ export async function importRacePayload(prisma: PrismaClient, payload: RaceImpor
       });
     }
 
+    await bumpCacheInvalidationScope(prisma, "player-detail");
+    await bumpCacheInvalidationScope(prisma, "competition-detail");
     await finalizeImportBatch(prisma, batch.id, "completed");
     return batch;
   } catch (error) {

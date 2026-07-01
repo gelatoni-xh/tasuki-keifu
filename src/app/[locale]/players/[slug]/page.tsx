@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { getScopeVersion } from "@/lib/cache-invalidation";
 import { getCachedValue } from "@/lib/server-cache";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRankWithNotes, formatStatus } from "@/lib/format";
@@ -59,7 +60,8 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
   }
 
   const locale = localeParam;
-  const player = await getCachedValue(`player:metadata:${slug}`, PLAYER_METADATA_CACHE_TTL_MS, async () =>
+  const playerScopeVersion = await getScopeVersion("player-detail");
+  const player = await getCachedValue(`player:metadata:${slug}:${playerScopeVersion}`, PLAYER_METADATA_CACHE_TTL_MS, async () =>
     prisma.person.findUnique({
       where: { slug },
       include: {
@@ -241,7 +243,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
   const locale = localeParam;
   const dictionary = getDictionary(locale);
-  const player = await getCachedValue(`player:detail:${slug}:profile`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
+  const playerScopeVersion = await getScopeVersion("player-detail");
+  const player = await getCachedValue(`player:detail:${slug}:profile:${playerScopeVersion}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
     prisma.person.findUnique({
       where: { slug },
       include: {
@@ -263,7 +266,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     notFound();
   }
 
-  const raceResults = await getCachedValue(`player:detail:${player.id}:race-results:${raceResultsPageSize}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
+  const raceResults = await getCachedValue(`player:detail:${player.id}:race-results:${raceResultsPageSize}:${playerScopeVersion}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
     prisma.raceResult.findMany({
       where: {
         personId: player.id,
@@ -285,7 +288,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
       take: raceResultsPageSize,
     }),
   );
-  const totalRaceResults = await getCachedValue(`player:detail:${player.id}:race-results-count`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
+  const totalRaceResults = await getCachedValue(`player:detail:${player.id}:race-results-count:${playerScopeVersion}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
     prisma.raceResult.count({
       where: {
         personId: player.id,

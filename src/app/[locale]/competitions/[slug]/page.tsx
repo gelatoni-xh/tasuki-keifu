@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { getScopeVersion } from "@/lib/cache-invalidation";
 import { prisma } from "@/lib/prisma";
 import { getCachedValue } from "@/lib/server-cache";
 import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRank, formatRankWithNotes } from "@/lib/format";
@@ -51,7 +52,8 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
   }
 
   const locale = localeParam;
-  const edition = await getCachedValue(`competition:metadata:${slug}`, COMPETITION_METADATA_CACHE_TTL_MS, async () =>
+  const competitionScopeVersion = await getScopeVersion("competition-detail");
+  const edition = await getCachedValue(`competition:metadata:${slug}:${competitionScopeVersion}`, COMPETITION_METADATA_CACHE_TTL_MS, async () =>
     prisma.competitionEdition.findUnique({
       where: { slug },
       include: {
@@ -122,7 +124,8 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
 
   const locale = localeParam;
   const dictionary = getDictionary(locale);
-  const edition = await getCachedValue(`competition:detail:${slug}:base`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+  const competitionScopeVersion = await getScopeVersion("competition-detail");
+  const edition = await getCachedValue(`competition:detail:${slug}:base:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
     prisma.competitionEdition.findUnique({
       where: { slug },
       include: {
@@ -156,14 +159,14 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const editionSlug = edition.slug;
 
   const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
-  const teamResultCount = await getCachedValue(`competition:detail:${edition.id}:team-result-count`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+  const teamResultCount = await getCachedValue(`competition:detail:${edition.id}:team-result-count:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
     prisma.teamCompetitionResult.count({
       where: {
         competitionEditionId: edition.id,
       },
     }),
   );
-  const latestSnapshot = await getCachedValue(`competition:detail:${edition.id}:latest-snapshot`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+  const latestSnapshot = await getCachedValue(`competition:detail:${edition.id}:latest-snapshot:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
     prisma.teamCompetitionLegSnapshot.findFirst({
       where: {
         teamCompetitionResult: {
@@ -203,7 +206,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const needsTeamResults = activeTab === "overview" || activeTab === "team-results" || activeTab === "snapshots";
   const needsSnapshots = activeTab === "overview" || activeTab === "snapshots";
   const teamResults = needsTeamResults
-    ? await getCachedValue(`competition:detail:${edition.id}:team-results:${needsSnapshots ? "with-snapshots" : "summary"}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+    ? await getCachedValue(`competition:detail:${edition.id}:team-results:${needsSnapshots ? "with-snapshots" : "summary"}:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
         prisma.teamCompetitionResult.findMany({
           where: {
             competitionEditionId: edition.id,
@@ -228,7 +231,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     ? teamResults.reduce((sum, result) => sum + ("legSnapshots" in result ? result.legSnapshots.length : 0), 0)
     : 0;
   const leadingOrganizations = teamResults.slice(0, 5).map((result) => result.organization.nameJa);
-  const sampledAthleteRows = await getCachedValue(`competition:detail:${edition.id}:sampled-athletes`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+  const sampledAthleteRows = await getCachedValue(`competition:detail:${edition.id}:sampled-athletes:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
     prisma.raceResult.findMany({
       where: {
         race: {
@@ -250,7 +253,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const sampledAthletes = sampledAthleteRows.map((entry) => entry.person.displayNameJa);
   const selectedRaceUnitDetails =
     activeTab === "race-units" && selectedRaceUnit
-      ? await getCachedValue(`competition:detail:${edition.id}:race-unit:${selectedRaceUnit.id}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+      ? await getCachedValue(`competition:detail:${edition.id}:race-unit:${selectedRaceUnit.id}:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
           prisma.race.findUnique({
             where: {
               id: selectedRaceUnit.id,
