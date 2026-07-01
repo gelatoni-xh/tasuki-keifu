@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+APP_DIR="/opt/apps/tasuki-keifu"
+COMPOSE_FILE="$APP_DIR/docker-compose.prod.yml"
+ENV_FILE="$APP_DIR/.env.production"
+OUTPUT_DIR="${1:-$APP_DIR/tmp/backups}"
+TIMESTAMP="$(date '+%Y-%m-%dT%H-%M-%S')"
+
+mkdir -p "$OUTPUT_DIR"
+
+cd "$APP_DIR"
+
+# Run pg_dump from inside the Postgres container so the host only needs Docker access.
+sudo docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" exec -T postgres \
+  sh -lc 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB"' \
+  | gzip -c > "$OUTPUT_DIR/tasuki-keifu-$TIMESTAMP.sql.gz"
+
+echo "$OUTPUT_DIR/tasuki-keifu-$TIMESTAMP.sql.gz"

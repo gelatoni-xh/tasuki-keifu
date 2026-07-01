@@ -188,6 +188,10 @@ model Person {
   sourceReferences     SourceReference[]
   /// 选手关系缓存
   playerRelationCache  PlayerRelationCache?
+
+  @@index([status, updatedAt])
+  @@index([type, status])
+  @@index([hometown])
 }
 
 /// 组织表：统一记录高中、大学、实业团、俱乐部等
@@ -287,6 +291,10 @@ model Membership {
   @@index([type])
   @@index([startDate])
   @@index([endDate])
+  @@index([personId, organizationId])
+  @@index([organizationId, personId])
+  @@index([organizationId, startYear, endYear])
+  @@index([personId, startDate, endDate])
 }
 
 /// 当前 PB 快照表：V0.1 只保存各项目当前最好成绩
@@ -456,6 +464,8 @@ model Race {
   @@index([competitionEditionId])
   @@index([discipline])
   @@index([leg])
+  @@index([competitionEditionId, leg, startsAt])
+  @@index([competitionEditionId, startsAt])
 }
 
 /// 比赛结果表：某个选手在某个 Race 中的成绩
@@ -507,6 +517,11 @@ model RaceResult {
   @@index([personId])
   @@index([raceId])
   @@index([organizationId])
+  @@index([raceId, personId])
+  @@index([personId, raceId])
+  @@index([organizationId, personId])
+  @@index([raceId, rank])
+  @@index([raceId, markMillis])
 }
 
 /// 选手关系缓存表：存储派生关系结果
