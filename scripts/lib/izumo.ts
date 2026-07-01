@@ -106,9 +106,17 @@ export function formatPbMark(value: string) {
     return null;
   }
 
-  const match = normalized.match(/^(\d+)\.(\d+)\.(\d+)$/);
+  const sanitized = normalized
+    .normalize("NFKC")
+    .replace(/[^\d.:]/g, "");
+
+  if (!sanitized) {
+    return null;
+  }
+
+  const match = sanitized.match(/^(\d+)\.(\d+)\.(\d+)$/);
   if (!match) {
-    return normalized;
+    return /^\d+\.\d+\.$/.test(sanitized) ? null : sanitized;
   }
 
   return `${match[1]}:${match[2]}.${match[3]}`;

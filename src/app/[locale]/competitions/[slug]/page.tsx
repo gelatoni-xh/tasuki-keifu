@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRank } from "@/lib/format";
+import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRank, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { buildLocaleAlternates } from "@/lib/site";
 
@@ -143,6 +143,30 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
       ? edition.races.find((race) => race.slug === queryParams.raceUnit) ?? edition.races[0] ?? null
       : null;
 
+  function formatRepresentativeLabel(notes: string | null | undefined, prefecture: string | null | undefined) {
+    if (notes?.startsWith("地区代表:")) {
+      return notes.replace("地区代表:", "");
+    }
+
+    if (notes === "都道府県代表") {
+      return prefecture ?? dictionary.common.emptyDash;
+    }
+
+    return prefecture ?? dictionary.common.emptyDash;
+  }
+
+  function formatRaceResultNotes(notes: string | null | undefined) {
+    if (!notes) {
+      return dictionary.common.emptyDash;
+    }
+
+    if (notes === "都道府県代表" || notes.startsWith("地区代表:")) {
+      return dictionary.common.emptyDash;
+    }
+
+    return notes;
+  }
+
   function buildCompetitionEditionHref(tab: string, raceUnit?: string) {
     const params = new URLSearchParams({ tab });
 
@@ -256,7 +280,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                             {result.organization.nameJa}
                           </Link>
                           <div className="text-right text-sm text-[#59615c]">
-                            <p>{formatRank(result.finalRank, locale) || dictionary.common.emptyDash}</p>
+                            <p>{formatRankWithNotes(result.finalRank, result.notes, locale) || dictionary.common.emptyDash}</p>
                             <p>{result.finalMark ? formatRaceMark(result.finalMark, locale) : dictionary.common.emptyDash}</p>
                           </div>
                         </div>
@@ -272,14 +296,15 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 <h2 className="text-xl font-semibold">{dictionary.competitions.teamResults}</h2>
                 <div className="mt-4 overflow-x-auto">
                   <div className="min-w-[520px]">
-                    <div className="grid grid-cols-[1.4fr_100px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                    <div className="grid grid-cols-[1.2fr_120px_100px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
                       <span>{dictionary.competitions.team}</span>
+                      <span>{dictionary.competitions.area}</span>
                       <span>{dictionary.competitions.rank}</span>
                       <span>{dictionary.competitions.mark}</span>
                     </div>
                     <div className="divide-y divide-[#e7e1d8]">
                       {teamResults.map((result) => (
-                        <div className="grid grid-cols-[1.4fr_100px_140px] px-3 py-3 text-sm" key={result.id}>
+                        <div className="grid grid-cols-[1.2fr_120px_100px_140px] px-3 py-3 text-sm" key={result.id}>
                           <Link
                             className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
                             href={`/${locale}/organizations/${result.organization.slug}`}
@@ -287,7 +312,10 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                             {result.organization.nameJa}
                           </Link>
                           <span className="text-[#59615c]">
-                            {formatRank(result.finalRank, locale) || dictionary.common.emptyDash}
+                            {formatRepresentativeLabel(result.notes, result.organization.prefecture)}
+                          </span>
+                          <span className="text-[#59615c]">
+                            {formatRankWithNotes(result.finalRank, result.notes, locale) || dictionary.common.emptyDash}
                           </span>
                           <span>{result.finalMark ? formatRaceMark(result.finalMark, locale) : dictionary.common.emptyDash}</span>
                         </div>
@@ -303,8 +331,9 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 <h2 className="text-xl font-semibold">{dictionary.competitions.teamSnapshots}</h2>
                 <div className="mt-4 overflow-x-auto">
                   <div className="min-w-[820px]">
-                    <div className="grid grid-cols-[1.2fr_80px_120px_140px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                    <div className="grid grid-cols-[1.1fr_120px_80px_120px_140px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
                       <span>{dictionary.competitions.team}</span>
+                      <span>{dictionary.competitions.area}</span>
                       <span>{dictionary.competitions.leg}</span>
                       <span>{dictionary.competitions.cumulativeRank}</span>
                       <span>{dictionary.competitions.cumulativeMark}</span>
@@ -316,7 +345,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                           .sort((left, right) => left.leg - right.leg)
                           .map((snapshot, index) => (
                             <div
-                              className={`grid grid-cols-[1.2fr_80px_120px_140px_140px] px-3 py-3 text-sm ${
+                              className={`grid grid-cols-[1.1fr_120px_80px_120px_140px_140px] px-3 py-3 text-sm ${
                                 index === 0 ? "border-t border-[#d9d1c5]" : ""
                               }`}
                               key={snapshot.id}
@@ -331,9 +360,14 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                               ) : (
                                 <span className="text-[#c1b7aa]">{dictionary.common.emptyDash}</span>
                               )}
+                              <span className={index === 0 ? "text-[#59615c]" : "text-[#c1b7aa]"}>
+                                {index === 0
+                                  ? formatRepresentativeLabel(result.notes, result.organization.prefecture)
+                                  : dictionary.common.emptyDash}
+                              </span>
                               <span>{snapshot.leg}</span>
                               <span className="text-[#59615c]">
-                                {formatRank(snapshot.cumulativeRank, locale) || dictionary.common.emptyDash}
+                                {formatRankWithNotes(snapshot.cumulativeRank, snapshot.notes, locale) || dictionary.common.emptyDash}
                               </span>
                               <span>{snapshot.cumulativeMark ? formatRaceMark(snapshot.cumulativeMark, locale) : dictionary.common.emptyDash}</span>
                               <span>{snapshot.gapFromLeader ? formatRaceMark(snapshot.gapFromLeader, locale) : dictionary.common.emptyDash}</span>
@@ -415,7 +449,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                                     key={result.id}
                                   >
                                     <span className="text-[#59615c]">
-                                      {formatRank(result.rank, locale) || dictionary.common.emptyDash}
+                                      {formatRankWithNotes(result.rank, result.notes, locale) || dictionary.common.emptyDash}
                                     </span>
                                     <Link
                                       className="font-semibold text-[#8a1f2d] underline-offset-4 hover:underline"
@@ -438,7 +472,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                                       <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
                                     )}
                                     <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
-                                    <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
+                                    <span className="text-[#59615c]">{formatRaceResultNotes(result.notes)}</span>
                                   </div>
                                 ))}
                               </div>

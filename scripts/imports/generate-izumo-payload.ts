@@ -64,6 +64,45 @@ type LegPassingRow = {
   cumulativeMark: string;
   gapFromLeader: string | null;
   notes: string | null;
+  isOpen: boolean;
+};
+
+type DraftEntry = {
+  slug: string;
+  displayNameJa: string;
+  displayNameKana: string | null;
+  displayNameRoman: string | null;
+  raceOrganizationSlug: string;
+  raceOrganizationNameJa: string;
+  raceOrganizationType: "university" | "club";
+  universitySlug: string | null;
+  universityNameJa: string | null;
+  highSchoolSlug: string | null;
+  highSchoolNameJa: string | null;
+  grade: number | null;
+  mark: string;
+  rawRank: number | null;
+  teamNumber: number;
+  notes: string | null;
+  pbs: Array<{ discipline: EventDiscipline; mark: string }>;
+  sourceEntityKey: string;
+  sourceUrl: string;
+};
+
+type DraftTeamResult = {
+  organizationSlug: string;
+  organizationNameJa: string;
+  organizationType: "university" | "club";
+  teamNumber: number;
+  finalMark: string | null;
+  notes: string | null;
+  snapshot: {
+    leg: number;
+    cumulativeRank: number | null;
+    cumulativeMark: string | null;
+    gapFromLeader: string | null;
+    notes: string | null;
+  };
 };
 
 const personSlugCache = new Map<string, string>();
@@ -110,6 +149,27 @@ function stripHtml(value: string) {
     .replace(/[ \t]+\n/g, "\n")
     .replace(/\n+/g, "\n")
     .trim();
+}
+
+function mergeNotes(existing: string | null, tokens: string[]) {
+  const merged = new Set(
+    (existing ?? "")
+      .split("/")
+      .map((part) => part.trim())
+      .filter(Boolean),
+  );
+
+  for (const token of tokens) {
+    if (token.trim()) {
+      merged.add(token.trim());
+    }
+  }
+
+  const ordered = ["OP", "区間賞", "区間新"].filter((token) => merged.delete(token));
+  const others = [...merged];
+  const finalTokens = [...ordered, ...others];
+
+  return finalTokens.length > 0 ? finalTokens.join(" / ") : null;
 }
 
 function normalizeText(value: string) {
@@ -354,16 +414,18 @@ function parsePassingRows(html: string) {
   return rows.map((rowMatch) => {
     const cells = [...rowMatch[1].matchAll(/<(?:th|td)[^>]*>([\s\S]*?)<\/(?:th|td)>/gi)].map((cell) => normalizeText(cell[1] ?? ""));
     const hasRunnerColumns = cells.length >= 8;
+    const rankToken = normalizeText(cells[0] ?? "");
     const teamNameIndex = 2;
     const displayNameIndex = hasRunnerColumns ? 3 : -1;
     const displayNameKanaIndex = hasRunnerColumns ? 4 : -1;
     const cumulativeMarkIndex = hasRunnerColumns ? 5 : 3;
     const gapIndex = hasRunnerColumns ? 6 : 4;
     const notesIndex = hasRunnerColumns ? 7 : 5;
+    const isOpen = /^(?:OP|OPN)$/i.test(rankToken);
     const gap = formatJapaneseTimeToMark(cells[gapIndex] ?? "");
     const notes = cells[notesIndex] ? normalizeText(cells[notesIndex]) : null;
     return {
-      cumulativeRank: Number(cells[0]) || null,
+      cumulativeRank: isOpen ? null : (Number(rankToken) || null),
       teamNumber: Number(cells[1]),
       teamName: normalizeText(cells[teamNameIndex] ?? ""),
       displayNameJa: displayNameIndex >= 0 ? normalizeDisplayNameJa(cells[displayNameIndex] ?? "") : "",
@@ -371,8 +433,34 @@ function parsePassingRows(html: string) {
       cumulativeMark: formatJapaneseTimeToMark(cells[cumulativeMarkIndex] ?? "") ?? "",
       gapFromLeader: gap && gap !== "0:00" ? gap : null,
       notes: notes || null,
+      isOpen,
     } satisfies LegPassingRow;
-  }).filter((row) => row.cumulativeRank !== null && row.teamNumber && row.cumulativeMark);
+  }).filter((row) => (row.cumulativeRank !== null || row.isOpen) && row.teamNumber && row.cumulativeMark);
+}
+
+function buildOfficialRankByTeamNumber(rows: Array<{
+  teamNumber: number;
+  rawRank: number | null;
+  isOpenTeam: boolean;
+}>) {
+  const officialRanks = new Map<number, number | null>();
+  let nextRank = 1;
+
+  for (const row of [...rows].sort((left, right) => {
+    const leftRank = left.rawRank ?? Number.MAX_SAFE_INTEGER;
+    const rightRank = right.rawRank ?? Number.MAX_SAFE_INTEGER;
+    return leftRank - rightRank;
+  })) {
+    if (row.isOpenTeam) {
+      officialRanks.set(row.teamNumber, null);
+      continue;
+    }
+
+    officialRanks.set(row.teamNumber, nextRank);
+    nextRank += 1;
+  }
+
+  return officialRanks;
 }
 
 async function resolvePersonSlug(input: {
@@ -596,7 +684,7 @@ async function loadTeamProfiles(edition: number) {
   for (const team of teams) {
     const orderHtml = await loadCachedHtml(
       buildIzumoCachePath(edition, `runner-order-${String(team.teamNumber).padStart(2, "0")}`),
-      buildIzumoRunnerOrderUrl(edition, team.teamNumber),
+      team.teamUrl,
     );
     profilesByTeamNumber.set(team.teamNumber, parseRunnerProfiles(orderHtml, team.teamUrl));
   }
@@ -633,8 +721,8 @@ async function main() {
   const passingByTeamNumber = new Map(passingRows.map((row) => [row.teamNumber, row]));
   const teamDirectoryByNumber = new Map(teamProfiles.teams.map((row) => [row.teamNumber, row]));
 
-  const entries = [];
-  const teamResults = [];
+  const entries: DraftEntry[] = [];
+  const teamResults: DraftTeamResult[] = [];
 
   for (const row of legRecordRows) {
     const profiles = teamProfiles.profilesByTeamNumber.get(row.teamNumber) ?? [];
@@ -696,8 +784,8 @@ async function main() {
       highSchoolNameJa: profile.highSchoolNameJa,
       grade: profile.grade,
       mark: row.mark,
-      rank: row.rank,
-      teamRank: passing?.cumulativeRank ?? null,
+      rawRank: row.rank,
+      teamNumber: row.teamNumber,
       notes: row.notes,
       pbs,
       sourceEntityKey: `izumo-${edition}-team-${row.teamNumber}-leg-${leg}-${personSlug}`,
@@ -712,7 +800,7 @@ async function main() {
       organizationSlug: universitySlug,
       organizationNameJa: universityNameJa,
       organizationType: universityType,
-      finalRank: leg === 6 ? passing.cumulativeRank : null,
+      teamNumber: row.teamNumber,
       finalMark: leg === 6 ? passing.cumulativeMark : null,
       notes: null,
       snapshot: {
@@ -725,14 +813,83 @@ async function main() {
     });
   }
 
+  const openTeamNumbers = new Set(
+    [
+      ...teamResults
+        .filter((teamResult) => teamResult.organizationType === "club")
+        .map((teamResult) => teamResult.teamNumber),
+      ...passingRows.filter((row) => row.isOpen).map((row) => row.teamNumber),
+    ],
+  );
+  const officialLegRanksByTeamNumber = buildOfficialRankByTeamNumber(
+    entries.map((entry) => ({
+      teamNumber: entry.teamNumber,
+      rawRank: entry.rawRank,
+      isOpenTeam: openTeamNumbers.has(entry.teamNumber),
+    })),
+  );
+  const officialCumulativeRanksByTeamNumber = buildOfficialRankByTeamNumber(
+    passingRows.map((row) => ({
+      teamNumber: row.teamNumber,
+      rawRank: row.cumulativeRank,
+      isOpenTeam: openTeamNumbers.has(row.teamNumber),
+    })),
+  );
+
+  const normalizedEntries = entries.map((entry) => {
+    const isOpenTeam = openTeamNumbers.has(entry.teamNumber);
+
+    return {
+      slug: entry.slug,
+      displayNameJa: entry.displayNameJa,
+      displayNameKana: entry.displayNameKana,
+      displayNameRoman: entry.displayNameRoman,
+      raceOrganizationSlug: entry.raceOrganizationSlug,
+      raceOrganizationNameJa: entry.raceOrganizationNameJa,
+      raceOrganizationType: entry.raceOrganizationType,
+      universitySlug: entry.universitySlug,
+      universityNameJa: entry.universityNameJa,
+      highSchoolSlug: entry.highSchoolSlug,
+      highSchoolNameJa: entry.highSchoolNameJa,
+      grade: entry.grade,
+      mark: entry.mark,
+      rank: isOpenTeam ? null : (officialLegRanksByTeamNumber.get(entry.teamNumber) ?? null),
+      teamRank: isOpenTeam ? null : (officialCumulativeRanksByTeamNumber.get(entry.teamNumber) ?? null),
+      notes: isOpenTeam ? mergeNotes(entry.notes, ["OP"]) : entry.notes,
+      pbs: entry.pbs,
+      sourceEntityKey: entry.sourceEntityKey,
+      sourceUrl: entry.sourceUrl,
+    };
+  });
+
+  const normalizedTeamResults = teamResults.map((teamResult) => {
+    const isOpenTeam = openTeamNumbers.has(teamResult.teamNumber);
+
+    return {
+      organizationSlug: teamResult.organizationSlug,
+      organizationNameJa: teamResult.organizationNameJa,
+      organizationType: teamResult.organizationType,
+      finalRank: leg === 6 && !isOpenTeam ? (officialCumulativeRanksByTeamNumber.get(teamResult.teamNumber) ?? null) : null,
+      finalMark: teamResult.finalMark,
+      notes: isOpenTeam ? mergeNotes(teamResult.notes, ["OP"]) : teamResult.notes,
+      snapshot: {
+        leg: teamResult.snapshot.leg,
+        cumulativeRank: isOpenTeam ? null : (officialCumulativeRanksByTeamNumber.get(teamResult.teamNumber) ?? null),
+        cumulativeMark: teamResult.snapshot.cumulativeMark,
+        gapFromLeader: teamResult.snapshot.gapFromLeader,
+        notes: isOpenTeam ? mergeNotes(teamResult.snapshot.notes ?? null, ["OP"]) : (teamResult.snapshot.notes ?? null),
+      },
+    };
+  });
+
   const payload = raceImportPayloadSchema.parse({
     batchKey,
     sourceId,
     raceSlug,
     summary: `第${edition}回出雲駅伝 ${leg}区 官方結果導入`,
     pbNotes: `第${edition}回出雲駅伝 選手紹介ページの自己最高記録摘要。正式 PB の大会別確認は後続タスクで再確認。`,
-    entries,
-    teamResults,
+    entries: normalizedEntries,
+    teamResults: normalizedTeamResults,
   });
 
   const outputPath = buildIzumoPayloadPath(edition, leg);

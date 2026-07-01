@@ -1,0 +1,99 @@
+{
+  "competition": {
+    "slug": "national-high-school-ekiden",
+    "nameJa": "全国高等学校駅伝競走大会",
+    "nameRoman": "National High School Ekiden",
+    "nameZh": "全国高中驿传",
+    "nameEn": "National High School Ekiden",
+    "type": "high_school_ekiden",
+    "region": "Japan",
+    "websiteUrl": "https://mainichi.jp/koukouekiden/"
+  },
+  "sources": [
+    {
+      "id": "source-jaaf-koko-ekiden-2024-men-result",
+      "name": "JAAF 全国高校駅伝 2024 男子リザルト",
+      "url": "https://www.jaaf.or.jp/files/upload/202412/22_151626.pdf",
+      "type": "pdf",
+      "reliability": 5,
+      "notes": "National high school ekiden men official result with total and leg data"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "national-high-school-ekiden-2024-men",
+      "editionNumber": 75,
+      "year": 2024,
+      "officialName": "男子第75回 全国高等学校駅伝競走大会",
+      "shortName": "全国高校駅伝2024 男子",
+      "startsOn": "2024-12-22T12:30:00.000Z",
+      "endsOn": "2024-12-22T14:30:00.000Z",
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    }
+  ],
+  "races": [
+    {
+      "slug": "national-high-school-ekiden-2024-men-leg-1",
+      "editionSlug": "national-high-school-ekiden-2024-men",
+      "name": "1区",
+      "discipline": "ekiden_leg",
+      "leg": 1,
+      "distanceMeters": 10000,
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    },
+    {
+      "slug": "national-high-school-ekiden-2024-men-leg-2",
+      "editionSlug": "national-high-school-ekiden-2024-men",
+      "name": "2区",
+      "discipline": "ekiden_leg",
+      "leg": 2,
+      "distanceMeters": 3000,
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    },
+    {
+      "slug": "national-high-school-ekiden-2024-men-leg-3",
+      "editionSlug": "national-high-school-ekiden-2024-men",
+      "name": "3区",
+      "discipline": "ekiden_leg",
+      "leg": 3,
+      "distanceMeters": 8107,
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    },
+    {
+      "slug": "national-high-school-ekiden-2024-men-leg-4",
+      "editionSlug": "national-high-school-ekiden-2024-men",
+      "name": "4区",
+      "discipline": "ekiden_leg",
+      "leg": 4,
+      "distanceMeters": 8087,
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    },
+    {
+      "slug": "national-high-school-ekiden-2024-men-leg-5",
+      "editionSlug": "national-high-school-ekiden-2024-men",
+      "name": "5区",
+      "discipline": "ekiden_leg",
+      "leg": 5,
+      "distanceMeters": 3000,
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    },
+    {
+      "slug": "national-high-school-ekiden-2024-men-leg-6",
+      "editionSlug": "national-high-school-ekiden-2024-men",
+      "name": "6区",
+      "discipline": "ekiden_leg",
+      "leg": 6,
+      "distanceMeters": 5000,
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    },
+    {
+      "slug": "national-high-school-ekiden-2024-men-leg-7",
+      "editionSlug": "national-high-school-ekiden-2024-men",
+      "name": "7区",
+      "discipline": "ekiden_leg",
+      "leg": 7,
+      "distanceMeters": 5000,
+      "sourceId": "source-jaaf-koko-ekiden-2024-men-result"
+    }
+  ]
+}

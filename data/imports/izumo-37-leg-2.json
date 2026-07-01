@@ -79,9 +79,9 @@
       "highSchoolNameJa": null,
       "grade": null,
       "mark": "16:25",
-      "rank": 3,
-      "teamRank": 6,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -109,7 +109,7 @@
       "highSchoolNameJa": "佐久長聖",
       "grade": 3,
       "mark": "16:28",
-      "rank": 4,
+      "rank": 3,
       "teamRank": 3,
       "notes": null,
       "pbs": [
@@ -139,8 +139,8 @@
       "highSchoolNameJa": "鹿島学園",
       "grade": 2,
       "mark": "16:29",
-      "rank": 5,
-      "teamRank": 7,
+      "rank": 4,
+      "teamRank": 6,
       "notes": null,
       "pbs": [
         {
@@ -169,7 +169,7 @@
       "highSchoolNameJa": "東京実業",
       "grade": 2,
       "mark": "16:30",
-      "rank": 6,
+      "rank": 5,
       "teamRank": 5,
       "notes": null,
       "pbs": [
@@ -199,7 +199,7 @@
       "highSchoolNameJa": "高田",
       "grade": 4,
       "mark": "16:33",
-      "rank": 7,
+      "rank": 6,
       "teamRank": 4,
       "notes": null,
       "pbs": [
@@ -229,8 +229,8 @@
       "highSchoolNameJa": "水城",
       "grade": 2,
       "mark": "16:41",
-      "rank": 8,
-      "teamRank": 8,
+      "rank": 7,
+      "teamRank": 7,
       "notes": null,
       "pbs": [
         {
@@ -259,8 +259,8 @@
       "highSchoolNameJa": "巨摩",
       "grade": 2,
       "mark": "16:42",
-      "rank": 9,
-      "teamRank": 9,
+      "rank": 8,
+      "teamRank": 8,
       "notes": null,
       "pbs": [
         {
@@ -289,8 +289,8 @@
       "highSchoolNameJa": "須磨学園",
       "grade": 2,
       "mark": "16:56",
-      "rank": 10,
-      "teamRank": 11,
+      "rank": 9,
+      "teamRank": 10,
       "notes": null,
       "pbs": [
         {
@@ -319,8 +319,8 @@
       "highSchoolNameJa": "佐久長聖",
       "grade": 1,
       "mark": "17:13",
-      "rank": 11,
-      "teamRank": 10,
+      "rank": 10,
+      "teamRank": 9,
       "notes": null,
       "pbs": [
         {
@@ -349,8 +349,8 @@
       "highSchoolNameJa": "クラーク記念国際",
       "grade": 2,
       "mark": "17:20",
-      "rank": 12,
-      "teamRank": 12,
+      "rank": 11,
+      "teamRank": 11,
       "notes": null,
       "pbs": [
         {
@@ -379,8 +379,8 @@
       "highSchoolNameJa": "尼崎稲園",
       "grade": 3,
       "mark": "17:27",
-      "rank": 13,
-      "teamRank": 14,
+      "rank": 12,
+      "teamRank": 13,
       "notes": null,
       "pbs": [
         {
@@ -409,8 +409,8 @@
       "highSchoolNameJa": "高田",
       "grade": 2,
       "mark": "17:30",
-      "rank": 14,
-      "teamRank": 19,
+      "rank": 13,
+      "teamRank": 18,
       "notes": null,
       "pbs": [
         {
@@ -439,8 +439,8 @@
       "highSchoolNameJa": "甲府南",
       "grade": 4,
       "mark": "17:33",
-      "rank": 15,
-      "teamRank": 13,
+      "rank": 14,
+      "teamRank": 12,
       "notes": null,
       "pbs": [
         {
@@ -469,8 +469,8 @@
       "highSchoolNameJa": "札幌山の手",
       "grade": 1,
       "mark": "17:38",
-      "rank": 16,
-      "teamRank": 16,
+      "rank": 15,
+      "teamRank": 15,
       "notes": null,
       "pbs": [
         {
@@ -500,7 +500,7 @@
       "grade": 2,
       "mark": "17:38",
       "rank": 16,
-      "teamRank": 18,
+      "teamRank": 17,
       "notes": null,
       "pbs": [
         {
@@ -529,8 +529,8 @@
       "highSchoolNameJa": "磐田東",
       "grade": null,
       "mark": "17:55",
-      "rank": 18,
-      "teamRank": 17,
+      "rank": 17,
+      "teamRank": 16,
       "notes": null,
       "pbs": [
         {
@@ -559,8 +559,8 @@
       "highSchoolNameJa": "鹿児島城西",
       "grade": 2,
       "mark": "18:02",
-      "rank": 19,
-      "teamRank": 15,
+      "rank": 18,
+      "teamRank": 14,
       "notes": null,
       "pbs": [
         {
@@ -589,9 +589,9 @@
       "highSchoolNameJa": "松山東",
       "grade": 4,
       "mark": "18:08",
-      "rank": 20,
+      "rank": null,
       "teamRank": null,
-      "notes": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -619,9 +619,9 @@
       "highSchoolNameJa": "泉",
       "grade": null,
       "mark": "18:26",
-      "rank": 21,
-      "teamRank": 20,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -649,8 +649,8 @@
       "highSchoolNameJa": "四条畷",
       "grade": 4,
       "mark": "18:32",
-      "rank": 22,
-      "teamRank": 21,
+      "rank": 19,
+      "teamRank": 19,
       "notes": null,
       "pbs": [
         {
@@ -664,36 +664,6 @@
       ],
       "sourceEntityKey": "izumo-37-team-2-leg-2-person-e5a4a7e9878e20e686b2e5b0",
       "sourceUrl": "https://www.izumo-ekiden.jp/37/runner/order/02.html"
-    },
-    {
-      "slug": "person-e5bf97e8b38020e9a2a8e5a4",
-      "displayNameJa": "志賀 風太",
-      "displayNameKana": "シガ フウタ",
-      "displayNameRoman": null,
-      "raceOrganizationSlug": "org-e696b0e6bd9fe5a4a7e5ada6",
-      "raceOrganizationNameJa": "新潟大学",
-      "raceOrganizationType": "university",
-      "universitySlug": "org-e696b0e6bd9fe5a4a7e5ada6",
-      "universityNameJa": "新潟大学",
-      "highSchoolSlug": "hs-e7a390e794b0e69db1",
-      "highSchoolNameJa": "磐田東",
-      "grade": null,
-      "mark": "17:50",
-      "rank": null,
-      "teamRank": 17,
-      "notes": "参考記録",
-      "pbs": [
-        {
-          "discipline": "m10000",
-          "mark": "30:50.96"
-        },
-        {
-          "discipline": "m5000",
-          "mark": "14:41.00"
-        }
-      ],
-      "sourceEntityKey": "izumo-37-team-15-leg-2-person-e5bf97e8b38020e9a2a8e5a4",
-      "sourceUrl": "https://www.izumo-ekiden.jp/37/runner/order/15.html"
     }
   ],
   "teamResults": [
@@ -733,13 +703,13 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": null,
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 6,
+        "cumulativeRank": null,
         "cumulativeMark": "40:14",
         "gapFromLeader": null,
-        "notes": null
+        "notes": "OP"
       }
     },
     {
@@ -766,7 +736,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 7,
+        "cumulativeRank": 6,
         "cumulativeMark": "40:16",
         "gapFromLeader": null,
         "notes": null
@@ -811,7 +781,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 8,
+        "cumulativeRank": 7,
         "cumulativeMark": "40:29",
         "gapFromLeader": null,
         "notes": null
@@ -826,7 +796,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 9,
+        "cumulativeRank": 8,
         "cumulativeMark": "40:33",
         "gapFromLeader": null,
         "notes": null
@@ -841,7 +811,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 11,
+        "cumulativeRank": 10,
         "cumulativeMark": "40:42",
         "gapFromLeader": null,
         "notes": null
@@ -856,7 +826,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 10,
+        "cumulativeRank": 9,
         "cumulativeMark": "40:41",
         "gapFromLeader": null,
         "notes": null
@@ -871,7 +841,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 12,
+        "cumulativeRank": 11,
         "cumulativeMark": "41:18",
         "gapFromLeader": null,
         "notes": null
@@ -886,7 +856,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 14,
+        "cumulativeRank": 13,
         "cumulativeMark": "41:52",
         "gapFromLeader": null,
         "notes": null
@@ -901,7 +871,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 19,
+        "cumulativeRank": 18,
         "cumulativeMark": "42:57",
         "gapFromLeader": null,
         "notes": null
@@ -916,7 +886,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 13,
+        "cumulativeRank": 12,
         "cumulativeMark": "41:52",
         "gapFromLeader": null,
         "notes": null
@@ -931,7 +901,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 16,
+        "cumulativeRank": 15,
         "cumulativeMark": "42:19",
         "gapFromLeader": null,
         "notes": null
@@ -946,7 +916,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 18,
+        "cumulativeRank": 17,
         "cumulativeMark": "42:41",
         "gapFromLeader": null,
         "notes": null
@@ -961,7 +931,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 17,
+        "cumulativeRank": 16,
         "cumulativeMark": "42:29",
         "gapFromLeader": null,
         "notes": null
@@ -976,7 +946,7 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 15,
+        "cumulativeRank": 14,
         "cumulativeMark": "42:03",
         "gapFromLeader": null,
         "notes": null
@@ -988,13 +958,13 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": null,
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 2,
         "cumulativeRank": null,
         "cumulativeMark": "43:01",
         "gapFromLeader": null,
-        "notes": null
+        "notes": "OP"
       }
     },
     {
@@ -1003,13 +973,13 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": null,
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 20,
+        "cumulativeRank": null,
         "cumulativeMark": "43:46",
         "gapFromLeader": null,
-        "notes": null
+        "notes": "OP"
       }
     },
     {
@@ -1021,23 +991,8 @@
       "notes": null,
       "snapshot": {
         "leg": 2,
-        "cumulativeRank": 21,
+        "cumulativeRank": 19,
         "cumulativeMark": "44:17",
-        "gapFromLeader": null,
-        "notes": null
-      }
-    },
-    {
-      "organizationSlug": "org-e696b0e6bd9fe5a4a7e5ada6",
-      "organizationNameJa": "新潟大学",
-      "organizationType": "university",
-      "finalRank": null,
-      "finalMark": null,
-      "notes": null,
-      "snapshot": {
-        "leg": 2,
-        "cumulativeRank": 17,
-        "cumulativeMark": "42:29",
         "gapFromLeader": null,
         "notes": null
       }

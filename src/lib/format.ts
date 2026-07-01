@@ -52,6 +52,18 @@ export function formatRank(rank: number | null | undefined, locale: Locale = "ja
   return `${rank}位`;
 }
 
+export function formatRankWithNotes(
+  rank: number | null | undefined,
+  notes: string | null | undefined,
+  locale: Locale = "ja",
+) {
+  if (notes?.split("/").map((part) => part.trim()).includes("OP")) {
+    return "OP";
+  }
+
+  return formatRank(rank, locale);
+}
+
 export function formatRaceMark(mark: string | null | undefined, locale: Locale = "ja") {
   if (!mark) {
     return "";

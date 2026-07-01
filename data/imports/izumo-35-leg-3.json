@@ -259,9 +259,9 @@
       "highSchoolNameJa": "西宮高校",
       "grade": 4,
       "mark": "25:36",
-      "rank": 8,
-      "teamRank": 14,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -289,7 +289,7 @@
       "highSchoolNameJa": "仙台育英",
       "grade": 2,
       "mark": "25:43",
-      "rank": 10,
+      "rank": 9,
       "teamRank": 9,
       "notes": null,
       "pbs": [
@@ -319,8 +319,8 @@
       "highSchoolNameJa": "興譲館",
       "grade": 2,
       "mark": "26:16",
-      "rank": 11,
-      "teamRank": 13,
+      "rank": 10,
+      "teamRank": 12,
       "notes": null,
       "pbs": [
         {
@@ -349,8 +349,8 @@
       "highSchoolNameJa": "智辯学園奈良カレッジ",
       "grade": 3,
       "mark": "26:19",
-      "rank": 12,
-      "teamRank": 16,
+      "rank": 11,
+      "teamRank": 13,
       "notes": null,
       "pbs": [
         {
@@ -379,8 +379,8 @@
       "highSchoolNameJa": "鳥取城北",
       "grade": 4,
       "mark": "26:23",
-      "rank": 13,
-      "teamRank": 12,
+      "rank": 12,
+      "teamRank": 11,
       "notes": null,
       "pbs": [
         {
@@ -409,9 +409,9 @@
       "highSchoolNameJa": null,
       "grade": null,
       "mark": "26:29",
-      "rank": 14,
-      "teamRank": 10,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -439,9 +439,9 @@
       "highSchoolNameJa": "清陵情報",
       "grade": 3,
       "mark": "26:33",
-      "rank": 15,
-      "teamRank": 15,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -469,8 +469,8 @@
       "highSchoolNameJa": "滝川",
       "grade": 3,
       "mark": "26:36",
-      "rank": 16,
-      "teamRank": 11,
+      "rank": 13,
+      "teamRank": 10,
       "notes": null,
       "pbs": [
         {
@@ -499,8 +499,8 @@
       "highSchoolNameJa": "樟南",
       "grade": 4,
       "mark": "26:54",
-      "rank": 17,
-      "teamRank": 17,
+      "rank": 14,
+      "teamRank": 14,
       "notes": null,
       "pbs": [
         {
@@ -529,9 +529,9 @@
       "highSchoolNameJa": "仙台育英",
       "grade": 1,
       "mark": "27:14",
-      "rank": 18,
-      "teamRank": 19,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m5000",
@@ -555,8 +555,8 @@
       "highSchoolNameJa": "伊賀白鳳",
       "grade": 3,
       "mark": "27:31",
-      "rank": 19,
-      "teamRank": 18,
+      "rank": 15,
+      "teamRank": 15,
       "notes": null,
       "pbs": [
         {
@@ -699,13 +699,13 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": null,
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 14,
+        "cumulativeRank": null,
         "cumulativeMark": "1:08:33",
         "gapFromLeader": "5:20",
-        "notes": null
+        "notes": "OP"
       }
     },
     {
@@ -732,7 +732,7 @@
       "notes": null,
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 13,
+        "cumulativeRank": 12,
         "cumulativeMark": "1:08:31",
         "gapFromLeader": "5:18",
         "notes": null
@@ -747,7 +747,7 @@
       "notes": null,
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 16,
+        "cumulativeRank": 13,
         "cumulativeMark": "1:09:21",
         "gapFromLeader": "6:08",
         "notes": null
@@ -762,7 +762,7 @@
       "notes": null,
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 12,
+        "cumulativeRank": 11,
         "cumulativeMark": "1:07:58",
         "gapFromLeader": "4:45",
         "notes": null
@@ -774,13 +774,13 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": null,
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 10,
+        "cumulativeRank": null,
         "cumulativeMark": "1:06:36",
         "gapFromLeader": "3:23",
-        "notes": null
+        "notes": "OP"
       }
     },
     {
@@ -789,13 +789,13 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": null,
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 15,
+        "cumulativeRank": null,
         "cumulativeMark": "1:08:54",
         "gapFromLeader": "5:41",
-        "notes": null
+        "notes": "OP"
       }
     },
     {
@@ -807,7 +807,7 @@
       "notes": null,
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 11,
+        "cumulativeRank": 10,
         "cumulativeMark": "1:07:18",
         "gapFromLeader": "4:05",
         "notes": null
@@ -822,7 +822,7 @@
       "notes": null,
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 17,
+        "cumulativeRank": 14,
         "cumulativeMark": "1:10:12",
         "gapFromLeader": "6:59",
         "notes": null
@@ -834,13 +834,13 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": null,
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 19,
+        "cumulativeRank": null,
         "cumulativeMark": "1:11:20",
         "gapFromLeader": "8:07",
-        "notes": null
+        "notes": "OP"
       }
     },
     {
@@ -852,7 +852,7 @@
       "notes": null,
       "snapshot": {
         "leg": 3,
-        "cumulativeRank": 18,
+        "cumulativeRank": 15,
         "cumulativeMark": "1:11:12",
         "gapFromLeader": "7:59",
         "notes": null

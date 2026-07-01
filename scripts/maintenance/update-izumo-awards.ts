@@ -61,11 +61,13 @@ async function loadCachedHtml(cachePath: string, url: string) {
 }
 
 function extractOldRecordMark(html: string) {
-  const match = html.match(/区間記録：[\s\S]*?(\d+:\d{2}(?::\d{2})?)（/);
+  const match =
+    html.match(/<p class="record__kukan">[\s\S]*?区間記録：[\s\S]*?(\d+[：:]\d{2}(?:[：:]\d{2})?)（/i)
+    ?? html.match(/区間記録：[\s\S]*?(\d+[：:]\d{2}(?:[：:]\d{2})?)（/);
   if (!match) {
     throw new Error("Izumo old record baseline not found in record page");
   }
-  return match[1];
+  return match[1].replace(/：/g, ":");
 }
 
 async function main() {
@@ -79,11 +81,15 @@ async function main() {
     throw new Error(`Izumo edition must be > 1 to derive prior baseline: ${edition}`);
   }
 
+  // The 32nd edition was canceled, so the previous record baseline for the 33rd edition
+  // must be derived from the 31st official record pages.
+  const baselineEdition = edition === 33 ? 31 : edition - 1;
+
   const baselines = new Map<number, string>();
   for (let leg = 1; leg <= 6; leg += 1) {
     const html = await loadCachedHtml(
-      buildIzumoCachePath(edition - 1, `record-${leg}b`),
-      buildIzumoRecordUrl(edition - 1, leg, "b"),
+      buildIzumoCachePath(baselineEdition, `record-${leg}b`),
+      buildIzumoRecordUrl(baselineEdition, leg, "b"),
     );
     baselines.set(leg, extractOldRecordMark(html));
   }

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMark, formatRank } from "@/lib/format";
+import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { groupMembershipsByRole, isCurrentMembership } from "@/lib/membership";
 import { buildLocaleAlternates } from "@/lib/site";
@@ -257,7 +257,7 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                           {result.competitionEdition.shortName ?? result.competitionEdition.officialName}
                         </span>
                         <span className="text-[#59615c]">
-                          {formatRank(result.finalRank, locale) || dictionary.common.emptyDash}
+                          {formatRankWithNotes(result.finalRank, result.notes, locale) || dictionary.common.emptyDash}
                         </span>
                         <span className="text-[#59615c]">{result.finalMark ? formatRaceMark(result.finalMark, locale) : dictionary.common.emptyDash}</span>
                       </Link>

@@ -5,7 +5,7 @@ import type { Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRank, formatStatus } from "@/lib/format";
+import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRankWithNotes, formatStatus } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import {
   formatMembershipPeriod,
@@ -458,7 +458,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                         </Link>
                         <span>{result.race.name}</span>
                         <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
-                        <span>{formatRank(result.rank, locale) || dictionary.common.emptyDash}</span>
+                        <span>{formatRankWithNotes(result.rank, result.notes, locale) || dictionary.common.emptyDash}</span>
                         <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
                         <span className="text-[#59615c]">
                           {result.organization ? (
@@ -500,7 +500,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                       </div>
                       <div className="text-right">
                         <p className="text-xs font-medium text-[#8b938e]">{dictionary.players.raceRank}</p>
-                        <p className="font-semibold">{formatRank(result.rank, locale) || dictionary.common.emptyDash}</p>
+                        <p className="font-semibold">{formatRankWithNotes(result.rank, result.notes, locale) || dictionary.common.emptyDash}</p>
                       </div>
                     </div>
                     <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">

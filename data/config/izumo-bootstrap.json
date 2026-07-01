@@ -11,6 +11,38 @@
   },
   "sources": [
     {
+      "id": "source-izumo-ekiden-33-official-record",
+      "name": "出雲駅伝公式 第33回 大会結果",
+      "url": "https://www.izumo-ekiden.jp/33/record/index.html",
+      "type": "data_site",
+      "reliability": 5,
+      "notes": "第33回出雲駅伝の大会結果・区間記録・通過記録の公式参照元。"
+    },
+    {
+      "id": "source-izumo-ekiden-33-runner-order",
+      "name": "出雲駅伝公式 第33回 選手紹介・オーダーリスト",
+      "url": "https://www.izumo-ekiden.jp/33/runner/index.html",
+      "type": "data_site",
+      "reliability": 5,
+      "notes": "第33回出雲駅伝の選手紹介、学年、出身高校、自己最高記録の公式参照元。"
+    },
+    {
+      "id": "source-izumo-ekiden-34-official-record",
+      "name": "出雲駅伝公式 第34回 大会結果",
+      "url": "https://www.izumo-ekiden.jp/34/record/index.html",
+      "type": "data_site",
+      "reliability": 5,
+      "notes": "第34回出雲駅伝の大会結果・区間記録・通過記録の公式参照元。"
+    },
+    {
+      "id": "source-izumo-ekiden-34-runner-order",
+      "name": "出雲駅伝公式 第34回 選手紹介・オーダーリスト",
+      "url": "https://www.izumo-ekiden.jp/34/runner/index.html",
+      "type": "data_site",
+      "reliability": 5,
+      "notes": "第34回出雲駅伝の選手紹介、学年、出身高校、自己最高記録の公式参照元。"
+    },
+    {
       "id": "source-izumo-ekiden-35-official-record",
       "name": "出雲駅伝公式 第35回 大会結果",
       "url": "https://www.izumo-ekiden.jp/35/record/index.html",
@@ -61,6 +93,24 @@
   ],
   "editions": [
     {
+      "slug": "izumo-ekiden-33",
+      "editionNumber": 33,
+      "year": 2021,
+      "officialName": "第33回出雲全日本大学選抜駅伝競走",
+      "shortName": "第33回出雲駅伝",
+      "startsOn": "2021-10-10",
+      "sourceId": "source-izumo-ekiden-33-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-34",
+      "editionNumber": 34,
+      "year": 2022,
+      "officialName": "第34回出雲全日本大学選抜駅伝競走",
+      "shortName": "第34回出雲駅伝",
+      "startsOn": "2022-10-10",
+      "sourceId": "source-izumo-ekiden-34-official-record"
+    },
+    {
       "slug": "izumo-ekiden-35",
       "editionNumber": 35,
       "year": 2023,
@@ -89,6 +139,114 @@
     }
   ],
   "races": [
+    {
+      "slug": "izumo-ekiden-33-leg-1",
+      "editionSlug": "izumo-ekiden-33",
+      "name": "1区",
+      "discipline": "ekiden_leg",
+      "leg": 1,
+      "distanceMeters": 8000,
+      "sourceId": "source-izumo-ekiden-33-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-33-leg-2",
+      "editionSlug": "izumo-ekiden-33",
+      "name": "2区",
+      "discipline": "ekiden_leg",
+      "leg": 2,
+      "distanceMeters": 5800,
+      "sourceId": "source-izumo-ekiden-33-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-33-leg-3",
+      "editionSlug": "izumo-ekiden-33",
+      "name": "3区",
+      "discipline": "ekiden_leg",
+      "leg": 3,
+      "distanceMeters": 8500,
+      "sourceId": "source-izumo-ekiden-33-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-33-leg-4",
+      "editionSlug": "izumo-ekiden-33",
+      "name": "4区",
+      "discipline": "ekiden_leg",
+      "leg": 4,
+      "distanceMeters": 6200,
+      "sourceId": "source-izumo-ekiden-33-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-33-leg-5",
+      "editionSlug": "izumo-ekiden-33",
+      "name": "5区",
+      "discipline": "ekiden_leg",
+      "leg": 5,
+      "distanceMeters": 6400,
+      "sourceId": "source-izumo-ekiden-33-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-33-leg-6",
+      "editionSlug": "izumo-ekiden-33",
+      "name": "6区",
+      "discipline": "ekiden_leg",
+      "leg": 6,
+      "distanceMeters": 10200,
+      "sourceId": "source-izumo-ekiden-33-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-34-leg-1",
+      "editionSlug": "izumo-ekiden-34",
+      "name": "1区",
+      "discipline": "ekiden_leg",
+      "leg": 1,
+      "distanceMeters": 8000,
+      "sourceId": "source-izumo-ekiden-34-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-34-leg-2",
+      "editionSlug": "izumo-ekiden-34",
+      "name": "2区",
+      "discipline": "ekiden_leg",
+      "leg": 2,
+      "distanceMeters": 5800,
+      "sourceId": "source-izumo-ekiden-34-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-34-leg-3",
+      "editionSlug": "izumo-ekiden-34",
+      "name": "3区",
+      "discipline": "ekiden_leg",
+      "leg": 3,
+      "distanceMeters": 8500,
+      "sourceId": "source-izumo-ekiden-34-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-34-leg-4",
+      "editionSlug": "izumo-ekiden-34",
+      "name": "4区",
+      "discipline": "ekiden_leg",
+      "leg": 4,
+      "distanceMeters": 6200,
+      "sourceId": "source-izumo-ekiden-34-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-34-leg-5",
+      "editionSlug": "izumo-ekiden-34",
+      "name": "5区",
+      "discipline": "ekiden_leg",
+      "leg": 5,
+      "distanceMeters": 6400,
+      "sourceId": "source-izumo-ekiden-34-official-record"
+    },
+    {
+      "slug": "izumo-ekiden-34-leg-6",
+      "editionSlug": "izumo-ekiden-34",
+      "name": "6区",
+      "discipline": "ekiden_leg",
+      "leg": 6,
+      "distanceMeters": 10200,
+      "sourceId": "source-izumo-ekiden-34-official-record"
+    },
     {
       "slug": "izumo-ekiden-35-leg-1",
       "editionSlug": "izumo-ekiden-35",

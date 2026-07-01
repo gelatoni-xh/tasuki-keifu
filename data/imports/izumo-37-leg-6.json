@@ -20,7 +20,7 @@
       "grade": 4,
       "mark": "29:15",
       "rank": 1,
-      "teamRank": 7,
+      "teamRank": 6,
       "notes": null,
       "pbs": [
         {
@@ -50,7 +50,7 @@
       "grade": 4,
       "mark": "29:38",
       "rank": 2,
-      "teamRank": 5,
+      "teamRank": 4,
       "notes": null,
       "pbs": [
         {
@@ -170,7 +170,7 @@
       "grade": 2,
       "mark": "30:06",
       "rank": 6,
-      "teamRank": 9,
+      "teamRank": 8,
       "notes": null,
       "pbs": [
         {
@@ -200,7 +200,7 @@
       "grade": 4,
       "mark": "30:13",
       "rank": 7,
-      "teamRank": 6,
+      "teamRank": 5,
       "notes": null,
       "pbs": [
         {
@@ -229,9 +229,9 @@
       "highSchoolNameJa": null,
       "grade": null,
       "mark": "30:14",
-      "rank": 8,
-      "teamRank": 4,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -260,7 +260,7 @@
       "grade": 3,
       "mark": "30:14",
       "rank": 8,
-      "teamRank": 8,
+      "teamRank": 7,
       "notes": null,
       "pbs": [
         {
@@ -289,8 +289,8 @@
       "highSchoolNameJa": "埼玉栄",
       "grade": 3,
       "mark": "31:22",
-      "rank": 10,
-      "teamRank": 10,
+      "rank": 9,
+      "teamRank": 9,
       "notes": null,
       "pbs": [
         {
@@ -319,8 +319,8 @@
       "highSchoolNameJa": "酒田南",
       "grade": 4,
       "mark": "31:27",
-      "rank": 11,
-      "teamRank": 13,
+      "rank": 10,
+      "teamRank": 12,
       "notes": null,
       "pbs": [
         {
@@ -349,8 +349,8 @@
       "highSchoolNameJa": "天竜",
       "grade": 3,
       "mark": "31:34",
-      "rank": 12,
-      "teamRank": 17,
+      "rank": 11,
+      "teamRank": 16,
       "notes": null,
       "pbs": [
         {
@@ -379,8 +379,8 @@
       "highSchoolNameJa": "東海大大阪仰星",
       "grade": 4,
       "mark": "31:45",
-      "rank": 13,
-      "teamRank": 12,
+      "rank": 12,
+      "teamRank": 11,
       "notes": null,
       "pbs": [
         {
@@ -409,8 +409,8 @@
       "highSchoolNameJa": "国分中央",
       "grade": 2,
       "mark": "32:03",
-      "rank": 14,
-      "teamRank": 15,
+      "rank": 13,
+      "teamRank": 14,
       "notes": null,
       "pbs": [
         {
@@ -439,9 +439,9 @@
       "highSchoolNameJa": "仙台第二",
       "grade": 5,
       "mark": "32:26",
-      "rank": 15,
-      "teamRank": 20,
-      "notes": null,
+      "rank": null,
+      "teamRank": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -469,8 +469,8 @@
       "highSchoolNameJa": "比叡山",
       "grade": 2,
       "mark": "32:42",
-      "rank": 16,
-      "teamRank": 18,
+      "rank": 14,
+      "teamRank": 17,
       "notes": null,
       "pbs": [
         {
@@ -495,12 +495,12 @@
       "raceOrganizationType": "university",
       "universitySlug": "org-e4bfa1e5b79ee5a4a7e5ada6",
       "universityNameJa": "信州大学",
-      "highSchoolSlug": "hs-e4b889e69da1",
+      "highSchoolSlug": "hs-e4b889e69da1e9ab98e6a0a1",
       "highSchoolNameJa": "三条",
       "grade": 3,
       "mark": "32:52",
-      "rank": 17,
-      "teamRank": 14,
+      "rank": 15,
+      "teamRank": 13,
       "notes": null,
       "pbs": [
         {
@@ -529,8 +529,8 @@
       "highSchoolNameJa": "石橋",
       "grade": null,
       "mark": "33:19",
-      "rank": 18,
-      "teamRank": 19,
+      "rank": 16,
+      "teamRank": 18,
       "notes": null,
       "pbs": [
         {
@@ -559,9 +559,9 @@
       "highSchoolNameJa": "山崎",
       "grade": 4,
       "mark": "33:27",
-      "rank": 19,
+      "rank": null,
       "teamRank": null,
-      "notes": null,
+      "notes": "OP",
       "pbs": [
         {
           "discipline": "m10000",
@@ -589,8 +589,8 @@
       "highSchoolNameJa": "倉敷",
       "grade": 1,
       "mark": "34:24",
-      "rank": 20,
-      "teamRank": 16,
+      "rank": 17,
+      "teamRank": 15,
       "notes": null,
       "pbs": [
         {
@@ -619,8 +619,8 @@
       "highSchoolNameJa": "新潟",
       "grade": null,
       "mark": "35:06",
-      "rank": 21,
-      "teamRank": 21,
+      "rank": 18,
+      "teamRank": 19,
       "notes": null,
       "pbs": [
         {
@@ -649,8 +649,8 @@
       "highSchoolNameJa": "鎮西学院",
       "grade": 4,
       "mark": "35:15",
-      "rank": 22,
-      "teamRank": 11,
+      "rank": 19,
+      "teamRank": 10,
       "notes": null,
       "pbs": [
         {
@@ -664,36 +664,6 @@
       ],
       "sourceEntityKey": "izumo-37-team-11-leg-6-ryusei-kawachi",
       "sourceUrl": "https://www.izumo-ekiden.jp/37/runner/order/11.html"
-    },
-    {
-      "slug": "person-e8b0b7e7abaf20e889afe9b7",
-      "displayNameJa": "谷端 良鷹",
-      "displayNameKana": "タニバタ ヨシタカ",
-      "displayNameRoman": null,
-      "raceOrganizationSlug": "org-e696b0e6bd9fe5a4a7e5ada6",
-      "raceOrganizationNameJa": "新潟大学",
-      "raceOrganizationType": "university",
-      "universitySlug": "org-e696b0e6bd9fe5a4a7e5ada6",
-      "universityNameJa": "新潟大学",
-      "highSchoolSlug": "hs-e79fb3e6a98b",
-      "highSchoolNameJa": "石橋",
-      "grade": null,
-      "mark": "31:32",
-      "rank": null,
-      "teamRank": 19,
-      "notes": "参考記録",
-      "pbs": [
-        {
-          "discipline": "m10000",
-          "mark": "30:27.74"
-        },
-        {
-          "discipline": "m5000",
-          "mark": "14:47.81"
-        }
-      ],
-      "sourceEntityKey": "izumo-37-team-15-leg-6-person-e8b0b7e7abaf20e889afe9b7",
-      "sourceUrl": "https://www.izumo-ekiden.jp/37/runner/order/15.html"
     }
   ],
   "teamResults": [
@@ -701,12 +671,12 @@
       "organizationSlug": "aoyama-gakuin-university",
       "organizationNameJa": "青山学院大学",
       "organizationType": "university",
-      "finalRank": 7,
+      "finalRank": 6,
       "finalMark": "2:10:52",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 7,
+        "cumulativeRank": 6,
         "cumulativeMark": "2:10:52",
         "gapFromLeader": null,
         "notes": null
@@ -716,12 +686,12 @@
       "organizationSlug": "komazawa-university",
       "organizationNameJa": "駒澤大学",
       "organizationType": "university",
-      "finalRank": 5,
+      "finalRank": 4,
       "finalMark": "2:10:27",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 5,
+        "cumulativeRank": 4,
         "cumulativeMark": "2:10:27",
         "gapFromLeader": null,
         "notes": null
@@ -776,12 +746,12 @@
       "organizationSlug": "toyo-university",
       "organizationNameJa": "東洋大学",
       "organizationType": "university",
-      "finalRank": 9,
+      "finalRank": 8,
       "finalMark": "2:12:06",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 9,
+        "cumulativeRank": 8,
         "cumulativeMark": "2:12:06",
         "gapFromLeader": null,
         "notes": null
@@ -791,12 +761,12 @@
       "organizationSlug": "josai-university",
       "organizationNameJa": "城西大学",
       "organizationType": "university",
-      "finalRank": 6,
+      "finalRank": 5,
       "finalMark": "2:10:41",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 6,
+        "cumulativeRank": 5,
         "cumulativeMark": "2:10:41",
         "gapFromLeader": null,
         "notes": null
@@ -806,27 +776,27 @@
       "organizationSlug": "org-e382a2e382a4e38393e383bc",
       "organizationNameJa": "アイビーリーグ選抜",
       "organizationType": "club",
-      "finalRank": 4,
+      "finalRank": null,
       "finalMark": "2:10:12",
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 4,
+        "cumulativeRank": null,
         "cumulativeMark": "2:10:12",
         "gapFromLeader": null,
-        "notes": null
+        "notes": "OP"
       }
     },
     {
       "organizationSlug": "teikyo-university",
       "organizationNameJa": "帝京大学",
       "organizationType": "university",
-      "finalRank": 8,
+      "finalRank": 7,
       "finalMark": "2:11:32",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 8,
+        "cumulativeRank": 7,
         "cumulativeMark": "2:11:32",
         "gapFromLeader": null,
         "notes": null
@@ -836,12 +806,12 @@
       "organizationSlug": "chuo-university",
       "organizationNameJa": "中央大学",
       "organizationType": "university",
-      "finalRank": 10,
+      "finalRank": 9,
       "finalMark": "2:12:43",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 10,
+        "cumulativeRank": 9,
         "cumulativeMark": "2:12:43",
         "gapFromLeader": null,
         "notes": null
@@ -851,12 +821,12 @@
       "organizationSlug": "org-e69cade5b98ce5ada6e999a2",
       "organizationNameJa": "札幌学院大学",
       "organizationType": "university",
-      "finalRank": 13,
+      "finalRank": 12,
       "finalMark": "2:18:24",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 13,
+        "cumulativeRank": 12,
         "cumulativeMark": "2:18:24",
         "gapFromLeader": null,
         "notes": null
@@ -866,12 +836,12 @@
       "organizationSlug": "org-e79a87e5adb8e9a4a8e5a4a7",
       "organizationNameJa": "皇學館大学",
       "organizationType": "university",
-      "finalRank": 17,
+      "finalRank": 16,
       "finalMark": "2:20:08",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 17,
+        "cumulativeRank": 16,
         "cumulativeMark": "2:20:08",
         "gapFromLeader": null,
         "notes": null
@@ -881,12 +851,12 @@
       "organizationSlug": "org-e996a2e8a5bfe5a4a7e5ada6",
       "organizationNameJa": "関西大学",
       "organizationType": "university",
-      "finalRank": 12,
+      "finalRank": 11,
       "finalMark": "2:18:06",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 12,
+        "cumulativeRank": 11,
         "cumulativeMark": "2:18:06",
         "gapFromLeader": null,
         "notes": null
@@ -896,12 +866,12 @@
       "organizationSlug": "org-e5bf97e5adb8e9a4a8e5a4a7",
       "organizationNameJa": "志學館大学",
       "organizationType": "university",
-      "finalRank": 15,
+      "finalRank": 14,
       "finalMark": "2:19:31",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 15,
+        "cumulativeRank": 14,
         "cumulativeMark": "2:19:31",
         "gapFromLeader": null,
         "notes": null
@@ -911,27 +881,27 @@
       "organizationSlug": "org-e69db1e58c97e5ada6e980a3",
       "organizationNameJa": "東北学連選抜",
       "organizationType": "club",
-      "finalRank": 20,
+      "finalRank": null,
       "finalMark": "2:22:37",
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 20,
+        "cumulativeRank": null,
         "cumulativeMark": "2:22:37",
         "gapFromLeader": null,
-        "notes": null
+        "notes": "OP"
       }
     },
     {
       "organizationSlug": "org-e4baace983bde794a3e6a5ad",
       "organizationNameJa": "京都産業大学",
       "organizationType": "university",
-      "finalRank": 18,
+      "finalRank": 17,
       "finalMark": "2:21:12",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 18,
+        "cumulativeRank": 17,
         "cumulativeMark": "2:21:12",
         "gapFromLeader": null,
         "notes": null
@@ -941,12 +911,12 @@
       "organizationSlug": "org-e4bfa1e5b79ee5a4a7e5ada6",
       "organizationNameJa": "信州大学",
       "organizationType": "university",
-      "finalRank": 14,
+      "finalRank": 13,
       "finalMark": "2:18:39",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 14,
+        "cumulativeRank": 13,
         "cumulativeMark": "2:18:39",
         "gapFromLeader": null,
         "notes": null
@@ -956,12 +926,12 @@
       "organizationSlug": "org-e696b0e6bd9fe5a4a7e5ada6",
       "organizationNameJa": "新潟大学",
       "organizationType": "university",
-      "finalRank": 19,
+      "finalRank": 18,
       "finalMark": "2:22:22",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 19,
+        "cumulativeRank": 18,
         "cumulativeMark": "2:22:22",
         "gapFromLeader": null,
         "notes": null
@@ -973,25 +943,25 @@
       "organizationType": "club",
       "finalRank": null,
       "finalMark": "2:21:00",
-      "notes": null,
+      "notes": "OP",
       "snapshot": {
         "leg": 6,
         "cumulativeRank": null,
         "cumulativeMark": "2:21:00",
         "gapFromLeader": null,
-        "notes": null
+        "notes": "OP"
       }
     },
     {
       "organizationSlug": "org-e792b0e5a4aae5b9b3e6b48b",
       "organizationNameJa": "環太平洋大学",
       "organizationType": "university",
-      "finalRank": 16,
+      "finalRank": 15,
       "finalMark": "2:19:58",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 16,
+        "cumulativeRank": 15,
         "cumulativeMark": "2:19:58",
         "gapFromLeader": null,
         "notes": null
@@ -1001,12 +971,12 @@
       "organizationSlug": "org-e58c97e6b5b7e98193e5a4a7",
       "organizationNameJa": "北海道大学",
       "organizationType": "university",
-      "finalRank": 21,
+      "finalRank": 19,
       "finalMark": "2:28:15",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 21,
+        "cumulativeRank": 19,
         "cumulativeMark": "2:28:15",
         "gapFromLeader": null,
         "notes": null
@@ -1016,28 +986,13 @@
       "organizationSlug": "tokyo-international-university",
       "organizationNameJa": "東京国際大学",
       "organizationType": "university",
-      "finalRank": 11,
+      "finalRank": 10,
       "finalMark": "2:16:33",
       "notes": null,
       "snapshot": {
         "leg": 6,
-        "cumulativeRank": 11,
+        "cumulativeRank": 10,
         "cumulativeMark": "2:16:33",
-        "gapFromLeader": null,
-        "notes": null
-      }
-    },
-    {
-      "organizationSlug": "org-e696b0e6bd9fe5a4a7e5ada6",
-      "organizationNameJa": "新潟大学",
-      "organizationType": "university",
-      "finalRank": 19,
-      "finalMark": "2:22:22",
-      "notes": null,
-      "snapshot": {
-        "leg": 6,
-        "cumulativeRank": 19,
-        "cumulativeMark": "2:22:22",
         "gapFromLeader": null,
         "notes": null
       }

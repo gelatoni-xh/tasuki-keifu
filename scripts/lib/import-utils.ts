@@ -4,7 +4,7 @@ import { AuditAction, AuditActorType, AuditReasonType, DataStatus, MembershipTyp
 
 import type { RaceImportPayload } from "./import-types";
 import { normalizeDisplayNameJa } from "./name-normalization";
-import { normalizeOrganizationLabel } from "./organization-normalization";
+import { buildOrganizationCanonicalKey, normalizeOrganizationIdentity, normalizeOrganizationLabel } from "./organization-normalization";
 
 function normalizeJaName(value: string) {
   return normalizeDisplayNameJa(value).replace(/ /g, "");
@@ -488,16 +488,64 @@ export async function validateRaceImportDuplicates(prisma: PrismaClient, entries
         slug: true,
         displayNameJa: true,
         displayNameRoman: true,
+        memberships: {
+          select: {
+            organization: {
+              select: {
+                slug: true,
+                type: true,
+              },
+            },
+          },
+        },
+        raceResults: {
+          where: {
+            organizationId: { not: null },
+          },
+          select: {
+            organization: {
+              select: {
+                slug: true,
+                type: true,
+              },
+            },
+          },
+        },
       },
     });
 
     const normalizedJaConflicts = conflictingPeople.filter(
-      (person) => normalizeJaName(person.displayNameJa) === normalizedJa,
+      (person) => normalizeJaName(person.displayNameJa) === normalizedJa && person.slug !== entry.slug,
     );
 
-    if (normalizedJaConflicts.length > 0) {
+    const allowedSameNameSchoolMismatches = normalizedJaConflicts.filter((person) => {
+      if (!entry.highSchoolSlug) {
+        return false;
+      }
+
+      const personHighSchoolSlugs = new Set(
+        person.memberships
+          .filter((membership) => membership.organization.type === OrganizationType.high_school)
+          .map((membership) => membership.organization.slug),
+      );
+      const personRaceSchoolSlugs = new Set(
+        person.raceResults
+          .filter((result) => result.organization?.type === OrganizationType.high_school)
+          .map((result) => result.organization?.slug)
+          .filter((slug): slug is string => Boolean(slug)),
+      );
+
+      const knownSchoolSlugs = new Set([...personHighSchoolSlugs, ...personRaceSchoolSlugs]);
+      return knownSchoolSlugs.size > 0 && !knownSchoolSlugs.has(entry.highSchoolSlug);
+    });
+
+    const blockingJaConflicts = normalizedJaConflicts.filter(
+      (person) => !allowedSameNameSchoolMismatches.some((allowed) => allowed.slug === person.slug),
+    );
+
+    if (blockingJaConflicts.length > 0) {
       throw new Error(
-        `Duplicate person detected by Japanese name: ${entry.displayNameJa} -> existing slugs ${normalizedJaConflicts
+        `Duplicate person detected by Japanese name: ${entry.displayNameJa} -> existing slugs ${blockingJaConflicts
           .map((person) => person.slug)
           .join(", ")}`,
       );
@@ -528,28 +576,18 @@ async function findOrganizationByName(prisma: PrismaClient, input: {
   type?: OrganizationType;
 }) {
   const normalizedTarget = normalizeOrganizationLabel(input.nameJa);
+  const canonicalTarget = input.type ? buildOrganizationCanonicalKey(input.nameJa, input.type) : null;
 
   const organizations = await prisma.organization.findMany({
     where: {
       ...(input.type ? { type: input.type } : {}),
-      OR: [
-        {
-          nameVariants: {
-            some: {
-              value: input.nameJa,
-            },
-          },
-        },
-        {
-          nameJa: input.nameJa,
-        },
-      ],
     },
     select: {
       id: true,
       slug: true,
       nameJa: true,
       type: true,
+      prefecture: true,
     },
   });
 
@@ -558,6 +596,15 @@ async function findOrganizationByName(prisma: PrismaClient, input: {
   );
   if (matchedByPrimaryName) {
     return matchedByPrimaryName;
+  }
+
+  if (canonicalTarget) {
+    const matchedByCanonicalKey = organizations.find(
+      (organization) => buildOrganizationCanonicalKey(organization.nameJa, organization.type) === canonicalTarget,
+    );
+    if (matchedByCanonicalKey) {
+      return matchedByCanonicalKey;
+    }
   }
 
   const variants = await prisma.nameVariant.findMany({
@@ -579,6 +626,7 @@ async function findOrganizationByName(prisma: PrismaClient, input: {
           slug: true,
           nameJa: true,
           type: true,
+          prefecture: true,
         },
       },
     },
@@ -590,7 +638,23 @@ async function findOrganizationByName(prisma: PrismaClient, input: {
       normalizeOrganizationLabel(variant.value) === normalizedTarget,
   );
 
-  return matchedByVariant?.organization ?? null;
+  if (matchedByVariant?.organization) {
+    return matchedByVariant.organization;
+  }
+
+  if (canonicalTarget) {
+    const matchedByVariantCanonicalKey = variants.find(
+      (variant) =>
+        variant.organization &&
+        buildOrganizationCanonicalKey(variant.value, variant.organization.type) === canonicalTarget,
+    );
+
+    if (matchedByVariantCanonicalKey?.organization) {
+      return matchedByVariantCanonicalKey.organization;
+    }
+  }
+
+  return null;
 }
 
 async function ensureOrganizationAlias(prisma: PrismaClient, input: {
@@ -636,6 +700,7 @@ async function ensureOrganization(prisma: PrismaClient, input: {
   slug: string | null | undefined;
   nameJa: string | null | undefined;
   type: OrganizationType;
+  prefecture?: string | null | undefined;
   sourceId: string;
 }) {
   if (!input.nameJa) {
@@ -645,14 +710,31 @@ async function ensureOrganization(prisma: PrismaClient, input: {
   if (input.slug) {
     const bySlug = await prisma.organization.findUnique({
       where: { slug: input.slug },
+      select: {
+        id: true,
+        slug: true,
+        nameJa: true,
+        type: true,
+        prefecture: true,
+      },
     });
     if (bySlug) {
+      if (!bySlug.prefecture && input.prefecture) {
+        await prisma.organization.update({
+          where: { id: bySlug.id },
+          data: {
+            prefecture: input.prefecture,
+          },
+        });
+      }
       await ensureOrganizationAlias(prisma, {
         organizationId: bySlug.id,
         alias: input.nameJa,
         sourceId: input.sourceId,
       });
-      return bySlug;
+      return bySlug.prefecture || !input.prefecture
+        ? bySlug
+        : { ...bySlug, prefecture: input.prefecture };
     }
   }
 
@@ -661,12 +743,22 @@ async function ensureOrganization(prisma: PrismaClient, input: {
     type: input.type,
   });
   if (byName) {
+    if (!byName.prefecture && input.prefecture) {
+      await prisma.organization.update({
+        where: { id: byName.id },
+        data: {
+          prefecture: input.prefecture,
+        },
+      });
+    }
     await ensureOrganizationAlias(prisma, {
       organizationId: byName.id,
       alias: input.nameJa,
       sourceId: input.sourceId,
     });
-    return byName;
+    return byName.prefecture || !input.prefecture
+      ? byName
+      : { ...byName, prefecture: input.prefecture };
   }
 
   const fallbackSlug =
@@ -676,8 +768,9 @@ async function ensureOrganization(prisma: PrismaClient, input: {
   return prisma.organization.create({
     data: {
       slug: fallbackSlug,
-      nameJa: input.nameJa,
+      nameJa: normalizeOrganizationLabel(input.nameJa),
       type: input.type,
+      prefecture: input.prefecture ?? null,
       status: DataStatus.pending,
       nameVariants: {
         create: [
@@ -703,6 +796,18 @@ async function ensureOrganization(prisma: PrismaClient, input: {
   });
 }
 
+function mapRaceOrganizationType(type: "university" | "high_school" | "club") {
+  if (type === "club") {
+    return OrganizationType.club;
+  }
+
+  if (type === "high_school") {
+    return OrganizationType.high_school;
+  }
+
+  return OrganizationType.university;
+}
+
 export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
   batchId: string;
   sourceId: string;
@@ -726,7 +831,8 @@ export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
   const organization = await ensureOrganization(prisma, {
     slug: input.teamResult.organizationSlug,
     nameJa: input.teamResult.organizationNameJa,
-    type: input.teamResult.organizationType === "club" ? OrganizationType.club : OrganizationType.university,
+    type: mapRaceOrganizationType(input.teamResult.organizationType),
+    prefecture: input.teamResult.organizationPrefecture,
     sourceId: input.sourceId,
   });
 
@@ -832,7 +938,8 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
   const raceOrganization = await ensureOrganization(prisma, {
     slug: input.entry.raceOrganizationSlug,
     nameJa: input.entry.raceOrganizationNameJa,
-    type: input.entry.raceOrganizationType === "club" ? OrganizationType.club : OrganizationType.university,
+    type: mapRaceOrganizationType(input.entry.raceOrganizationType),
+    prefecture: input.entry.raceOrganizationPrefecture,
     sourceId: input.sourceId,
   });
   const university = await ensureOrganization(prisma, {
@@ -845,6 +952,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     slug: input.entry.highSchoolSlug,
     nameJa: input.entry.highSchoolNameJa,
     type: OrganizationType.high_school,
+    prefecture: input.entry.highSchoolPrefecture,
     sourceId: input.sourceId,
   });
 
