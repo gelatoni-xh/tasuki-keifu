@@ -194,11 +194,6 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
       "@type": "Person",
       name,
     })),
-    subjectOf: ekidenResults.slice(0, 8).map((result) => ({
-      "@type": "SportsEvent",
-      name: result.competitionEdition.shortName ?? result.competitionEdition.officialName,
-      url: `https://tasukikeifu.com/${locale}/competitions/${result.competitionEdition.slug}`,
-    })),
   };
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

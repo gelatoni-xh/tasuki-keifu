@@ -362,15 +362,6 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
         name: organization.nameJa,
         url: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
       })),
-    subjectOf: keyCompetitionNames.map((name, index) => {
-      const result = sortedRaceResults.find((item) => (item.race.competitionEdition.shortName ?? item.race.competitionEdition.officialName) === name);
-
-      return result ? {
-        "@type": "SportsEvent",
-        name,
-        url: `https://tasukikeifu.com/${locale}/competitions/${result.race.competitionEdition.slug}`,
-      } : null;
-    }).filter(Boolean),
     url: `https://tasukikeifu.com/${locale}/players/${player.slug}`,
   };
   const breadcrumbJsonLd = {
