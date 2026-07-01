@@ -10,11 +10,7 @@ import { formatDiscipline, formatOrganizationType, formatPersonType, formatStatu
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
 import { buildPageMetadata } from "@/lib/site";
-import {
-  getCurrentMembership,
-  getHighSchoolMembership,
-  getUniversityMembership,
-} from "@/lib/membership";
+import { getCurrentMembership, getHighSchoolMembership, getUniversityMembership } from "@/lib/membership";
 
 type PlayersPageProps = {
   params: Promise<{
@@ -60,45 +56,6 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "corporate_team",
   "federation",
 ];
-
-function normalizeSearchText(value: string | null | undefined) {
-  return (value ?? "").replace(/\s+/g, "").toLocaleLowerCase();
-}
-
-function includesNormalized(value: string | null | undefined, query: string) {
-  return normalizeSearchText(value).includes(query);
-}
-
-function getStatusPriority(status: DataStatus) {
-  switch (status) {
-    case "verified":
-      return 0;
-    case "pending":
-      return 1;
-    case "conflicting":
-      return 2;
-    case "missing":
-    default:
-      return 3;
-  }
-}
-
-function getOrganizationTypePriority(type: OrganizationType | null | undefined) {
-  switch (type) {
-    case "university":
-      return 0;
-    case "corporate_team":
-      return 1;
-    case "high_school":
-      return 2;
-    case "junior_high_school":
-      return 3;
-    case "federation":
-      return 4;
-    default:
-      return 5;
-  }
-}
 
 function buildPlayersPath(locale: string, params: Record<string, string | number | undefined>) {
   const searchParams = new URLSearchParams();
@@ -147,7 +104,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   const locale = localeParam;
   const dictionary = getDictionary(locale);
   const query = queryParams.q?.trim() ?? "";
-  const normalizedQuery = normalizeSearchText(query);
   const requestedOrganizationType = allowedOrganizationTypes.includes(queryParams.organizationType as OrganizationType)
     ? (queryParams.organizationType as OrganizationType)
     : "";
@@ -197,6 +153,33 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     ...(personType ? { type: personType } : {}),
     ...(status ? { status } : {}),
     ...(hometown ? { hometown } : {}),
+    ...(query
+      ? {
+          OR: [
+            { displayNameJa: { contains: query, mode: "insensitive" } },
+            { displayNameKana: { contains: query, mode: "insensitive" } },
+            { displayNameRoman: { contains: query, mode: "insensitive" } },
+            { displayNameZh: { contains: query, mode: "insensitive" } },
+            { displayNameEn: { contains: query, mode: "insensitive" } },
+            {
+              memberships: {
+                some: {
+                  organization: {
+                    OR: [
+                      { nameJa: { contains: query, mode: "insensitive" } },
+                      { nameKana: { contains: query, mode: "insensitive" } },
+                      { nameRoman: { contains: query, mode: "insensitive" } },
+                      { nameZh: { contains: query, mode: "insensitive" } },
+                      { nameEn: { contains: query, mode: "insensitive" } },
+                      { shortName: { contains: query, mode: "insensitive" } },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        }
+      : {}),
     ...(organizationSlug || organizationType
       ? {
           memberships: {
@@ -211,87 +194,37 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
       : {}),
   };
 
-  const players = await prisma.person.findMany({
+  const totalPlayers = await prisma.person.count({
     where: playerWhere,
+  });
+  const totalPages = Math.max(1, Math.ceil(totalPlayers / pageSize));
+  const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+  const paginatedPlayers = await prisma.person.findMany({
+    where: playerWhere,
+    orderBy: [
+      { status: "asc" },
+      { updatedAt: "desc" },
+      { displayNameJa: "asc" },
+    ],
+    skip: (currentPage - 1) * pageSize,
+    take: pageSize,
     include: {
-      _count: {
-        select: {
-          raceResults: true,
-          personalBests: true,
-        },
-      },
       memberships: {
-        include: { organization: true },
-        orderBy: { type: "asc" },
+        include: {
+          organization: true,
+        },
+        orderBy: [{ endDate: "desc" }, { startDate: "desc" }, { createdAt: "desc" }],
       },
       personalBests: {
-        orderBy: { discipline: "asc" },
+        where: {
+          discipline: {
+            in: ["m5000", "m10000", "half_marathon"],
+          },
+        },
+        orderBy: [{ discipline: "asc" }],
       },
     },
   });
-  const filteredPlayers = normalizedQuery
-    ? players.filter((player) => {
-        const personMatched = [
-          player.displayNameJa,
-          player.displayNameKana,
-          player.displayNameRoman,
-          player.displayNameZh,
-          player.displayNameEn,
-        ].some((value) => includesNormalized(value, normalizedQuery));
-        const organizationMatched = player.memberships.some((membership) =>
-          [
-            membership.organization.nameJa,
-            membership.organization.nameKana,
-            membership.organization.nameRoman,
-            membership.organization.nameZh,
-            membership.organization.nameEn,
-            membership.organization.shortName,
-          ].some((value) => includesNormalized(value, normalizedQuery)),
-        );
-
-        return personMatched || organizationMatched;
-      })
-    : players;
-  filteredPlayers.sort((left, right) => {
-    const statusDelta = getStatusPriority(left.status) - getStatusPriority(right.status);
-    if (statusDelta !== 0) {
-      return statusDelta;
-    }
-
-    const leftCurrentMembership = getCurrentMembership(left.memberships);
-    const rightCurrentMembership = getCurrentMembership(right.memberships);
-    const currentMembershipDelta = Number(Boolean(rightCurrentMembership)) - Number(Boolean(leftCurrentMembership));
-    if (currentMembershipDelta !== 0) {
-      return currentMembershipDelta;
-    }
-
-    const membershipTypeDelta =
-      getOrganizationTypePriority(leftCurrentMembership?.organization.type) -
-      getOrganizationTypePriority(rightCurrentMembership?.organization.type);
-    if (membershipTypeDelta !== 0) {
-      return membershipTypeDelta;
-    }
-
-    const raceResultDelta = right._count.raceResults - left._count.raceResults;
-    if (raceResultDelta !== 0) {
-      return raceResultDelta;
-    }
-
-    const pbDelta = right._count.personalBests - left._count.personalBests;
-    if (pbDelta !== 0) {
-      return pbDelta;
-    }
-
-    const updatedAtDelta = right.updatedAt.getTime() - left.updatedAt.getTime();
-    if (updatedAtDelta !== 0) {
-      return updatedAtDelta;
-    }
-
-    return left.displayNameJa.localeCompare(right.displayNameJa, "ja");
-  });
-  const totalPages = Math.max(1, Math.ceil(filteredPlayers.length / pageSize));
-  const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
-  const paginatedPlayers = filteredPlayers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginationParams = {
     q: query,
     organizationType,
@@ -313,7 +246,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                 <h1 className="text-3xl font-semibold">{dictionary.players.listTitle}</h1>
               </div>
               <p className="text-sm font-medium text-[#8a1f2d]">
-                {interpolate(dictionary.players.resultCount, { count: filteredPlayers.length })}
+                {interpolate(dictionary.players.resultCount, { count: totalPlayers })}
               </p>
             </div>
           </header>
@@ -419,7 +352,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               <span>{dictionary.players.personalBest}</span>
               <span>{dictionary.players.status}</span>
             </div>
-            {filteredPlayers.length > 0 ? (
+            {totalPlayers > 0 ? (
               <div className="divide-y divide-[#e7e1d8]">
                 {paginatedPlayers.map((player) => {
                   const currentMembership = getCurrentMembership(player.memberships);
@@ -482,7 +415,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             )}
           </section>
 
-          {filteredPlayers.length > pageSize ? (
+          {totalPlayers > pageSize ? (
             <nav className="flex flex-col items-center justify-between gap-3 border-t border-[#ded8cc] pt-4 sm:flex-row">
               <p className="text-sm text-[#59615c]">
                 {interpolate(dictionary.players.pageSummary, {

@@ -120,23 +120,20 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     where: { slug },
     include: {
       competition: true,
-      teamCompetitionResults: {
-        include: {
-          legSnapshots: true,
-          organization: true,
-        },
-      },
       source: true,
       races: {
-        include: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          discipline: true,
+          leg: true,
+          startsAt: true,
           source: true,
-          raceResults: {
-            include: {
-              person: true,
-              organization: true,
-              source: true,
+          _count: {
+            select: {
+              raceResults: true,
             },
-            orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
           },
         },
         orderBy: [{ leg: "asc" }, { startsAt: "asc" }, { name: "asc" }],
@@ -150,31 +147,33 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
 
   const editionSlug = edition.slug;
 
-  const resultCount = edition.races.reduce((sum, race) => sum + race.raceResults.length, 0);
+  const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
+  const teamResultCount = await prisma.teamCompetitionResult.count({
+    where: {
+      competitionEditionId: edition.id,
+    },
+  });
+  const latestSnapshot = await prisma.teamCompetitionLegSnapshot.findFirst({
+    where: {
+      teamCompetitionResult: {
+        competitionEditionId: edition.id,
+      },
+    },
+    orderBy: {
+      leg: "desc",
+    },
+    select: {
+      leg: true,
+    },
+  });
   const seoTier = getCompetitionSeoTier({
     raceCount: edition.races.length,
     resultCount,
-    teamResultCount: edition.teamCompetitionResults.length,
+    teamResultCount,
   });
-  const teamResults = [...edition.teamCompetitionResults].sort((left, right) => {
-    const leftRank = left.finalRank ?? Number.MAX_SAFE_INTEGER;
-    const rightRank = right.finalRank ?? Number.MAX_SAFE_INTEGER;
-
-    if (leftRank !== rightRank) {
-      return leftRank - rightRank;
-    }
-
-    return left.organization.nameJa.localeCompare(right.organization.nameJa, "ja");
-  });
-  const totalTeamSnapshotCount = teamResults.reduce((sum, result) => sum + result.legSnapshots.length, 0);
-  const hasEkidenTeamResults = teamResults.length > 0;
-  const maxSnapshotLeg = Math.max(0, ...teamResults.flatMap((result) => result.legSnapshots.map((snapshot) => snapshot.leg)));
+  const hasEkidenTeamResults = teamResultCount > 0;
+  const maxSnapshotLeg = latestSnapshot?.leg ?? 0;
   const hasRaceUnits = edition.races.length > 0;
-  const leadingOrganizations = teamResults.slice(0, 5).map((result) => result.organization.nameJa);
-  const sampledAthletes = edition.races
-    .flatMap((race) => race.raceResults.slice(0, 3).map((result) => result.person.displayNameJa))
-    .filter((name, index, list) => list.indexOf(name) === index)
-    .slice(0, 8);
   const availableTabs = [
     { key: "overview", label: dictionary.competitions.tabOverview, enabled: true },
     { key: "team-results", label: dictionary.competitions.tabTeamResults, enabled: hasEkidenTeamResults },
@@ -188,6 +187,69 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const selectedRaceUnit =
     activeTab === "race-units"
       ? edition.races.find((race) => race.slug === queryParams.raceUnit) ?? edition.races[0] ?? null
+      : null;
+  const needsTeamResults = activeTab === "overview" || activeTab === "team-results" || activeTab === "snapshots";
+  const needsSnapshots = activeTab === "overview" || activeTab === "snapshots";
+  const teamResults = needsTeamResults
+    ? await prisma.teamCompetitionResult.findMany({
+        where: {
+          competitionEditionId: edition.id,
+        },
+        include: {
+          organization: true,
+          ...(needsSnapshots
+            ? {
+                legSnapshots: {
+                  orderBy: {
+                    leg: "asc",
+                  },
+                },
+              }
+            : {}),
+        },
+        orderBy: [{ finalRank: "asc" }, { organization: { nameJa: "asc" } }],
+      })
+    : [];
+  const totalTeamSnapshotCount = needsSnapshots
+    ? teamResults.reduce((sum, result) => sum + ("legSnapshots" in result ? result.legSnapshots.length : 0), 0)
+    : 0;
+  const leadingOrganizations = teamResults.slice(0, 5).map((result) => result.organization.nameJa);
+  const sampledAthleteRows = await prisma.raceResult.findMany({
+    where: {
+      race: {
+        competitionEditionId: edition.id,
+      },
+    },
+    distinct: ["personId"],
+    orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
+    take: 8,
+    select: {
+      person: {
+        select: {
+          displayNameJa: true,
+        },
+      },
+    },
+  });
+  const sampledAthletes = sampledAthleteRows.map((entry) => entry.person.displayNameJa);
+  const selectedRaceUnitDetails =
+    activeTab === "race-units" && selectedRaceUnit
+      ? await prisma.race.findUnique({
+          where: {
+            id: selectedRaceUnit.id,
+          },
+          include: {
+            source: true,
+            raceResults: {
+              include: {
+                person: true,
+                organization: true,
+                source: true,
+              },
+              orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
+            },
+          },
+        })
       : null;
 
   function formatRepresentativeLabel(notes: string | null | undefined, prefecture: string | null | undefined) {
@@ -550,12 +612,12 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                               {selectedRaceUnit.startsAt ? ` / ${formatDate(selectedRaceUnit.startsAt)}` : ""}
                             </p>
                           </div>
-                          {selectedRaceUnit.source?.url ? (
+                          {selectedRaceUnitDetails?.source?.url ? (
                             <a
                               className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
                               data-analytics-event="source_outbound_click"
                               data-analytics-link-type="competition_source"
-                              href={selectedRaceUnit.source.url}
+                              href={selectedRaceUnitDetails.source.url}
                               rel="noreferrer"
                               target="_blank"
                             >
@@ -565,7 +627,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                           ) : null}
                         </div>
 
-                        {selectedRaceUnit.raceResults.length > 0 ? (
+                        {selectedRaceUnitDetails && selectedRaceUnitDetails.raceResults.length > 0 ? (
                           <div className="mt-4 overflow-x-auto">
                             <div className="min-w-[780px]">
                               <div className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
@@ -576,7 +638,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                                 <span>{dictionary.competitions.notes}</span>
                               </div>
                               <div className="divide-y divide-[#e7e1d8]">
-                                {selectedRaceUnit.raceResults.map((result) => (
+                                {selectedRaceUnitDetails.raceResults.map((result) => (
                                   <div
                                     className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] px-3 py-3 text-sm"
                                     key={result.id}

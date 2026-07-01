@@ -26,6 +26,8 @@ type PlayerDetailPageProps = {
   }>;
 };
 
+const raceResultsPageSize = 30;
+
 function getPlayerSeoTier({
   memberships,
   personalBests,
@@ -65,8 +67,10 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
       personalBests: {
         select: { id: true },
       },
-      raceResults: {
-        select: { id: true },
+      _count: {
+        select: {
+          raceResults: true,
+        },
       },
     },
   });
@@ -81,7 +85,7 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
   const seoTier = getPlayerSeoTier({
     memberships: player.memberships.length,
     personalBests: player.personalBests.length,
-    results: player.raceResults.length,
+    results: player._count.raceResults,
   });
   const title = `${player.displayNameJa}の所属・記録・大会成績`;
   const descriptionParts = [
@@ -90,7 +94,7 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
     university?.organization.nameJa ? `大学は${university.organization.nameJa}。` : null,
     highSchool?.organization.nameJa ? `出身校は${highSchool.organization.nameJa}。` : null,
     player.personalBests.length > 0 ? `主要PBを${player.personalBests.length}件収録。` : null,
-    player.raceResults.length > 0 ? `大会成績を${player.raceResults.length}件収録。` : null,
+    player._count.raceResults > 0 ? `大会成績を${player._count.raceResults}件収録。` : null,
     "所属変遷、関連大会、データ出典もあわせて確認できます。",
   ].filter(Boolean);
 
@@ -245,19 +249,6 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
         include: { source: true },
         orderBy: { discipline: "asc" },
       },
-      raceResults: {
-        include: {
-          race: {
-            include: {
-              competitionEdition: {
-                include: { competition: true },
-              },
-            },
-          },
-          organization: true,
-          source: true,
-        },
-      },
     },
   });
 
@@ -265,12 +256,38 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     notFound();
   }
 
+  const raceResults = await prisma.raceResult.findMany({
+    where: {
+      personId: player.id,
+    },
+    include: {
+      race: {
+        include: {
+          competitionEdition: {
+            include: {
+              competition: true,
+            },
+          },
+        },
+      },
+      organization: true,
+      source: true,
+    },
+    orderBy: [{ race: { startsAt: "desc" } }, { race: { competitionEdition: { startsOn: "desc" } } }, { race: { leg: "asc" } }],
+    take: raceResultsPageSize,
+  });
+  const totalRaceResults = await prisma.raceResult.count({
+    where: {
+      personId: player.id,
+    },
+  });
+
   const sortedMemberships = sortMembershipsByStartDate(player.memberships);
   const currentMembership = getCurrentMembership(player.memberships);
   const university = getUniversityMembership(player.memberships);
   const highSchool = getHighSchoolMembership(player.memberships);
   const currentUniversityGrade = inferCurrentUniversityGrade(university);
-  const sortedRaceResults = [...player.raceResults].sort((a, b) => {
+  const sortedRaceResults = [...raceResults].sort((a, b) => {
     const dateA = a.race.startsAt ?? a.race.competitionEdition.startsOn;
     const dateB = b.race.startsAt ?? b.race.competitionEdition.startsOn;
     const timestampA = dateA?.getTime() ?? 0;
@@ -285,7 +302,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
   const relationPayload = await getPlayerRelations(player.id);
   const uniqueSources = Array.from(
     new Map(
-      [...player.memberships, ...player.personalBests, ...player.raceResults]
+      [...player.memberships, ...player.personalBests, ...raceResults]
         .map((item) => item.source)
         .filter(isPublicSource)
         .map((source) => [source.id, source]),
@@ -324,7 +341,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
   const seoTier = getPlayerSeoTier({
     memberships: player.memberships.length,
     personalBests: player.personalBests.length,
-    results: sortedRaceResults.length,
+    results: totalRaceResults,
   });
   const keyCompetitionNames = sortedRaceResults
     .slice(0, 5)
@@ -336,7 +353,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     university?.organization.nameJa ? `大学は${university.organization.nameJa}。` : null,
     highSchool?.organization.nameJa ? `高校は${highSchool.organization.nameJa}。` : null,
     player.personalBests.length > 0 ? `主要PBを${player.personalBests.length}件掲載しています。` : null,
-    sortedRaceResults.length > 0 ? `大会成績を${sortedRaceResults.length}件掲載しています。` : null,
+    totalRaceResults > 0 ? `大会成績を${totalRaceResults}件掲載しています。` : null,
     keyCompetitionNames.length > 0 ? `主な大会として${keyCompetitionNames.join("、")}などを確認できます。` : null,
   ]
     .filter(Boolean)
@@ -555,6 +572,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
               <h2 className="text-lg font-semibold">{dictionary.players.raceRecord}</h2>
               {hasRaceResults ? (
                 <>
+            {totalRaceResults > sortedRaceResults.length ? (
+              <p className="mt-4 text-sm text-[#59615c]">
+                {interpolate(dictionary.players.resultCount, { count: totalRaceResults })}。{sortedRaceResults.length}
+                件を新しい順で表示しています。
+              </p>
+            ) : null}
             <div className="mt-4 hidden md:block">
               <div>
                 <div className="grid grid-cols-[0.8fr_1.45fr_1.1fr_0.8fr_0.55fr_1.35fr_1.1fr_1.25fr] border-b border-[#ded8cc] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
