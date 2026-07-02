@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { getCachedValue } from "@/lib/server-cache";
 import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
+import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { buildPageMetadata } from "@/lib/site";
 
 type CompetitionEditionPageProps = {
@@ -75,6 +76,10 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
   );
 
   if (!edition) {
+    return {};
+  }
+
+  if (!isPublicCompetitionType(edition.competition.type)) {
     return {};
   }
 
@@ -166,6 +171,17 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
       locale,
       slug,
       reason: "competition_missing",
+    });
+    notFound();
+  }
+
+  if (!isPublicCompetitionType(edition.competition.type)) {
+    pageLogger.info("page_not_found", {
+      path: `/${locale}/competitions/${slug}`,
+      locale,
+      slug,
+      reason: "competition_not_public",
+      competition_type: edition.competition.type,
     });
     notFound();
   }

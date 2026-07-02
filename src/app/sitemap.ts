@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { publicCompetitionTypes } from "@/lib/public-competitions";
 import { buildLocalizedUrl, siteConfig } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -44,6 +45,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         select: { slug: true, updatedAt: true },
       }),
       prisma.competitionEdition.findMany({
+        where: {
+          competition: {
+            type: {
+              in: publicCompetitionTypes,
+            },
+          },
+        },
         select: { slug: true, updatedAt: true },
       }),
       prisma.organization.findMany({

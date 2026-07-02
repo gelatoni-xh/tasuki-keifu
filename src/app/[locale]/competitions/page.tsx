@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
+import { publicCompetitionTypes } from "@/lib/public-competitions";
 import { buildPageMetadata } from "@/lib/site";
 
 type CompetitionsPageProps = {
@@ -97,6 +98,13 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
   const normalizedQuery = normalizeSearchText(query);
   const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
   const editions = await prisma.competitionEdition.findMany({
+    where: {
+      competition: {
+        type: {
+          in: publicCompetitionTypes,
+        },
+      },
+    },
     include: {
       competition: true,
       races: {

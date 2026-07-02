@@ -19,6 +19,7 @@ import {
   sortMembershipsByStartDate,
 } from "@/lib/membership";
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
+import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { buildPageMetadata } from "@/lib/site";
 import type { PlayerRelationEntry, RelationReason, RelationStageKey } from "@/lib/player-relations/types";
 
@@ -52,6 +53,42 @@ function getPlayerSeoTier({
   }
 
   return "thin";
+}
+
+function renderCompetitionEditionName({
+  locale,
+  edition,
+  analyticsEvent,
+  analyticsLinkType,
+}: {
+  locale: string;
+  edition: {
+    slug: string;
+    shortName: string | null;
+    officialName: string;
+    competition: {
+      type: import("@prisma/client").CompetitionType | null;
+    };
+  };
+  analyticsEvent: string;
+  analyticsLinkType: string;
+}) {
+  const label = edition.shortName ?? edition.officialName;
+
+  if (!isPublicCompetitionType(edition.competition.type)) {
+    return <span className="font-medium text-[#1f2421]">{label}</span>;
+  }
+
+  return (
+    <Link
+      className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
+      data-analytics-event={analyticsEvent}
+      data-analytics-link-type={analyticsLinkType}
+      href={`/${locale}/competitions/${edition.slug}`}
+    >
+      {label}
+    </Link>
+  );
 }
 
 export async function generateMetadata({ params }: PlayerDetailPageProps): Promise<Metadata> {
@@ -641,14 +678,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                         key={result.id}
                       >
                         <span className="text-[#59615c]">{raceDate || dictionary.common.emptyDash}</span>
-                        <Link
-                          className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
-                          data-analytics-event="player_to_competition_click"
-                          data-analytics-link-type="player_race_record"
-                          href={`/${locale}/competitions/${edition.slug}`}
-                        >
-                          {edition.shortName ?? edition.officialName}
-                        </Link>
+                        {renderCompetitionEditionName({
+                          locale,
+                          edition,
+                          analyticsEvent: "player_to_competition_click",
+                          analyticsLinkType: "player_race_record",
+                        })}
                         <span>{result.race.name}</span>
                         <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
                         <span>{formatRankWithNotes(result.rank, result.notes, locale) || dictionary.common.emptyDash}</span>
@@ -681,14 +716,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                       <div>
                         <p className="text-xs font-medium text-[#8b938e]">{raceDate || dictionary.common.emptyDash}</p>
                         <h3 className="mt-1 font-semibold">
-                          <Link
-                            className="text-[#8a1f2d] underline-offset-4 hover:underline"
-                            data-analytics-event="player_to_competition_click"
-                            data-analytics-link-type="player_race_record_mobile"
-                            href={`/${locale}/competitions/${edition.slug}`}
-                          >
-                            {edition.shortName ?? edition.officialName}
-                          </Link>
+                          {renderCompetitionEditionName({
+                            locale,
+                            edition,
+                            analyticsEvent: "player_to_competition_click",
+                            analyticsLinkType: "player_race_record_mobile",
+                          })}
                         </h3>
                       </div>
                       <div className="text-right">
