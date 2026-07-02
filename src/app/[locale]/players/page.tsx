@@ -202,7 +202,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   const paginatedPlayers = await prisma.person.findMany({
     where: playerWhere,
     orderBy: [
-      { status: "asc" },
       { updatedAt: "desc" },
       { displayNameJa: "asc" },
     ],
