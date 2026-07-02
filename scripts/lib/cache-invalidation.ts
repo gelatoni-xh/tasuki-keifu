@@ -1,6 +1,10 @@
 import type { PrismaClient } from "@prisma/client";
 
 export async function bumpCacheInvalidationScope(prisma: PrismaClient, scope: string) {
+  if (!("cacheInvalidation" in prisma) || !prisma.cacheInvalidation) {
+    return;
+  }
+
   try {
     await prisma.cacheInvalidation.upsert({
       where: { scope },

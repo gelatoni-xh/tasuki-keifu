@@ -36,7 +36,6 @@ enum OrganizationType {
   corporate_team
   company
   club
-  federation
   organizer
 }
 

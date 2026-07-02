@@ -54,7 +54,7 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "high_school",
   "university",
   "corporate_team",
-  "federation",
+  "club",
 ];
 
 function buildPlayersPath(locale: string, params: Record<string, string | number | undefined>) {

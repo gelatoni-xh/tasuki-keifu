@@ -16,6 +16,7 @@
     "generate:all-japan-university-ekiden": "tsx scripts/imports/generate-all-japan-university-ekiden-payload.ts",
     "import:all-japan-university-ekiden": "tsx scripts/imports/run-all-japan-university-ekiden-import.ts",
     "generate:new-year-ekiden": "tsx scripts/imports/generate-new-year-ekiden-payload.ts",
+    "bootstrap:new-year-ekiden-organizations": "tsx scripts/imports/bootstrap-new-year-ekiden-organizations.ts",
     "generate:izumo": "tsx scripts/imports/generate-izumo-payload.ts",
     "reset:izumo": "tsx scripts/imports/reset-izumo-edition.ts",
     "import:izumo": "tsx scripts/imports/run-izumo-import.ts",

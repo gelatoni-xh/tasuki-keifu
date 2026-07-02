@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import path from "node:path";
 
 export function buildNewYearEkidenSourceId(edition: number) {
@@ -21,8 +22,16 @@ export function buildNewYearEkidenPdfPath(edition: number) {
 }
 
 export function buildNewYearEkidenSourceUrl(edition: number) {
+  if (edition === 68) {
+    return "https://gold.jaic.org/jaic/res2024/nyeki/pcsp/rel001.html";
+  }
+
   if (edition === 69) {
-    return "https://gold.jaic.org/gunma/menu/results/r_25/r250101/results.pdf";
+    return "https://gold.jaic.org/gunma/menu/results/r_25/r250101/rel001.html";
+  }
+
+  if (edition === 70) {
+    return "https://gold.jaic.org/jaic/res2026/nyeki/pcsp/rel001.html";
   }
 
   throw new Error(`Unsupported new year ekiden edition: ${edition}`);
@@ -50,13 +59,20 @@ export function slugifyAscii(value: string) {
 }
 
 export function slugifyJapaneseFallback(prefix: string, value: string) {
+  const normalized = value.normalize("NFKC").trim();
   const ascii = slugifyAscii(value);
-  if (ascii) {
+
+  if (ascii && /^[\x00-\x7F\s-]+$/.test(normalized)) {
     return `${prefix}-${ascii}`;
   }
 
-  const hex = Buffer.from(value.normalize("NFKC")).toString("hex").slice(0, 24);
-  return `${prefix}-${hex}`;
+  const digest = createHash("sha1").update(normalized).digest("hex").slice(0, 16);
+
+  if (ascii) {
+    return `${prefix}-${ascii}-${digest.slice(0, 8)}`;
+  }
+
+  return `${prefix}-${digest}`;
 }
 
 export function mergeNotes(existing: string | null, tokens: string[]) {

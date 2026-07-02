@@ -47,7 +47,7 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "high_school",
   "university",
   "corporate_team",
-  "federation",
+  "club",
 ];
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const pageSize = 10;

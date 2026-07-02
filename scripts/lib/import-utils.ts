@@ -72,6 +72,12 @@ function academicDatesForHighSchoolGrade(grade: number, referenceDate: Date) {
   };
 }
 
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setUTCDate(next.getUTCDate() + days);
+  return next;
+}
+
 function deriveAcademicDatesForEntry(input: {
   grade: number;
   referenceDate: Date;
@@ -1056,6 +1062,20 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     },
   });
 
+  const existingMemberships = !input.protectedProfileSlugs.has(input.entry.slug)
+    ? await prisma.membership.findMany({
+        where: { personId: person.id },
+        include: {
+          organization: {
+            select: {
+              id: true,
+              type: true,
+            },
+          },
+        },
+      })
+    : [];
+
   const referenceDate =
     race.startsAt ??
     race.competitionEdition.startsOn ??
@@ -1098,13 +1118,6 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
       sourceId: input.sourceId,
     });
   } else if (dates && highSchool) {
-    const existingMemberships = await prisma.membership.findMany({
-      where: { personId: person.id },
-      include: {
-        organization: true,
-      },
-    });
-
     const hasHighSchoolMembership = existingMemberships.some(
       (membership) =>
         highSchool !== null &&
@@ -1132,13 +1145,32 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     !input.protectedProfileSlugs.has(input.entry.slug) &&
     raceOrganization.type === OrganizationType.corporate_team
   ) {
+    const latestUniversityMembership = existingMemberships
+      .filter((membership) => membership.organization.type === OrganizationType.university)
+      .sort((left, right) => {
+        const leftTime =
+          left.endDate?.getTime() ??
+          (left.endYear ? Date.UTC(left.endYear, 2, 31) : 0);
+        const rightTime =
+          right.endDate?.getTime() ??
+          (right.endYear ? Date.UTC(right.endYear, 2, 31) : 0);
+
+        return rightTime - leftTime;
+      })[0];
+
+    const corporateStartDate = latestUniversityMembership?.endDate
+      ? addDays(latestUniversityMembership.endDate, 1)
+      : latestUniversityMembership?.endYear
+        ? new Date(Date.UTC(latestUniversityMembership.endYear, 3, 1))
+        : null;
+
     await ensureMembership(prisma, {
       personId: person.id,
       organizationId: raceOrganization.id,
       type: MembershipType.affiliated,
-      startDate: null,
+      startDate: corporateStartDate,
       endDate: null,
-      startYear: null,
+      startYear: corporateStartDate?.getUTCFullYear() ?? null,
       endYear: null,
       sourceId: input.sourceId,
     });

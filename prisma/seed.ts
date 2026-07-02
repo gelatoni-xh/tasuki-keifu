@@ -568,11 +568,11 @@ async function main() {
   });
   const newYearEkiden69Source = await upsertSourceById({
     id: "source-new-year-ekiden-69-result",
-    name: "JITA 第69回ニューイヤー駅伝大会成績PDF",
-    url: "https://www.jita-trackfield.jp/jita/wp-content/uploads/2025/01/2025_JITA_NewYearEKIDEN_Result_0101.pdf",
-    type: SourceType.pdf,
+    name: "JAIC 第69回ニューイヤー駅伝総合成績HTML",
+    url: "https://gold.jaic.org/gunma/menu/results/r_25/r250101/rel001.html",
+    type: SourceType.data_site,
     reliability: 5,
-    notes: "2025年1月1日開催、第69回全日本実業団対抗駅伝競走大会の公式成績PDF。",
+    notes: "2025年1月1日開催、第69回全日本実業団対抗駅伝競走大会のJAIC総合成績HTML。",
   });
 
   const aogaku = await upsertOrganization({
@@ -737,7 +737,7 @@ async function main() {
     slug: "kanto-student-union",
     nameJa: "関東学生連合",
     shortName: "関東学生連合",
-    type: OrganizationType.federation,
+    type: OrganizationType.club,
     prefecture: "東京都",
   });
   const gmo = await upsertOrganization({
@@ -745,7 +745,6 @@ async function main() {
     nameJa: "GMOインターネットグループ",
     shortName: "GMO",
     type: OrganizationType.corporate_team,
-    prefecture: "東京都",
     websiteUrl: "https://athletes.gmo.jp/",
   });
 
