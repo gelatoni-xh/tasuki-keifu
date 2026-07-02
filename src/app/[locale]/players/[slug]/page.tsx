@@ -5,6 +5,7 @@ import type { Source } from "@prisma/client";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { getScopeVersion } from "@/lib/cache-invalidation";
+import { createLogger } from "@/lib/logger";
 import { getCachedValue } from "@/lib/server-cache";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRankWithNotes, formatStatus } from "@/lib/format";
@@ -31,6 +32,7 @@ type PlayerDetailPageProps = {
 const raceResultsPageSize = 30;
 const PLAYER_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
 const PLAYER_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
+const pageLogger = createLogger("player-detail-page");
 
 function getPlayerSeoTier({
   memberships,
@@ -238,6 +240,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
   const { locale: localeParam, slug } = await params;
 
   if (!isLocale(localeParam)) {
+    pageLogger.warn("page_not_found", {
+      path: "/[locale]/players/[slug]",
+      locale: localeParam,
+      slug,
+      reason: "invalid_locale",
+    });
     notFound();
   }
 
@@ -263,6 +271,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
   );
 
   if (!player) {
+    pageLogger.info("page_not_found", {
+      path: `/${locale}/players/${slug}`,
+      locale,
+      slug,
+      reason: "player_missing",
+    });
     notFound();
   }
 
@@ -358,6 +372,16 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     memberships: player.memberships.length,
     personalBests: player.personalBests.length,
     results: totalRaceResults,
+  });
+
+  pageLogger.info("page_rendered", {
+    path: `/${locale}/players/${slug}`,
+    locale,
+    slug,
+    relation_count: relationPayload.topRelations.length,
+    source_count: uniqueSources.length,
+    total_race_results: totalRaceResults,
+    seo_tier: seoTier,
   });
   const keyCompetitionNames = sortedRaceResults
     .slice(0, 5)

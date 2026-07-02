@@ -33,6 +33,12 @@ Production deploy should normally run through GitHub Actions:
 git push main -> build image archive -> upload to Ubuntu-3 -> docker load -> migrate deploy -> compose up
 ```
 
+Production logs:
+
+- App and script logs are emitted as structured JSON to container stdout/stderr.
+- Docker Compose uses the `local` logging driver with three rotated files per container.
+- Application-side log retention is configured with `TASUKI_LOG_RETENTION_DAYS=3`.
+
 Do not run `pnpm db:seed` in production deploys. Business data import and correction are separate workflows.
 
 Nginx:

@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { getScopeVersion } from "@/lib/cache-invalidation";
+import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { getCachedValue } from "@/lib/server-cache";
-import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRank, formatRankWithNotes } from "@/lib/format";
+import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { buildPageMetadata } from "@/lib/site";
 
@@ -23,6 +24,7 @@ type CompetitionEditionPageProps = {
 
 const COMPETITION_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
 const COMPETITION_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
+const pageLogger = createLogger("competition-detail-page");
 
 function getCompetitionSeoTier({
   raceCount,
@@ -119,6 +121,12 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const queryParams = searchParams ? await searchParams : {};
 
   if (!isLocale(localeParam)) {
+    pageLogger.warn("page_not_found", {
+      path: "/[locale]/competitions/[slug]",
+      locale: localeParam,
+      slug,
+      reason: "invalid_locale",
+    });
     notFound();
   }
 
@@ -153,6 +161,12 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   );
 
   if (!edition) {
+    pageLogger.info("page_not_found", {
+      path: `/${locale}/competitions/${slug}`,
+      locale,
+      slug,
+      reason: "competition_missing",
+    });
     notFound();
   }
 
@@ -272,6 +286,18 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
           }),
         )
       : null;
+
+  pageLogger.info("page_rendered", {
+    path: `/${locale}/competitions/${slug}`,
+    locale,
+    slug,
+    tab: activeTab,
+    race_count: edition.races.length,
+    result_count: resultCount,
+    team_result_count: teamResultCount,
+    snapshot_count: totalTeamSnapshotCount,
+    seo_tier: seoTier,
+  });
 
   function formatRepresentativeLabel(notes: string | null | undefined, prefecture: string | null | undefined) {
     if (notes?.startsWith("地区代表:")) {

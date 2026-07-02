@@ -13,6 +13,7 @@ services:
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
       NEXT_TELEMETRY_DISABLED: "1"
+      TASUKI_LOG_RETENTION_DAYS: "3"
     ports:
       - "127.0.0.1:3020:3000"
     depends_on:
@@ -24,6 +25,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    logging:
+      driver: local
+      options:
+        max-file: "3"
+        max-size: "10m"
 
   postgres:
     image: postgres:17-alpine

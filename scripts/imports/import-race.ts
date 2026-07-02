@@ -4,26 +4,30 @@ import path from "node:path";
 import { prisma } from "../lib/prisma";
 import { raceImportPayloadSchema } from "../lib/import-types";
 import { importRacePayload } from "../lib/race-importer";
+import { runScript } from "../lib/script-runtime";
 
-async function main() {
-  const inputPath = process.argv[2];
+await runScript(
+  {
+    script: "imports/import-race",
+    disconnect: () => prisma.$disconnect(),
+  },
+  async ({ logger, runId }) => {
+    const inputPath = process.argv[2];
 
-  if (!inputPath) {
-    throw new Error("Usage: tsx scripts/imports/import-race.ts <payload.json>");
-  }
+    if (!inputPath) {
+      throw new Error("Usage: tsx scripts/imports/import-race.ts <payload.json>");
+    }
 
-  const payloadText = await readFile(path.resolve(inputPath), "utf8");
-  const payload = raceImportPayloadSchema.parse(JSON.parse(payloadText));
+    const resolvedInputPath = path.resolve(inputPath);
+    const payloadText = await readFile(resolvedInputPath, "utf8");
+    const payload = raceImportPayloadSchema.parse(JSON.parse(payloadText));
 
-  try {
     await importRacePayload(prisma, payload);
-    console.log(`Import completed: ${payload.batchKey}`);
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+    logger.info("race_import_completed", {
+      run_id: runId,
+      input_path: resolvedInputPath,
+      batch_key: payload.batchKey,
+      race_slug: payload.raceSlug,
+    });
+  },
+);

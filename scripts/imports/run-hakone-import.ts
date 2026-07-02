@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 
 import { buildHakonePayloadPath } from "../lib/hakone";
+import { runScript } from "../lib/script-runtime";
 
 type Phase = "generate" | "import" | "all";
 
@@ -73,29 +74,43 @@ async function runWithConcurrency<T>(items: T[], concurrency: number, worker: (i
   await Promise.all(runners);
 }
 
-async function main() {
-  const options = parseArgs(process.argv.slice(2));
+await runScript(
+  {
+    script: "imports/run-hakone-import",
+  },
+  async ({ logger }) => {
+    const options = parseArgs(process.argv.slice(2));
 
-  if (!options.edition) {
-    throw new Error("Usage: tsx scripts/imports/run-hakone-import.ts --edition <edition> [--legs 1,2,3] [--concurrency 4] [--phase generate|import|all]");
-  }
-
-  const legs = options.legs.length > 0 ? options.legs : Array.from({ length: 10 }, (_, index) => index + 1);
-
-  if (options.phase === "generate" || options.phase === "all") {
-    await runWithConcurrency(legs, options.concurrency, async (leg) => {
-      await runCommand(["tsx", "scripts/imports/generate-hakone-leg-payload.ts", String(options.edition), String(leg)]);
-    });
-  }
-
-  if (options.phase === "import" || options.phase === "all") {
-    for (const leg of legs) {
-      await runCommand(["import:race", buildHakonePayloadPath(options.edition, leg)]);
+    if (!options.edition) {
+      throw new Error("Usage: tsx scripts/imports/run-hakone-import.ts --edition <edition> [--legs 1,2,3] [--concurrency 4] [--phase generate|import|all]");
     }
-  }
-}
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+    const legs = options.legs.length > 0 ? options.legs : Array.from({ length: 10 }, (_, index) => index + 1);
+
+    logger.info("hakone_import_requested", {
+      edition: options.edition,
+      phase: options.phase,
+      concurrency: options.concurrency,
+      leg_count: legs.length,
+      legs,
+    });
+
+    if (options.phase === "generate" || options.phase === "all") {
+      await runWithConcurrency(legs, options.concurrency, async (leg) => {
+        await runCommand(["tsx", "scripts/imports/generate-hakone-leg-payload.ts", String(options.edition), String(leg)]);
+      });
+    }
+
+    if (options.phase === "import" || options.phase === "all") {
+      for (const leg of legs) {
+        await runCommand(["import:race", buildHakonePayloadPath(options.edition, leg)]);
+      }
+    }
+
+    logger.info("hakone_import_finished", {
+      edition: options.edition,
+      phase: options.phase,
+      leg_count: legs.length,
+    });
+  },
+);
