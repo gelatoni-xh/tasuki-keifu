@@ -10,8 +10,10 @@
   },
   "language": {
     "ja": "日本語",
-    "zh": "中文",
-    "en": "EN"
+    "zh": "简体中文",
+    "zh-Hant": "繁體中文",
+    "en": "English",
+    "ko": "한국어"
   },
   "nav": {
     "players": "选手",
@@ -169,6 +171,13 @@
     "statusFilter": "状态",
     "prefectureFilter": "都道府县",
     "website": "官方网站",
+    "detailSummaryIntro": "{name} 是本站收录的 {type} 组织页面。",
+    "detailSummaryMemberships": "目前已确认 {count} 条所属关系。",
+    "detailSummaryTeamResults": "在驿传赛事中，已收录 {count} 条队伍成绩。",
+    "detailSummaryCompetitions": "相关重点赛事可查看 {competitions} 等。",
+    "detailSeoIntro": "{name} 的组织页面，本站以 {type} 进行收录。",
+    "detailSeoMemberships": "已收录 {count} 位相关人物。",
+    "detailSeoLocation": "所在地为 {location}。",
     "pageSummary": "第 {current} / {total} 页",
     "previousPage": "上一页",
     "nextPage": "下一页",

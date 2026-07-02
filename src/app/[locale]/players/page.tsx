@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CascadingOrganizationFilters } from "@/components/cascading-organization-filters";
 import { prisma } from "@/lib/prisma";
-import { formatDiscipline, formatOrganizationType, formatPersonType, formatStatus } from "@/lib/format";
+import { formatDiscipline, formatOrganizationType, formatPersonType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
 import { buildPageMetadata } from "@/lib/site";
@@ -256,7 +256,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             data-analytics-event={hasActiveFilters ? "players_filter_apply" : "players_search_submit"}
             data-analytics-form="players_search"
           >
-            <div className="grid gap-3 lg:grid-cols-[1.15fr_0.8fr_0.9fr_0.75fr_0.7fr_0.85fr_auto_auto]">
+            <div className="grid gap-3 lg:grid-cols-[1.15fr_0.9fr_0.75fr_0.7fr_0.85fr_auto_auto]">
               <label className="filter-field">
                 <span className="filter-label">{dictionary.common.search}</span>
                 <div className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
@@ -288,18 +288,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                 selectedOrganization={organizationSlug}
                 selectedOrganizationType={organizationType}
               />
-
-              <label className="filter-field">
-                <span className="filter-label">{dictionary.players.statusFilter}</span>
-                <select className="filter-input" defaultValue={status} name="status">
-                  <option value="">{dictionary.common.all}</option>
-                  {allowedStatuses.map((statusOption) => (
-                    <option key={statusOption} value={statusOption}>
-                      {formatStatus(statusOption, locale)}
-                    </option>
-                  ))}
-                </select>
-              </label>
 
               <label className="filter-field">
                 <span className="filter-label">{dictionary.players.personTypeFilter}</span>
@@ -344,12 +332,11 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
           </form>
 
           <section className="overflow-hidden border border-[#ded8cc] bg-white">
-            <div className="hidden grid-cols-[1.1fr_1fr_1fr_1.2fr_0.7fr] border-b border-[#ded8cc] bg-[#f2eee7] px-4 py-3 text-sm font-semibold text-[#59615c] md:grid">
+            <div className="hidden grid-cols-[1.1fr_1fr_1fr_1.2fr] border-b border-[#ded8cc] bg-[#f2eee7] px-4 py-3 text-sm font-semibold text-[#59615c] md:grid">
               <span>{dictionary.players.name}</span>
               <span>{dictionary.players.currentAffiliation}</span>
               <span>{dictionary.players.schoolHistory}</span>
               <span>{dictionary.players.personalBest}</span>
-              <span>{dictionary.players.status}</span>
             </div>
             {totalPlayers > 0 ? (
               <div className="divide-y divide-[#e7e1d8]">
@@ -364,7 +351,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
 
                   return (
                     <Link
-                      className="grid gap-3 px-4 py-4 transition hover:bg-[#fbfaf7] md:grid-cols-[1.1fr_1fr_1fr_1.2fr_0.7fr]"
+                      className="grid gap-3 px-4 py-4 transition hover:bg-[#fbfaf7] md:grid-cols-[1.1fr_1fr_1fr_1.2fr]"
                       href={`/${locale}/players/${player.slug}`}
                       key={player.id}
                       data-analytics-event="player_profile_view"
@@ -395,12 +382,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                           {dictionary.players.personalBest}
                         </span>
                         {pbSummary || dictionary.common.emptyDash}
-                      </span>
-                      <span className="text-sm text-[#8a1f2d]">
-                        <span className="mb-1 block text-xs font-medium text-[#8b938e] md:hidden">
-                          {dictionary.players.status}
-                        </span>
-                        {formatStatus(player.status, locale)}
                       </span>
                     </Link>
                   );

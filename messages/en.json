@@ -10,8 +10,10 @@
   },
   "language": {
     "ja": "日本語",
-    "zh": "中文",
-    "en": "EN"
+    "zh": "简体中文",
+    "zh-Hant": "繁體中文",
+    "en": "English",
+    "ko": "한국어"
   },
   "nav": {
     "players": "Athletes",
@@ -169,6 +171,13 @@
     "statusFilter": "Status",
     "prefectureFilter": "Prefecture",
     "website": "Official site",
+    "detailSummaryIntro": "{name} is an organization page in this archive, recorded as a {type}.",
+    "detailSummaryMemberships": "We currently confirm {count} affiliation records.",
+    "detailSummaryTeamResults": "{count} team results are listed for ekiden competitions.",
+    "detailSummaryCompetitions": "Key related competitions include {competitions} and others.",
+    "detailSeoIntro": "{name} organization page in the archive, recorded as a {type}.",
+    "detailSeoMemberships": "{count} related people are included.",
+    "detailSeoLocation": "Located in {location}.",
     "pageSummary": "Page {current} / {total}",
     "previousPage": "Previous",
     "nextPage": "Next",

@@ -1,15 +1,19 @@
 import ja from "../../messages/ja.json";
 import zh from "../../messages/zh.json";
+import zhHant from "../../messages/zh-Hant.json";
 import en from "../../messages/en.json";
+import ko from "../../messages/ko.json";
 
-export const locales = ["ja", "zh", "en"] as const;
+export const locales = ["ja", "zh", "zh-Hant", "en", "ko"] as const;
 
 export type Locale = (typeof locales)[number];
 
 const dictionaries = {
   ja,
   zh,
+  "zh-Hant": zhHant,
   en,
+  ko,
 };
 
 export function isLocale(value: string): value is Locale {

@@ -8,7 +8,7 @@ import { getScopeVersion } from "@/lib/cache-invalidation";
 import { createLogger } from "@/lib/logger";
 import { getCachedValue } from "@/lib/server-cache";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRankWithNotes, formatStatus } from "@/lib/format";
+import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import {
   formatMembershipPeriod,
@@ -518,20 +518,6 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
               <div className="flex flex-wrap gap-2">
                 <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#59615c]">
                   {dictionary.players.personType}: {formatPersonType(player.type, locale)}
-                </span>
-                <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#8a1f2d]">
-                  {formatStatus(player.status, locale)}
-                </span>
-                <span
-                  className={`border px-3 py-1 text-sm ${
-                    seoTier === "primary"
-                      ? "border-[#c9d7c6] bg-[#eef6ec] text-[#29543a]"
-                      : seoTier === "secondary"
-                        ? "border-[#d8cfbf] bg-[#f6f1e8] text-[#7a5d2d]"
-                        : "border-[#ded8cc] bg-white text-[#59615c]"
-                  }`}
-                >
-                  {seoTier === "primary" ? "Complete page" : seoTier === "secondary" ? "Growing page" : "Seed page"}
                 </span>
               </div>
             </div>

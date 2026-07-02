@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
-import { getDictionary, isLocale } from "@/lib/i18n";
+import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { groupMembershipsByRole, isCurrentMembership } from "@/lib/membership";
 import { buildPageMetadata } from "@/lib/site";
 
@@ -62,16 +62,27 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
   }
 
   const title = `${organization.nameJa}の所属人物・関連データ`;
+  const dictionary = getDictionary(locale);
   const seoTier = getOrganizationSeoTier({
     memberships: organization._count.memberships,
     raceResults: organization._count.raceResults,
     teamResults: 0,
   });
   const description = [
-    `${organization.nameJa}の組織ページです。`,
-    `${formatOrganizationType(organization.type, locale)}として収録しています。`,
-    organization._count.memberships > 0 ? `関連人物を${organization._count.memberships}件収録。` : null,
-    organization.location ?? organization.prefecture ? `所在地は${organization.location ?? organization.prefecture}。` : null,
+    interpolate(dictionary.organizations.detailSeoIntro, {
+      name: organization.nameJa,
+      type: formatOrganizationType(organization.type, locale),
+    }),
+    organization._count.memberships > 0
+      ? interpolate(dictionary.organizations.detailSeoMemberships, {
+          count: organization._count.memberships,
+        })
+      : null,
+    organization.location ?? organization.prefecture
+      ? interpolate(dictionary.organizations.detailSeoLocation, {
+          location: organization.location ?? organization.prefecture ?? "",
+        })
+      : null,
   ]
     .filter(Boolean)
     .join(" ");
@@ -162,21 +173,31 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
     { key: "coach", label: formatMembershipRole("coach", locale), current: currentByRole.coach, former: formerByRole.coach },
     { key: "staff", label: formatMembershipRole("staff", locale), current: currentByRole.staff, former: formerByRole.staff },
   ];
-  const seoTier = getOrganizationSeoTier({
-    memberships: organization.memberships.length,
-    raceResults: 0,
-    teamResults: organization.teamCompetitionResults.length,
-  });
   const highlightedEditions = ekidenResults.slice(0, 5).map((result) => result.competitionEdition.shortName ?? result.competitionEdition.officialName);
   const highlightedPeople = organization.memberships
     .slice(0, 8)
     .map((membership) => membership.person.displayNameJa)
     .filter((name, index, list) => list.indexOf(name) === index);
   const organizationSummary = [
-    `${organization.nameJa}は、${formatOrganizationType(organization.type, locale)}として収録している組織ページです。`,
-    organization.memberships.length > 0 ? `現在までに${organization.memberships.length}件の所属関係を確認しています。` : null,
-    ekidenResults.length > 0 ? `駅伝大会では${ekidenResults.length}件のチーム成績を掲載しています。` : null,
-    highlightedEditions.length > 0 ? `主な関連大会として${highlightedEditions.join("、")}などを確認できます。` : null,
+    interpolate(dictionary.organizations.detailSummaryIntro, {
+      name: organization.nameJa,
+      type: formatOrganizationType(organization.type, locale),
+    }),
+    organization.memberships.length > 0
+      ? interpolate(dictionary.organizations.detailSummaryMemberships, {
+          count: organization.memberships.length,
+        })
+      : null,
+    ekidenResults.length > 0
+      ? interpolate(dictionary.organizations.detailSummaryTeamResults, {
+          count: ekidenResults.length,
+        })
+      : null,
+    highlightedEditions.length > 0
+      ? interpolate(dictionary.organizations.detailSummaryCompetitions, {
+          competitions: highlightedEditions.join("、"),
+        })
+      : null,
   ]
     .filter(Boolean)
     .join(" ");
@@ -208,7 +229,7 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
       {
         "@type": "ListItem",
         position: 2,
-        name: "組織一覧",
+        name: dictionary.organizations.listTitle,
         item: `https://tasukikeifu.com/${locale}/organizations`,
       },
       {
@@ -256,17 +277,6 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                 </p>
               </div>
               <div className="flex flex-col items-start gap-3">
-                <span
-                  className={`border px-3 py-1 text-sm ${
-                    seoTier === "primary"
-                      ? "border-[#c9d7c6] bg-[#eef6ec] text-[#29543a]"
-                      : seoTier === "secondary"
-                        ? "border-[#d8cfbf] bg-[#f6f1e8] text-[#7a5d2d]"
-                        : "border-[#ded8cc] bg-white text-[#59615c]"
-                  }`}
-                >
-                  {seoTier === "primary" ? "Complete page" : seoTier === "secondary" ? "Growing page" : "Seed page"}
-                </span>
                 {organization.websiteUrl ? (
                   <a
                     className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] underline-offset-4 hover:underline"

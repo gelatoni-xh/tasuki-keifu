@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { locales, type Locale } from "@/lib/i18n";
 
 const defaultSiteUrl = "https://tasukikeifu.com";
+const openGraphLocaleMap: Record<Locale, string> = {
+  ja: "ja_JP",
+  zh: "zh_CN",
+  "zh-Hant": "zh_TW",
+  en: "en_US",
+  ko: "ko_KR",
+};
 
 export const siteConfig = {
   name: "襷の系譜",
@@ -73,7 +80,7 @@ export function buildPageMetadata({
     },
     openGraph: {
       type,
-      locale: locale === "ja" ? "ja_JP" : locale,
+      locale: openGraphLocaleMap[locale],
       siteName: siteConfig.searchName,
       title,
       description,

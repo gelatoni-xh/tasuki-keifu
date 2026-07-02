@@ -10,8 +10,10 @@
   },
   "language": {
     "ja": "日本語",
-    "zh": "中文",
-    "en": "EN"
+    "zh": "简体中文",
+    "zh-Hant": "繁體中文",
+    "en": "English",
+    "ko": "한국어"
   },
   "nav": {
     "players": "選手",
@@ -169,6 +171,13 @@
     "statusFilter": "状態",
     "prefectureFilter": "都道府県",
     "website": "公式サイト",
+    "detailSummaryIntro": "{name}は、{type}として収録している組織ページです。",
+    "detailSummaryMemberships": "現在までに{count}件の所属関係を確認しています。",
+    "detailSummaryTeamResults": "駅伝大会では{count}件のチーム成績を掲載しています。",
+    "detailSummaryCompetitions": "主な関連大会として{competitions}などを確認できます。",
+    "detailSeoIntro": "{name}の組織ページです。{type}として収録しています。",
+    "detailSeoMemberships": "関連人物を{count}件収録。",
+    "detailSeoLocation": "所在地は{location}。",
     "pageSummary": "{current} / {total} ページ",
     "previousPage": "前へ",
     "nextPage": "次へ",

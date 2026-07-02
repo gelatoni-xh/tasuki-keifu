@@ -235,18 +235,6 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
               </label>
 
               <label className="filter-field">
-                <span className="filter-label">{dictionary.organizations.statusFilter}</span>
-                <select className="filter-input" defaultValue={status} name="status">
-                  <option value="">{dictionary.common.all}</option>
-                  {allowedStatuses.map((statusOption) => (
-                    <option key={statusOption} value={statusOption}>
-                      {dictionary.status[statusOption]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="filter-field">
                 <span className="filter-label">{dictionary.organizations.prefectureFilter}</span>
                 <select className="filter-input" defaultValue={prefecture} name="prefecture">
                   <option value="">{dictionary.common.all}</option>

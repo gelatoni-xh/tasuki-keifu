@@ -461,17 +461,6 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 <span className="border border-[#ded8cc] px-3 py-1">
                   {dictionary.competitions.resultCountLabel}: {resultCount}
                 </span>
-                <span
-                  className={`border px-3 py-1 ${
-                    seoTier === "primary"
-                      ? "border-[#c9d7c6] bg-[#eef6ec] text-[#29543a]"
-                      : seoTier === "secondary"
-                        ? "border-[#d8cfbf] bg-[#f6f1e8] text-[#7a5d2d]"
-                        : "border-[#ded8cc] bg-white text-[#59615c]"
-                  }`}
-                >
-                  {seoTier === "primary" ? "Complete page" : seoTier === "secondary" ? "Growing page" : "Seed page"}
-                </span>
               </div>
             </div>
           </header>
