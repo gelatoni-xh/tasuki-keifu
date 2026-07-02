@@ -7,8 +7,19 @@ type SiteHeaderProps = {
   path: string;
 };
 
+function normalizeLanguageSwitchPath(path: string) {
+  if (!path) {
+    return "";
+  }
+
+  const localePrefixPattern = new RegExp(`^/(${locales.join("|")})(?=/|$)`);
+
+  return path.replace(localePrefixPattern, "");
+}
+
 export function SiteHeader({ locale, path }: SiteHeaderProps) {
   const dictionary = getDictionary(locale);
+  const normalizedPath = normalizeLanguageSwitchPath(path);
 
   return (
     <header className="sticky top-0 z-30 border-b border-[#ded8cc] bg-[#fbfaf7]/95 backdrop-blur">
@@ -39,7 +50,7 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
                     ? "border border-[#ded8cc] px-2 py-1 text-[#8a1f2d]"
                     : "px-2 py-1 transition hover:text-[#8a1f2d]"
                 }
-                href={`/${targetLocale}${path}`}
+                href={`/${targetLocale}${normalizedPath}`}
                 key={targetLocale}
               >
                 {dictionary.language[targetLocale]}
