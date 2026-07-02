@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import type { Locale } from "@/lib/i18n";
 import { getDictionary, locales } from "@/lib/i18n";
+import { getStaticPageCopy } from "@/lib/static-pages";
 
 type SiteHeaderProps = {
   locale: Locale;
@@ -28,6 +29,7 @@ function isActivePath(path: string, href: string) {
 
 export function SiteHeader({ locale, path }: SiteHeaderProps) {
   const dictionary = getDictionary(locale);
+  const staticPageCopy = getStaticPageCopy(locale);
   const normalizedPath = normalizeLanguageSwitchPath(path);
   const localeOptions = locales.map((targetLocale) => ({
     value: targetLocale,
@@ -46,6 +48,12 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
     {
       href: "/organizations",
       label: dictionary.nav.organizations,
+    },
+  ];
+  const secondaryNavigationItems = [
+    {
+      href: "/support",
+      label: staticPageCopy.labels.support,
     },
   ];
 
@@ -76,6 +84,25 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
                   className={
                     active
                       ? "border border-[#b53b4d] bg-[#8a1f2d] px-3 py-2 text-white"
+                      : "border border-[#ded8cc] bg-white px-3 py-2 text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
+                  }
+                  href={`/${locale}${item.href}`}
+                  key={item.href}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+          <nav className="mt-3 flex flex-wrap gap-2 text-sm" aria-label="Secondary">
+            {secondaryNavigationItems.map((item) => {
+              const active = isActivePath(normalizedPath, item.href);
+
+              return (
+                <Link
+                  className={
+                    active
+                      ? "border border-[#8a1f2d] bg-[#8a1f2d] px-3 py-2 text-white shadow-sm"
                       : "border border-[#ded8cc] bg-white px-3 py-2 text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
                   }
                   href={`/${locale}${item.href}`}
@@ -120,6 +147,25 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
           </nav>
 
           <div className="mt-auto space-y-5 border-t border-[#d8cfbf] pt-6">
+            <nav className="grid gap-3 text-sm" aria-label="Secondary">
+              {secondaryNavigationItems.map((item) => {
+                const active = isActivePath(normalizedPath, item.href);
+
+                return (
+                  <Link
+                    className={
+                      active
+                        ? "border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-3 font-medium text-white shadow-[0_10px_24px_rgba(138,31,45,0.14)]"
+                        : "border border-[#d8cfbf] bg-white/82 px-4 py-3 text-[#2d342f] transition hover:-translate-y-0.5 hover:border-[#c4b9a5] hover:bg-white"
+                    }
+                    href={`/${locale}${item.href}`}
+                    key={item.href}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
             <LocaleSwitcher
               ariaLabel="Language"
               currentLocale={locale}

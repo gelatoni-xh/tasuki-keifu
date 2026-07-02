@@ -19,7 +19,8 @@ type AnalyticsEventName =
   | "player_to_competition_click"
   | "player_to_organization_click"
   | "player_to_related_player_click"
-  | "source_outbound_click";
+  | "source_outbound_click"
+  | "support_paypal_click";
 
 function trackEvent(eventName: AnalyticsEventName, params: Record<string, string | number> = {}) {
   window.gtag?.("event", eventName, params);
@@ -115,6 +116,7 @@ export function AnalyticsEvents() {
       trackEvent(eventName, {
         href: link.href,
         link_type: link.dataset.analyticsLinkType ?? "unknown",
+        placement: link.dataset.analyticsPlacement ?? "unknown",
       });
     }
 
