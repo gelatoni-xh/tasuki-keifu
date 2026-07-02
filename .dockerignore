@@ -8,3 +8,12 @@ coverage
 *.log
 *.pem
 docker-compose.yml
+**/.DS_Store
+tmp
+local
+scripts/local
+scripts/imports
+scripts/maintenance
+data/config
+data/imports
+data/bootstrap

@@ -22,6 +22,7 @@
 
 # misc
 .DS_Store
+**/.DS_Store
 *.pem
 
 # debug
@@ -47,3 +48,13 @@ tmp/
 local/
 scripts/local/
 data/imports/*.draft.json
+
+# local / generated import artifacts
+scripts/imports/
+scripts/maintenance/
+data/config/
+data/imports/
+data/bootstrap/
+data/imports/**/*.html
+data/imports/**/*.pdf
+data/imports/**/summary.json
