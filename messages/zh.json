@@ -30,7 +30,9 @@
     "sampleTag": "V0.1 seed",
     "emptyDash": "-",
     "notEntered": "记录未录入",
-    "present": "至今"
+    "present": "至今",
+    "furusatoSystemLabel": "ふるさと制度（{code}・{origin}）",
+    "furusatoSystemDescription": "按出身学校所在地都道府县代表出场"
   },
   "home": {
     "browseTitle": "从一览进入",
@@ -69,7 +71,7 @@
     "profile": "人物档案",
     "personType": "人物类型",
     "affiliation": "所属与出身",
-    "currentAffiliation": "当前所属",
+    "currentAffiliation": "所属",
     "careerTimeline": "所属履历",
     "university": "大学",
     "grade": "年级",
@@ -208,6 +210,8 @@
     "junior_high_school": "初中",
     "high_school": "高中",
     "university": "大学",
+    "prefecture_representative": "都道府县代表",
+    "student_union_select": "学联选拔",
     "corporate_team": "实业团",
     "company": "企业",
     "club": "俱乐部",

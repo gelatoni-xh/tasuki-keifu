@@ -3,6 +3,7 @@ import { z } from "zod";
 export const raceEntryPbSchema = z.object({
   discipline: z.string(),
   mark: z.string().min(1),
+  sourceId: z.string().min(1).optional(),
 });
 
 export const teamSnapshotSchema = z.object({
@@ -16,7 +17,14 @@ export const teamSnapshotSchema = z.object({
 export const teamResultSchema = z.object({
   organizationSlug: z.string().min(1),
   organizationNameJa: z.string().min(1),
-  organizationType: z.enum(["university", "high_school", "club", "corporate_team"]).default("university"),
+  organizationType: z.enum([
+    "university",
+    "high_school",
+    "club",
+    "corporate_team",
+    "prefecture_representative",
+    "student_union_select",
+  ]).default("university"),
   organizationPrefecture: z.string().min(1).nullable().optional(),
   finalRank: z.number().int().positive().nullable().optional(),
   finalMark: z.string().min(1).nullable().optional(),
@@ -31,8 +39,30 @@ export const raceEntrySchema = z.object({
   displayNameRoman: z.string().min(1).nullable().optional(),
   raceOrganizationSlug: z.string().min(1),
   raceOrganizationNameJa: z.string().min(1),
-  raceOrganizationType: z.enum(["university", "high_school", "club", "corporate_team"]).default("university"),
+  raceOrganizationType: z.enum([
+    "university",
+    "high_school",
+    "junior_high_school",
+    "club",
+    "corporate_team",
+    "company",
+    "prefecture_representative",
+    "student_union_select",
+  ]).default("university"),
   raceOrganizationPrefecture: z.string().min(1).nullable().optional(),
+  affiliationOrganizationSlug: z.string().min(1).nullable().optional(),
+  affiliationOrganizationNameJa: z.string().min(1).nullable().optional(),
+  affiliationOrganizationType: z.enum([
+    "university",
+    "high_school",
+    "junior_high_school",
+    "club",
+    "corporate_team",
+    "company",
+    "prefecture_representative",
+    "student_union_select",
+  ]).nullable().optional(),
+  affiliationOrganizationPrefecture: z.string().min(1).nullable().optional(),
   universitySlug: z.string().min(1).nullable().optional(),
   universityNameJa: z.string().min(1).nullable().optional(),
   highSchoolSlug: z.string().min(1).nullable().optional(),

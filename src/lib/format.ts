@@ -1,6 +1,6 @@
 import type { CompetitionType, EventDiscipline, MembershipRole, OrganizationType, PersonType } from "@prisma/client";
 import type { Locale } from "@/lib/i18n";
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary, interpolate } from "@/lib/i18n";
 
 export function formatDiscipline(discipline: EventDiscipline, locale: Locale = "ja") {
   return getDictionary(locale).discipline[discipline];
@@ -104,4 +104,46 @@ export function formatRaceMark(mark: string | null | undefined, locale: Locale =
   }
 
   return mark;
+}
+
+type RaceResultNoteFormatOptions = {
+  suppressRepresentativeNotes?: boolean;
+};
+
+function formatSingleRaceResultNote(
+  note: string,
+  locale: Locale,
+  options: RaceResultNoteFormatOptions,
+) {
+  const trimmed = note.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (options.suppressRepresentativeNotes && (trimmed === "都道府県代表" || trimmed.startsWith("地区代表:"))) {
+    return null;
+  }
+
+  const furusatoMatch = trimmed.match(/^\[(F\d+)\]:(.+)$/u);
+  if (furusatoMatch) {
+    const [, code, origin] = furusatoMatch;
+    const dictionary = getDictionary(locale);
+
+    return `${interpolate(dictionary.common.furusatoSystemLabel, {
+      code,
+      origin: origin.trim(),
+    })}: ${dictionary.common.furusatoSystemDescription}`;
+  }
+
+  return trimmed;
+}
+
+export function formatRaceResultNotes(
+  notes: string | null | undefined,
+  locale: Locale = "ja",
+  options: RaceResultNoteFormatOptions = {},
+) {
+  const parts = notes?.split("/").map((part) => formatSingleRaceResultNote(part, locale, options)).filter(Boolean) ?? [];
+
+  return parts.join(" / ");
 }

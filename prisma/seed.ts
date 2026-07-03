@@ -134,14 +134,17 @@ async function upsertOrganization(input: {
   shortName?: string;
   type: OrganizationType;
   prefecture?: string;
+  country?: string;
   websiteUrl?: string;
+  status?: DataStatus;
+  notes?: string;
 }) {
   return prisma.organization.upsert({
     where: { slug: input.slug },
     update: input,
     create: {
       ...input,
-      status: DataStatus.pending,
+      status: input.status ?? DataStatus.pending,
     },
   });
 }
@@ -566,6 +569,22 @@ async function main() {
     reliability: 5,
     notes: "2025年12月21日開催、第76回全国高等学校駅伝競走大会 男子の公式総合成績PDF。",
   });
+  const newYearEkiden66Source = await upsertSourceById({
+    id: "source-new-year-ekiden-66-result",
+    name: "JAIC 第66回ニューイヤー駅伝総合成績HTML",
+    url: "https://gold.jaic.org/gunma/menu/results/r_22/r220101/rel001.html",
+    type: SourceType.data_site,
+    reliability: 5,
+    notes: "2022年1月1日開催、第66回全日本実業団対抗駅伝競走大会のJAIC総合成績HTML。",
+  });
+  const newYearEkiden67Source = await upsertSourceById({
+    id: "source-new-year-ekiden-67-result",
+    name: "JAIC 第67回ニューイヤー駅伝総合成績HTML",
+    url: "https://gold.jaic.org/jaic/res2023/nyeki/pcsp/rel001.html",
+    type: SourceType.data_site,
+    reliability: 5,
+    notes: "2023年1月1日開催、第67回全日本実業団対抗駅伝競走大会のJAIC総合成績HTML。",
+  });
   const newYearEkiden69Source = await upsertSourceById({
     id: "source-new-year-ekiden-69-result",
     name: "JAIC 第69回ニューイヤー駅伝総合成績HTML",
@@ -582,6 +601,22 @@ async function main() {
     type: OrganizationType.university,
     prefecture: "東京都",
     websiteUrl: "https://aogaku-tf.com/",
+  });
+  await upsertOrganization({
+    slug: "kanebo",
+    nameJa: "カネボウ",
+    type: OrganizationType.corporate_team,
+    country: "JP",
+    status: DataStatus.pending,
+    notes: "ニューイヤー駅伝実業団チーム初期整備。",
+  });
+  await upsertOrganization({
+    slug: "komori-corporation",
+    nameJa: "小森コーポレーション",
+    type: OrganizationType.corporate_team,
+    country: "JP",
+    status: DataStatus.pending,
+    notes: "ニューイヤー駅伝実業団チーム初期整備。",
   });
   const kokugakuin = await upsertOrganization({
     slug: "kokugakuin-university",
@@ -1370,6 +1405,50 @@ async function main() {
     region: "群馬県",
     websiteUrl: "https://www.jita-trackfield.jp/",
   });
+  const newYearEkiden66 = await upsertCompetitionEdition({
+    slug: "new-year-ekiden-66",
+    competitionId: newYearEkiden.id,
+    editionNumber: 66,
+    year: 2022,
+    officialName: "第66回全日本実業団対抗駅伝競走大会",
+    shortName: "ニューイヤー駅伝2022",
+    startsOn: new Date("2022-01-01"),
+    sourceId: newYearEkiden66Source.id,
+  });
+  await Promise.all(
+    Array.from({ length: 7 }, (_, index) =>
+      upsertRace({
+        slug: `new-year-ekiden-66-leg-${index + 1}`,
+        competitionEditionId: newYearEkiden66.id,
+        name: `${index + 1}区`,
+        discipline: EventDiscipline.ekiden_leg,
+        leg: index + 1,
+        sourceId: newYearEkiden66Source.id,
+      }),
+    ),
+  );
+  const newYearEkiden67 = await upsertCompetitionEdition({
+    slug: "new-year-ekiden-67",
+    competitionId: newYearEkiden.id,
+    editionNumber: 67,
+    year: 2023,
+    officialName: "第67回全日本実業団対抗駅伝競走大会",
+    shortName: "ニューイヤー駅伝2023",
+    startsOn: new Date("2023-01-01"),
+    sourceId: newYearEkiden67Source.id,
+  });
+  await Promise.all(
+    Array.from({ length: 7 }, (_, index) =>
+      upsertRace({
+        slug: `new-year-ekiden-67-leg-${index + 1}`,
+        competitionEditionId: newYearEkiden67.id,
+        name: `${index + 1}区`,
+        discipline: EventDiscipline.ekiden_leg,
+        leg: index + 1,
+        sourceId: newYearEkiden67Source.id,
+      }),
+    ),
+  );
   const newYearEkiden69 = await upsertCompetitionEdition({
     slug: "new-year-ekiden-69",
     competitionId: newYearEkiden.id,

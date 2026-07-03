@@ -30,7 +30,9 @@
     "sampleTag": "V0.1 seed",
     "emptyDash": "-",
     "notEntered": "Record not entered",
-    "present": "present"
+    "present": "present",
+    "furusatoSystemLabel": "ふるさと制度 ({code} / {origin})",
+    "furusatoSystemDescription": "Represents the prefecture of the athlete's school of origin"
   },
   "home": {
     "browseTitle": "Browse directories",
@@ -69,7 +71,7 @@
     "profile": "Person Profile",
     "personType": "Person type",
     "affiliation": "Affiliation and Origin",
-    "currentAffiliation": "Current affiliation",
+    "currentAffiliation": "Affiliation",
     "careerTimeline": "Affiliation history",
     "university": "University",
     "grade": "Year",
@@ -208,6 +210,8 @@
     "junior_high_school": "Junior high school",
     "high_school": "High school",
     "university": "University",
+    "prefecture_representative": "Prefectural representative",
+    "student_union_select": "Student union select",
     "corporate_team": "Corporate team",
     "company": "Company",
     "club": "Club",

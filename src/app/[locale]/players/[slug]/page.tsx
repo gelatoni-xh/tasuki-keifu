@@ -8,7 +8,7 @@ import { getScopeVersion } from "@/lib/cache-invalidation";
 import { createLogger } from "@/lib/logger";
 import { getCachedValue } from "@/lib/server-cache";
 import { prisma } from "@/lib/prisma";
-import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
+import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import {
   formatMembershipPeriod,
@@ -673,7 +673,9 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                         <span>{result.race.name}</span>
                         <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
                         <span>{formatRankWithNotes(result.rank, result.notes, locale) || dictionary.common.emptyDash}</span>
-                        <span className="text-[#59615c]">{result.notes ?? dictionary.common.emptyDash}</span>
+                        <span className="text-[#59615c]">
+                          {formatRaceResultNotes(result.notes, locale) || dictionary.common.emptyDash}
+                        </span>
                         <span className="text-[#59615c]">
                           {result.organization ? (
                             <OrganizationInlineLink locale={locale} muted organization={result.organization} />
@@ -736,7 +738,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                       </div>
                       <div>
                         <dt className="text-xs font-medium text-[#8b938e]">{dictionary.players.raceNotes}</dt>
-                        <dd className="mt-1">{result.notes ?? dictionary.common.emptyDash}</dd>
+                        <dd className="mt-1">{formatRaceResultNotes(result.notes, locale) || dictionary.common.emptyDash}</dd>
                       </div>
                       <div className="col-span-2">
                         <dt className="text-xs font-medium text-[#8b938e]">{dictionary.players.source}</dt>

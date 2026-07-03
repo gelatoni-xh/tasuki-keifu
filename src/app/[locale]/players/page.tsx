@@ -53,6 +53,8 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "junior_high_school",
   "high_school",
   "university",
+  "prefecture_representative",
+  "student_union_select",
   "corporate_team",
   "club",
 ];

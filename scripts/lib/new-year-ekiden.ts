@@ -22,6 +22,14 @@ export function buildNewYearEkidenPdfPath(edition: number) {
 }
 
 export function buildNewYearEkidenSourceUrl(edition: number) {
+  if (edition === 66) {
+    return "https://gold.jaic.org/gunma/menu/results/r_22/r220101/rel001.html";
+  }
+
+  if (edition === 67) {
+    return "https://gold.jaic.org/jaic/res2023/nyeki/pcsp/rel001.html";
+  }
+
   if (edition === 68) {
     return "https://gold.jaic.org/jaic/res2024/nyeki/pcsp/rel001.html";
   }

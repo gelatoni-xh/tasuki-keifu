@@ -7,7 +7,7 @@ import { getScopeVersion } from "@/lib/cache-invalidation";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { getCachedValue } from "@/lib/server-cache";
-import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRankWithNotes } from "@/lib/format";
+import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { buildPageMetadata } from "@/lib/site";
@@ -327,18 +327,6 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     return prefecture ?? dictionary.common.emptyDash;
   }
 
-  function formatRaceResultNotes(notes: string | null | undefined) {
-    if (!notes) {
-      return dictionary.common.emptyDash;
-    }
-
-    if (notes === "都道府県代表" || notes.startsWith("地区代表:")) {
-      return dictionary.common.emptyDash;
-    }
-
-    return notes;
-  }
-
   function buildCompetitionEditionHref(tab: string, raceUnit?: string) {
     const params = new URLSearchParams({ tab });
 
@@ -412,6 +400,19 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
       },
     ],
   };
+  const isNationalPrefecturalEkiden = edition.competition.slug.startsWith("national-prefectural-ekiden-");
+  const hidesRepresentativeArea = hasEkidenTeamResults && teamResults.every((result) => result.notes?.startsWith("都道府県代表"));
+  const teamResultsGridClass = hidesRepresentativeArea
+    ? "grid grid-cols-[1.2fr_100px_140px]"
+    : "grid grid-cols-[1.2fr_120px_100px_140px]";
+  const hidesGapFromLeader = isNationalPrefecturalEkiden;
+  const snapshotGridClass = hidesRepresentativeArea
+    ? hidesGapFromLeader
+      ? "grid grid-cols-[1.1fr_80px_120px_140px]"
+      : "grid grid-cols-[1.1fr_80px_120px_140px_140px]"
+    : hidesGapFromLeader
+      ? "grid grid-cols-[1.1fr_120px_80px_120px_140px]"
+      : "grid grid-cols-[1.1fr_120px_80px_120px_140px_140px]";
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -543,24 +544,26 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 <h2 className="text-xl font-semibold">{dictionary.competitions.teamResults}</h2>
                 <div className="mt-4 overflow-x-auto">
                   <div className="min-w-[520px]">
-                    <div className="grid grid-cols-[1.2fr_120px_100px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                    <div className={`${teamResultsGridClass} bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]`}>
                       <span>{dictionary.competitions.team}</span>
-                      <span>{dictionary.competitions.area}</span>
+                      {!hidesRepresentativeArea ? <span>{dictionary.competitions.area}</span> : null}
                       <span>{dictionary.competitions.rank}</span>
                       <span>{dictionary.competitions.mark}</span>
                     </div>
                     <div className="divide-y divide-[#e7e1d8]">
                       {teamResults.map((result) => (
-                        <div className="grid grid-cols-[1.2fr_120px_100px_140px] px-3 py-3 text-sm" key={result.id}>
+                        <div className={`${teamResultsGridClass} px-3 py-3 text-sm`} key={result.id}>
                           <Link
                             className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
                             href={`/${locale}/organizations/${result.organization.slug}`}
                           >
                             {result.organization.nameJa}
                           </Link>
-                          <span className="text-[#59615c]">
-                            {formatRepresentativeLabel(result.notes, result.organization.prefecture)}
-                          </span>
+                          {!hidesRepresentativeArea ? (
+                            <span className="text-[#59615c]">
+                              {formatRepresentativeLabel(result.notes, result.organization.prefecture)}
+                            </span>
+                          ) : null}
                           <span className="text-[#59615c]">
                             {formatRankWithNotes(result.finalRank, result.notes, locale) || dictionary.common.emptyDash}
                           </span>
@@ -578,13 +581,13 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 <h2 className="text-xl font-semibold">{dictionary.competitions.teamSnapshots}</h2>
                 <div className="mt-4 overflow-x-auto">
                   <div className="min-w-[820px]">
-                    <div className="grid grid-cols-[1.1fr_120px_80px_120px_140px_140px] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
+                    <div className={`${snapshotGridClass} bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]`}>
                       <span>{dictionary.competitions.team}</span>
-                      <span>{dictionary.competitions.area}</span>
+                      {!hidesRepresentativeArea ? <span>{dictionary.competitions.area}</span> : null}
                       <span>{dictionary.competitions.leg}</span>
                       <span>{dictionary.competitions.cumulativeRank}</span>
                       <span>{dictionary.competitions.cumulativeMark}</span>
-                      <span>{dictionary.competitions.gapFromLeader}</span>
+                      {!hidesGapFromLeader ? <span>{dictionary.competitions.gapFromLeader}</span> : null}
                     </div>
                     <div className="divide-y divide-[#e7e1d8]">
                       {teamResults.map((result) =>
@@ -592,7 +595,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                           .sort((left, right) => left.leg - right.leg)
                           .map((snapshot, index) => (
                             <div
-                              className={`grid grid-cols-[1.1fr_120px_80px_120px_140px_140px] px-3 py-3 text-sm ${
+                              className={`${snapshotGridClass} px-3 py-3 text-sm ${
                                 index === 0 ? "border-t border-[#d9d1c5]" : ""
                               }`}
                               key={snapshot.id}
@@ -607,17 +610,21 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                               ) : (
                                 <span className="text-[#c1b7aa]">{dictionary.common.emptyDash}</span>
                               )}
-                              <span className={index === 0 ? "text-[#59615c]" : "text-[#c1b7aa]"}>
-                                {index === 0
-                                  ? formatRepresentativeLabel(result.notes, result.organization.prefecture)
-                                  : dictionary.common.emptyDash}
-                              </span>
+                              {!hidesRepresentativeArea ? (
+                                <span className={index === 0 ? "text-[#59615c]" : "text-[#c1b7aa]"}>
+                                  {index === 0
+                                    ? formatRepresentativeLabel(result.notes, result.organization.prefecture)
+                                    : dictionary.common.emptyDash}
+                                </span>
+                              ) : null}
                               <span>{snapshot.leg}</span>
                               <span className="text-[#59615c]">
                                 {formatRankWithNotes(snapshot.cumulativeRank, snapshot.notes, locale) || dictionary.common.emptyDash}
                               </span>
                               <span>{snapshot.cumulativeMark ? formatRaceMark(snapshot.cumulativeMark, locale) : dictionary.common.emptyDash}</span>
-                              <span>{snapshot.gapFromLeader ? formatRaceMark(snapshot.gapFromLeader, locale) : dictionary.common.emptyDash}</span>
+                              {!hidesGapFromLeader ? (
+                                <span>{snapshot.gapFromLeader ? formatRaceMark(snapshot.gapFromLeader, locale) : dictionary.common.emptyDash}</span>
+                              ) : null}
                             </div>
                           )),
                       )}
@@ -719,7 +726,9 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                                       <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
                                     )}
                                     <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
-                                    <span className="text-[#59615c]">{formatRaceResultNotes(result.notes)}</span>
+                                    <span className="text-[#59615c]">
+                                      {formatRaceResultNotes(result.notes, locale, { suppressRepresentativeNotes: true }) || dictionary.common.emptyDash}
+                                    </span>
                                   </div>
                                 ))}
                               </div>

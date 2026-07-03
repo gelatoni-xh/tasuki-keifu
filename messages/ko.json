@@ -30,7 +30,9 @@
     "sampleTag": "V0.1 seed",
     "emptyDash": "-",
     "notEntered": "기록 미입력",
-    "present": "현재"
+    "present": "현재",
+    "furusatoSystemLabel": "ふるさと制度 ({code} / {origin})",
+    "furusatoSystemDescription": "출신 학교 소재지 도도부현 대표로 출전"
   },
   "home": {
     "browseTitle": "목록에서 찾기",
@@ -69,7 +71,7 @@
     "profile": "인물 프로필",
     "personType": "인물 유형",
     "affiliation": "소속과 출신",
-    "currentAffiliation": "현재 소속",
+    "currentAffiliation": "소속",
     "careerTimeline": "소속 이력",
     "university": "대학",
     "grade": "학년",
@@ -208,6 +210,8 @@
     "junior_high_school": "중학교",
     "high_school": "고등학교",
     "university": "대학",
+    "prefecture_representative": "도도부현 대표",
+    "student_union_select": "학생연맹 선발",
     "corporate_team": "실업팀",
     "company": "기업",
     "club": "클럽",
