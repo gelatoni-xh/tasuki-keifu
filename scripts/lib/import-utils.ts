@@ -50,6 +50,13 @@ function getAcademicYearEndYear(referenceDate: Date) {
   return month >= 4 ? year + 1 : year;
 }
 
+function getAcademicYearStartYear(referenceDate: Date) {
+  const month = referenceDate.getUTCMonth() + 1;
+  const year = referenceDate.getUTCFullYear();
+
+  return month >= 4 ? year : year - 1;
+}
+
 function academicDatesForUniversityGrade(grade: number, referenceDate: Date) {
   const academicYearEndYear = getAcademicYearEndYear(referenceDate);
   const universityStartYear = academicYearEndYear - grade;
@@ -72,10 +79,53 @@ function academicDatesForHighSchoolGrade(grade: number, referenceDate: Date) {
   };
 }
 
+function academicDatesForJuniorHighSchoolGrade(grade: number, referenceDate: Date) {
+  const academicYearEndYear = getAcademicYearEndYear(referenceDate);
+  const juniorHighSchoolEndYear = academicYearEndYear + (3 - grade);
+
+  return {
+    juniorHighSchoolStart: new Date(`${juniorHighSchoolEndYear - 3}-04-01`),
+    juniorHighSchoolEnd: new Date(`${juniorHighSchoolEndYear}-03-31`),
+  };
+}
+
 function addDays(date: Date, days: number) {
   const next = new Date(date);
   next.setUTCDate(next.getUTCDate() + days);
   return next;
+}
+
+function inferHighSchoolWindowFromUniversityStart(universityStartDate: Date) {
+  const universityStartYear = getAcademicYearStartYear(universityStartDate);
+
+  return {
+    highSchoolStart: new Date(Date.UTC(universityStartYear - 3, 3, 1)),
+    highSchoolEnd: new Date(Date.UTC(universityStartYear, 2, 31)),
+  };
+}
+
+function inferUniversityWindowFromCorporateStart(corporateStartDate: Date) {
+  const corporateAcademicStartYear = getAcademicYearStartYear(corporateStartDate);
+
+  return {
+    universityStart: new Date(Date.UTC(corporateAcademicStartYear - 4, 3, 1)),
+    universityEnd: new Date(Date.UTC(corporateAcademicStartYear, 2, 31)),
+  };
+}
+
+function getMembershipAcademicStartDate(membership: {
+  startDate: Date | null;
+  startYear: number | null;
+}) {
+  if (membership.startDate) {
+    return membership.startDate;
+  }
+
+  if (membership.startYear) {
+    return new Date(Date.UTC(membership.startYear, 3, 1));
+  }
+
+  return null;
 }
 
 function deriveAcademicDatesForEntry(input: {
@@ -83,17 +133,35 @@ function deriveAcademicDatesForEntry(input: {
   referenceDate: Date;
   raceOrganizationType: RaceImportPayload["entries"][number]["raceOrganizationType"];
 }) {
+  if (input.raceOrganizationType === "junior_high_school") {
+    const juniorHighSchoolDates = academicDatesForJuniorHighSchoolGrade(input.grade, input.referenceDate);
+    return {
+      highSchoolStart: null,
+      highSchoolEnd: null,
+      universityStart: null,
+      universityEnd: null,
+      juniorHighSchoolStart: juniorHighSchoolDates.juniorHighSchoolStart,
+      juniorHighSchoolEnd: juniorHighSchoolDates.juniorHighSchoolEnd,
+    };
+  }
+
   if (input.raceOrganizationType === "high_school") {
     const highSchoolDates = academicDatesForHighSchoolGrade(input.grade, input.referenceDate);
     return {
       ...highSchoolDates,
       universityStart: null,
       universityEnd: null,
+      juniorHighSchoolStart: null,
+      juniorHighSchoolEnd: null,
     };
   }
 
   const universityDates = academicDatesForUniversityGrade(input.grade, input.referenceDate);
-  return universityDates;
+  return {
+    ...universityDates,
+    juniorHighSchoolStart: null,
+    juniorHighSchoolEnd: null,
+  };
 }
 
 export function markToMilliseconds(mark: string) {
@@ -874,13 +942,39 @@ async function ensureOrganization(prisma: PrismaClient, input: {
   });
 }
 
-function mapRaceOrganizationType(type: "university" | "high_school" | "club" | "corporate_team") {
+function mapRaceOrganizationType(
+  type:
+    | "university"
+    | "high_school"
+    | "junior_high_school"
+    | "club"
+    | "corporate_team"
+    | "company"
+    | "prefecture_representative"
+    | "student_union_select",
+) {
+  if (type === "prefecture_representative") {
+    return OrganizationType.prefecture_representative;
+  }
+
+  if (type === "student_union_select") {
+    return OrganizationType.student_union_select;
+  }
+
   if (type === "corporate_team") {
     return OrganizationType.corporate_team;
   }
 
+  if (type === "company") {
+    return OrganizationType.company;
+  }
+
   if (type === "club") {
     return OrganizationType.club;
+  }
+
+  if (type === "junior_high_school") {
+    return OrganizationType.junior_high_school;
   }
 
   if (type === "high_school") {
@@ -930,10 +1024,10 @@ export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
       },
     },
     update: {
-      finalRank: input.teamResult.finalRank ?? undefined,
-      finalMark: canonicalFinalMark ?? undefined,
-      finalMarkMillis: canonicalFinalMark ? markToMilliseconds(canonicalFinalMark) : undefined,
-      notes: input.teamResult.notes ?? undefined,
+      finalRank: input.teamResult.finalRank ?? null,
+      finalMark: canonicalFinalMark ?? null,
+      finalMarkMillis: canonicalFinalMark ? markToMilliseconds(canonicalFinalMark) : null,
+      notes: input.teamResult.notes ?? null,
       status: DataStatus.pending,
       sourceId: input.sourceId,
     },
@@ -957,12 +1051,12 @@ export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
       },
     },
     update: {
-      cumulativeRank: input.teamResult.snapshot.cumulativeRank ?? undefined,
-      cumulativeMark: canonicalCumulativeMark ?? undefined,
-      cumulativeMarkMillis: canonicalCumulativeMark ? markToMilliseconds(canonicalCumulativeMark) : undefined,
-      gapFromLeader: canonicalGapFromLeader ?? undefined,
-      gapFromLeaderMillis: canonicalGapFromLeader ? markToMilliseconds(canonicalGapFromLeader) : undefined,
-      notes: input.teamResult.snapshot.notes ?? undefined,
+      cumulativeRank: input.teamResult.snapshot.cumulativeRank ?? null,
+      cumulativeMark: canonicalCumulativeMark ?? null,
+      cumulativeMarkMillis: canonicalCumulativeMark ? markToMilliseconds(canonicalCumulativeMark) : null,
+      gapFromLeader: canonicalGapFromLeader ?? null,
+      gapFromLeaderMillis: canonicalGapFromLeader ? markToMilliseconds(canonicalGapFromLeader) : null,
+      notes: input.teamResult.snapshot.notes ?? null,
       status: DataStatus.pending,
       sourceId: input.sourceId,
     },
@@ -1024,6 +1118,15 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     prefecture: input.entry.raceOrganizationPrefecture,
     sourceId: input.sourceId,
   });
+  const affiliationOrganization = input.entry.affiliationOrganizationNameJa && input.entry.affiliationOrganizationType
+    ? await ensureOrganization(prisma, {
+        slug: input.entry.affiliationOrganizationSlug,
+        nameJa: input.entry.affiliationOrganizationNameJa,
+        type: mapRaceOrganizationType(input.entry.affiliationOrganizationType),
+        prefecture: input.entry.affiliationOrganizationPrefecture,
+        sourceId: input.sourceId,
+      })
+    : null;
   const university = await ensureOrganization(prisma, {
     slug: input.entry.universitySlug,
     nameJa: input.entry.universityNameJa ?? (input.entry.raceOrganizationType === "university" ? input.entry.raceOrganizationNameJa : null),
@@ -1084,7 +1187,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     ? deriveAcademicDatesForEntry({
         grade: input.entry.grade,
         referenceDate,
-        raceOrganizationType: input.entry.raceOrganizationType,
+        raceOrganizationType: input.entry.affiliationOrganizationType ?? input.entry.raceOrganizationType,
       })
     : null;
 
@@ -1117,7 +1220,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
       endYear: dates.highSchoolEnd.getFullYear(),
       sourceId: input.sourceId,
     });
-  } else if (dates && highSchool) {
+  } else if (dates && highSchool && dates.highSchoolStart && dates.highSchoolEnd) {
     const hasHighSchoolMembership = existingMemberships.some(
       (membership) =>
         highSchool !== null &&
@@ -1141,10 +1244,67 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     }
   }
 
+  if (dates && !input.protectedProfileSlugs.has(input.entry.slug) && affiliationOrganization) {
+    if (
+      affiliationOrganization.type === OrganizationType.university &&
+      dates.universityStart &&
+      dates.universityEnd
+    ) {
+      await ensureMembership(prisma, {
+        personId: person.id,
+        organizationId: affiliationOrganization.id,
+        type: MembershipType.enrolled,
+        startDate: dates.universityStart,
+        endDate: dates.universityEnd,
+        startYear: dates.universityStart.getFullYear(),
+        endYear: dates.universityEnd.getFullYear(),
+        sourceId: input.sourceId,
+      });
+    }
+
+    if (
+      affiliationOrganization.type === OrganizationType.high_school &&
+      dates.highSchoolStart &&
+      dates.highSchoolEnd
+    ) {
+      await ensureMembership(prisma, {
+        personId: person.id,
+        organizationId: affiliationOrganization.id,
+        type: MembershipType.enrolled,
+        startDate: dates.highSchoolStart,
+        endDate: dates.highSchoolEnd,
+        startYear: dates.highSchoolStart.getFullYear(),
+        endYear: dates.highSchoolEnd.getFullYear(),
+        sourceId: input.sourceId,
+      });
+    }
+
+    if (
+      affiliationOrganization.type === OrganizationType.junior_high_school &&
+      dates.juniorHighSchoolStart &&
+      dates.juniorHighSchoolEnd
+    ) {
+      await ensureMembership(prisma, {
+        personId: person.id,
+        organizationId: affiliationOrganization.id,
+        type: MembershipType.enrolled,
+        startDate: dates.juniorHighSchoolStart,
+        endDate: dates.juniorHighSchoolEnd,
+        startYear: dates.juniorHighSchoolStart.getFullYear(),
+        endYear: dates.juniorHighSchoolEnd.getFullYear(),
+        sourceId: input.sourceId,
+      });
+    }
+  }
+
   if (
     !input.protectedProfileSlugs.has(input.entry.slug) &&
-    raceOrganization.type === OrganizationType.corporate_team
+    (raceOrganization.type === OrganizationType.corporate_team ||
+      affiliationOrganization?.type === OrganizationType.corporate_team ||
+      affiliationOrganization?.type === OrganizationType.company ||
+      affiliationOrganization?.type === OrganizationType.club)
   ) {
+    const affiliatedOrganization = affiliationOrganization ?? raceOrganization;
     const latestUniversityMembership = existingMemberships
       .filter((membership) => membership.organization.type === OrganizationType.university)
       .sort((left, right) => {
@@ -1164,16 +1324,86 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
         ? new Date(Date.UTC(latestUniversityMembership.endYear, 3, 1))
         : null;
 
+    const matchingUniversityMembership = existingMemberships.find(
+      (membership) => membership.organization.type === OrganizationType.university,
+    );
+    const matchingCorporateMembership = existingMemberships.find(
+      (membership) =>
+        membership.organizationId === affiliatedOrganization.id &&
+        membership.organization.type === OrganizationType.corporate_team,
+    );
+    const knownCorporateStartDate =
+      corporateStartDate ??
+      (matchingCorporateMembership ? getMembershipAcademicStartDate(matchingCorporateMembership) : null);
+    const inferredUniversityWindow =
+      knownCorporateStartDate &&
+      matchingUniversityMembership &&
+      !matchingUniversityMembership.startDate &&
+      !matchingUniversityMembership.endDate
+        ? inferUniversityWindowFromCorporateStart(knownCorporateStartDate)
+        : null;
+
+    if (matchingUniversityMembership && inferredUniversityWindow) {
+      await ensureMembership(prisma, {
+        personId: person.id,
+        organizationId: matchingUniversityMembership.organizationId,
+        type: MembershipType.enrolled,
+        startDate: inferredUniversityWindow.universityStart,
+        endDate: inferredUniversityWindow.universityEnd,
+        startYear: inferredUniversityWindow.universityStart.getUTCFullYear(),
+        endYear: inferredUniversityWindow.universityEnd.getUTCFullYear(),
+        sourceId: input.sourceId,
+      });
+    }
+
     await ensureMembership(prisma, {
       personId: person.id,
-      organizationId: raceOrganization.id,
+      organizationId: affiliatedOrganization.id,
       type: MembershipType.affiliated,
-      startDate: corporateStartDate,
+      startDate:
+        affiliatedOrganization.type === OrganizationType.corporate_team
+          ? corporateStartDate
+          : null,
       endDate: null,
-      startYear: corporateStartDate?.getUTCFullYear() ?? null,
+      startYear:
+        affiliatedOrganization.type === OrganizationType.corporate_team
+          ? corporateStartDate?.getUTCFullYear() ?? null
+          : null,
       endYear: null,
       sourceId: input.sourceId,
     });
+  }
+
+  if (!input.protectedProfileSlugs.has(input.entry.slug)) {
+    const matchingUniversityMembership = existingMemberships.find(
+      (membership) => membership.organization.type === OrganizationType.university,
+    );
+    const matchingHighSchoolMembership = existingMemberships.find(
+      (membership) => membership.organization.type === OrganizationType.high_school,
+    );
+
+    if (
+      matchingUniversityMembership &&
+      matchingHighSchoolMembership &&
+      !matchingHighSchoolMembership.startDate &&
+      !matchingHighSchoolMembership.endDate
+    ) {
+      const universityStartDate = getMembershipAcademicStartDate(matchingUniversityMembership);
+      if (universityStartDate) {
+        const inferredHighSchoolWindow = inferHighSchoolWindowFromUniversityStart(universityStartDate);
+
+        await ensureMembership(prisma, {
+          personId: person.id,
+          organizationId: matchingHighSchoolMembership.organizationId,
+          type: MembershipType.enrolled,
+          startDate: inferredHighSchoolWindow.highSchoolStart,
+          endDate: inferredHighSchoolWindow.highSchoolEnd,
+          startYear: inferredHighSchoolWindow.highSchoolStart.getUTCFullYear(),
+          endYear: inferredHighSchoolWindow.highSchoolEnd.getUTCFullYear(),
+          sourceId: input.sourceId,
+        });
+      }
+    }
   }
 
   if (!input.protectedProfileSlugs.has(input.entry.slug)) {
@@ -1183,7 +1413,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
         discipline: pb.discipline,
         mark: pb.mark,
         notes: input.pbNotes,
-        sourceId: input.sourceId,
+        sourceId: pb.sourceId ?? input.sourceId,
       });
     }
   }

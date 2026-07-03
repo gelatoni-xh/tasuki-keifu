@@ -46,6 +46,8 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "junior_high_school",
   "high_school",
   "university",
+  "prefecture_representative",
+  "student_union_select",
   "corporate_team",
   "club",
 ];
@@ -273,7 +275,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
               >
                 <div>
                   <h2 className="text-xl font-semibold">{organization.nameJa}</h2>
-                  <p className="mt-2 text-sm text-[#59615c]">{organization.shortName ?? dictionary.common.emptyDash}</p>
+                  <p className="mt-2 text-sm text-[#59615c]">{organization.prefecture ?? dictionary.common.emptyDash}</p>
                 </div>
                 <div className="text-sm text-[#59615c]">
                   <p className="text-xs font-medium text-[#8b938e]">{dictionary.organizations.type}</p>

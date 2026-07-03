@@ -78,9 +78,9 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
           count: organization._count.memberships,
         })
       : null,
-    organization.location ?? organization.prefecture
+    organization.prefecture
       ? interpolate(dictionary.organizations.detailSeoLocation, {
-          location: organization.location ?? organization.prefecture ?? "",
+          location: organization.prefecture ?? "",
         })
       : null,
   ]
@@ -142,7 +142,9 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
           },
         },
         orderBy: [
+          { competitionEdition: { startsOn: "desc" } },
           { competitionEdition: { year: "desc" } },
+          { competitionEdition: { editionNumber: "desc" } },
           { finalRank: "asc" },
         ],
       },
@@ -209,7 +211,7 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
     description: organizationSummary,
     sport: "Ekiden",
     url: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
-    location: organization.location ?? organization.prefecture ?? undefined,
+    location: organization.prefecture ?? undefined,
     sameAs: organization.websiteUrl ?? undefined,
     member: highlightedPeople.map((name) => ({
       "@type": "Person",
@@ -270,7 +272,7 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                 </p>
                 <h1 className="mt-3 text-4xl font-semibold">{organization.nameJa}</h1>
                 <p className="mt-3 text-sm text-[#59615c]">
-                  {organization.location ?? organization.prefecture ?? dictionary.common.emptyDash}
+                  {organization.prefecture ?? dictionary.common.emptyDash}
                 </p>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
                   {organizationSummary}
