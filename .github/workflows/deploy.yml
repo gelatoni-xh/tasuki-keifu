@@ -44,18 +44,6 @@ jobs:
         env:
           DATABASE_URL: postgresql://tasuki_keifu_user:dummy@localhost:5432/tasuki_keifu
 
-      - name: Build deploy image archive
-        run: |
-          docker build -t tasuki-keifu-app:latest .
-          docker save tasuki-keifu-app:latest | gzip > tasuki-keifu-image.tar.gz
-
-      - name: Upload deploy image archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: tasuki-keifu-image
-          path: tasuki-keifu-image.tar.gz
-          retention-days: 1
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -64,10 +52,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download deploy image archive
-        uses: actions/download-artifact@v4
-        with:
-          name: tasuki-keifu-image
+      - name: Build deploy image archive
+        run: |
+          docker build -t tasuki-keifu-app:latest .
+          docker save tasuki-keifu-app:latest | gzip > tasuki-keifu-image.tar.gz
 
       - name: Copy deployment files
         uses: appleboy/scp-action@v1
