@@ -162,6 +162,7 @@
     "affiliatedPlayers": "関連人物",
     "currentPeople": "現在の所属人物",
     "formerPeople": "過去の所属人物",
+    "unknownPeriodPeople": "所属時期未確定",
     "ekidenResults": "駅伝成績",
     "role": "役割",
     "competition": "大会",
@@ -186,6 +187,7 @@
     "emptyTitle": "条件に一致する組織はまだありません。",
     "emptyDescription": "検索条件を変更してください。",
     "emptyPeople": "この組織に関連する人物はまだ収録されていません。",
+    "unknownPeriodLabel": "時期未確定",
     "emptyEkidenResults": "この組織に関連する駅伝成績はまだ収録されていません。",
     "emptyResults": "この組織に関連するレース結果はまだ収録されていません。"
   },

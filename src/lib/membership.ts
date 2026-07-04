@@ -42,10 +42,20 @@ export function isCurrentMembership(
   membership: Pick<Membership, "startDate" | "endDate">,
   now = new Date(),
 ) {
+  if (!membership.startDate && !membership.endDate) {
+    return false;
+  }
+
   const startsBeforeNow = !membership.startDate || membership.startDate <= now;
   const hasNotEnded = !membership.endDate || membership.endDate >= now;
 
   return startsBeforeNow && hasNotEnded;
+}
+
+export function isMembershipPeriodUnknown(
+  membership: Pick<Membership, "startDate" | "endDate" | "startYear" | "endYear">,
+) {
+  return !membership.startDate && !membership.endDate && !membership.startYear && !membership.endYear;
 }
 
 export function getCurrentMemberships(memberships: MembershipWithOrganization[], now = new Date()) {

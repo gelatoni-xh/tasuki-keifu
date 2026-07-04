@@ -162,6 +162,7 @@
     "affiliatedPlayers": "관련 인물",
     "currentPeople": "현재 소속 인물",
     "formerPeople": "과거 소속 인물",
+    "unknownPeriodPeople": "소속 시기 미확정",
     "ekidenResults": "에키덴 성적",
     "role": "역할",
     "competition": "대회",
@@ -186,6 +187,7 @@
     "emptyTitle": "조건에 맞는 조직이 아직 없습니다.",
     "emptyDescription": "검색 조건을 조정해 보세요.",
     "emptyPeople": "이 조직에는 아직 관련 인물이 수록되지 않았습니다.",
+    "unknownPeriodLabel": "시기 미확정",
     "emptyEkidenResults": "이 조직에는 아직 관련 에키덴 성적이 수록되지 않았습니다.",
     "emptyResults": "이 조직에는 아직 관련 경기 결과가 수록되지 않았습니다."
   },

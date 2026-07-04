@@ -162,6 +162,7 @@
     "affiliatedPlayers": "Related people",
     "currentPeople": "Current people",
     "formerPeople": "Former people",
+    "unknownPeriodPeople": "Affiliation period unknown",
     "ekidenResults": "Ekiden results",
     "role": "Role",
     "competition": "Competition",
@@ -186,6 +187,7 @@
     "emptyTitle": "No organizations match these filters yet.",
     "emptyDescription": "Try changing the search terms.",
     "emptyPeople": "No people have been recorded for this organization yet.",
+    "unknownPeriodLabel": "Period unknown",
     "emptyEkidenResults": "No ekiden team results have been recorded for this organization yet.",
     "emptyResults": "No race results have been recorded for this organization yet."
   },

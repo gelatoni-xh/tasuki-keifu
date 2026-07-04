@@ -307,7 +307,7 @@ export function chooseBestPersonalBestCandidate(candidates: PersonalBestCandidat
   return [...candidates].sort((left, right) => comparePersonalBestCandidates(right, left))[0] ?? null;
 }
 
-async function ensureMembership(prisma: PrismaClient, input: {
+export async function ensureMembership(prisma: PrismaClient, input: {
   personId: string;
   organizationId: string;
   type: MembershipType;
@@ -1016,6 +1016,26 @@ export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
     throw new Error(`Missing organization for team result ${input.teamResult.organizationNameJa}`);
   }
 
+  const existingTeamResult = await prisma.teamCompetitionResult.findUnique({
+    where: {
+      competitionEditionId_organizationId: {
+        competitionEditionId: race.competitionEditionId,
+        organizationId: organization.id,
+      },
+    },
+    select: {
+      finalRank: true,
+      finalMark: true,
+      finalMarkMillis: true,
+    },
+  });
+
+  const nextFinalRank = input.teamResult.finalRank ?? existingTeamResult?.finalRank ?? null;
+  const nextFinalMark = canonicalFinalMark ?? existingTeamResult?.finalMark ?? null;
+  const nextFinalMarkMillis = nextFinalMark
+    ? markToMilliseconds(nextFinalMark)
+    : (existingTeamResult?.finalMarkMillis ?? null);
+
   const teamResult = await prisma.teamCompetitionResult.upsert({
     where: {
       competitionEditionId_organizationId: {
@@ -1024,9 +1044,9 @@ export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
       },
     },
     update: {
-      finalRank: input.teamResult.finalRank ?? null,
-      finalMark: canonicalFinalMark ?? null,
-      finalMarkMillis: canonicalFinalMark ? markToMilliseconds(canonicalFinalMark) : null,
+      finalRank: nextFinalRank,
+      finalMark: nextFinalMark,
+      finalMarkMillis: nextFinalMarkMillis,
       notes: input.teamResult.notes ?? null,
       status: DataStatus.pending,
       sourceId: input.sourceId,
@@ -1034,9 +1054,9 @@ export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
     create: {
       competitionEditionId: race.competitionEditionId,
       organizationId: organization.id,
-      finalRank: input.teamResult.finalRank ?? null,
-      finalMark: canonicalFinalMark ?? null,
-      finalMarkMillis: canonicalFinalMark ? markToMilliseconds(canonicalFinalMark) : null,
+      finalRank: nextFinalRank,
+      finalMark: nextFinalMark,
+      finalMarkMillis: nextFinalMarkMillis,
       notes: input.teamResult.notes ?? null,
       status: DataStatus.pending,
       sourceId: input.sourceId,

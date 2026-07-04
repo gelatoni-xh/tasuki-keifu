@@ -143,7 +143,12 @@ export function formatRaceResultNotes(
   locale: Locale = "ja",
   options: RaceResultNoteFormatOptions = {},
 ) {
-  const parts = notes?.split("/").map((part) => formatSingleRaceResultNote(part, locale, options)).filter(Boolean) ?? [];
+  const rawParts = notes?.split("/").map((part) => part.trim()).filter(Boolean) ?? [];
+  const hasSectionAward = rawParts.includes("区間賞");
+  const parts = rawParts
+    .filter((part) => !(hasSectionAward && part === "同タイム区間1位"))
+    .map((part) => formatSingleRaceResultNote(part, locale, options))
+    .filter(Boolean);
 
   return parts.join(" / ");
 }

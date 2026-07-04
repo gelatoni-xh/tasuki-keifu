@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
-import { groupMembershipsByRole, isCurrentMembership } from "@/lib/membership";
+import { groupMembershipsByRole, isCurrentMembership, isMembershipPeriodUnknown } from "@/lib/membership";
 import { buildPageMetadata } from "@/lib/site";
 
 type OrganizationDetailPageProps = {
@@ -156,10 +156,16 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
   }
 
   const now = new Date();
-  const currentMemberships = organization.memberships.filter((membership) => isCurrentMembership(membership, now));
-  const formerMemberships = organization.memberships.filter((membership) => !currentMemberships.includes(membership));
+  const unknownMemberships = organization.memberships.filter((membership) => isMembershipPeriodUnknown(membership));
+  const currentMemberships = organization.memberships.filter(
+    (membership) => !unknownMemberships.includes(membership) && isCurrentMembership(membership, now),
+  );
+  const formerMemberships = organization.memberships.filter(
+    (membership) => !unknownMemberships.includes(membership) && !currentMemberships.includes(membership),
+  );
   const currentByRole = groupMembershipsByRole(currentMemberships);
   const formerByRole = groupMembershipsByRole(formerMemberships);
+  const unknownByRole = groupMembershipsByRole(unknownMemberships);
   const ekidenResults = organization.teamCompetitionResults.filter((result) =>
     result.competitionEdition.competition.type?.includes("ekiden"),
   );
@@ -174,6 +180,11 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
     { key: "athlete", label: formatMembershipRole("athlete", locale), current: currentByRole.athlete, former: formerByRole.athlete },
     { key: "coach", label: formatMembershipRole("coach", locale), current: currentByRole.coach, former: formerByRole.coach },
     { key: "staff", label: formatMembershipRole("staff", locale), current: currentByRole.staff, former: formerByRole.staff },
+  ];
+  const unknownMembershipSections = [
+    { key: "athlete", label: formatMembershipRole("athlete", locale), items: unknownByRole.athlete },
+    { key: "coach", label: formatMembershipRole("coach", locale), items: unknownByRole.coach },
+    { key: "staff", label: formatMembershipRole("staff", locale), items: unknownByRole.staff },
   ];
   const highlightedEditions = ekidenResults.slice(0, 5).map((result) => result.competitionEdition.shortName ?? result.competitionEdition.officialName);
   const highlightedPeople = organization.memberships
@@ -363,6 +374,35 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
               )}
             </div>
           </section>
+
+          {unknownMemberships.length > 0 ? (
+            <section className="border border-[#ded8cc] bg-white p-5">
+              <h2 className="text-lg font-semibold">{dictionary.organizations.unknownPeriodPeople}</h2>
+              <div className="mt-4 space-y-5">
+                {unknownMembershipSections.map((section) =>
+                  section.items.length > 0 ? (
+                    <div key={section.key}>
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">{section.label}</h3>
+                      <div className="mt-2 divide-y divide-[#e7e1d8]">
+                        {section.items.map((membership) => (
+                          <Link
+                            className="grid gap-2 py-3 text-sm transition hover:text-[#8a1f2d] sm:grid-cols-[1fr_auto]"
+                            data-analytics-event="player_profile_view"
+                            data-analytics-link-type="organization_unknown_period_player"
+                            href={`/${locale}/players/${membership.person.slug}`}
+                            key={membership.id}
+                          >
+                            <span className="font-semibold">{membership.person.displayNameJa}</span>
+                            <span className="text-[#59615c]">{dictionary.organizations.unknownPeriodLabel}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null,
+                )}
+              </div>
+            </section>
+          ) : null}
 
           <section className="border border-[#ded8cc] bg-white p-5">
             <h2 className="text-lg font-semibold">{dictionary.organizations.ekidenResults}</h2>

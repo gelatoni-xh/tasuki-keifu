@@ -162,6 +162,7 @@
     "affiliatedPlayers": "相關人物",
     "currentPeople": "目前所屬人物",
     "formerPeople": "過往所屬人物",
+    "unknownPeriodPeople": "所屬時期未確定",
     "ekidenResults": "驛傳成績",
     "role": "角色",
     "competition": "賽事",
@@ -186,6 +187,7 @@
     "emptyTitle": "還沒有符合條件的組織。",
     "emptyDescription": "請調整搜尋條件。",
     "emptyPeople": "這個組織還沒有收錄相關人物。",
+    "unknownPeriodLabel": "時期未確定",
     "emptyEkidenResults": "這個組織還沒有收錄相關驛傳成績。",
     "emptyResults": "這個組織還沒有收錄相關比賽結果。"
   },
