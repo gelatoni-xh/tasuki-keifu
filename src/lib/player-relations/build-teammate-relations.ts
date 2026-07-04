@@ -1,25 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { getMembershipOverlap } from "@/lib/membership";
+import { getMembershipOverlap, getMembershipOverlapYears } from "@/lib/membership";
 import type { TeammateAggregate } from "@/lib/player-relations/types";
 
 const SUPPORTED_ORGANIZATION_TYPES = ["high_school", "university", "corporate_team"] as const;
-
-function getOverlapYears(
-  first: { startYear: number | null; endYear: number | null },
-  second: { startYear: number | null; endYear: number | null },
-  fallbackYear: number,
-) {
-  if (!first.startYear || !second.startYear) {
-    return 0;
-  }
-
-  const firstEnd = first.endYear ?? fallbackYear;
-  const secondEnd = second.endYear ?? fallbackYear;
-  const start = Math.max(first.startYear, second.startYear);
-  const end = Math.min(firstEnd, secondEnd);
-
-  return end > start ? end - start : 0;
-}
 
 export async function buildTeammateRelations(personId: string) {
   const memberships = await prisma.membership.findMany({
@@ -111,7 +94,7 @@ export async function buildTeammateRelations(personId: string) {
     teammateEditionsByPersonAndOrg.set(key, existing);
   }
 
-  const nowYear = new Date().getFullYear();
+  const now = new Date();
   const aggregates = new Map<string, TeammateAggregate>();
 
   for (const teammate of teammateMemberships) {
@@ -134,7 +117,7 @@ export async function buildTeammateRelations(personId: string) {
       current.organizationTypes.add(teammate.organization.type);
 
       if (overlap === "overlap") {
-        current.overlapYears += getOverlapYears(ownMembership, teammate, nowYear);
+        current.overlapYears += getMembershipOverlapYears(ownMembership, teammate, now);
       }
 
       const playerEditions = playerEditionsByOrg.get(teammate.organizationId) ?? new Set<string>();

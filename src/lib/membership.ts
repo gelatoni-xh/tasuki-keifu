@@ -171,3 +171,36 @@ export function getMembershipOverlap(
 
   return "unknown";
 }
+
+function getMembershipTimelineBounds(
+  membership: Pick<Membership, "startDate" | "endDate" | "startYear" | "endYear">,
+  now = new Date(),
+) {
+  const start = membership.startYear ?? membership.startDate?.getUTCFullYear() ?? null;
+
+  if (!start) {
+    return null;
+  }
+
+  const end = membership.endYear ?? membership.endDate?.getUTCFullYear() ?? now.getUTCFullYear();
+
+  return { start, end };
+}
+
+export function getMembershipOverlapYears(
+  first: Pick<Membership, "startDate" | "endDate" | "startYear" | "endYear">,
+  second: Pick<Membership, "startDate" | "endDate" | "startYear" | "endYear">,
+  now = new Date(),
+) {
+  const firstBounds = getMembershipTimelineBounds(first, now);
+  const secondBounds = getMembershipTimelineBounds(second, now);
+
+  if (!firstBounds || !secondBounds) {
+    return 0;
+  }
+
+  const start = Math.max(firstBounds.start, secondBounds.start);
+  const end = Math.min(firstBounds.end, secondBounds.end);
+
+  return end > start ? end - start : 0;
+}
