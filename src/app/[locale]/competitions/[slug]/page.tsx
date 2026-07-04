@@ -47,6 +47,25 @@ function getCompetitionSeoTier({
   return "thin";
 }
 
+function buildCompetitionLocationJsonLd(competition: {
+  nameJa: string;
+  region: string | null;
+}) {
+  const locationName = competition.region
+    ? `${competition.region} (${competition.nameJa})`
+    : `${competition.nameJa} 開催地`;
+
+  return {
+    "@type": "Place",
+    name: locationName,
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "JP",
+      ...(competition.region && competition.region !== "国際" ? { addressRegion: competition.region } : {}),
+    },
+  };
+}
+
 export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params;
 
@@ -355,9 +374,10 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     endDate: edition.endsOn?.toISOString() ?? edition.startsOn?.toISOString(),
     eventStatus: "https://schema.org/EventCompleted",
     sport: "Ekiden",
+    location: buildCompetitionLocationJsonLd(edition.competition),
     url: `https://tasukikeifu.com/${locale}/competitions/${edition.slug}`,
     isPartOf: {
-      "@type": "SportsEvent",
+      "@type": "CreativeWork",
       name: edition.competition.nameJa,
     },
     competitor: teamResults.slice(0, 12).map((result) => ({
