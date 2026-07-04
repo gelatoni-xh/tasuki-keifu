@@ -12,6 +12,8 @@ import {
 } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { markToMilliseconds, upsertPersonalBestSnapshot } from "../scripts/lib/import-utils";
+import { normalizeJaForLookup, normalizePersonDisplayNameJa } from "../scripts/lib/name-normalization";
+import { normalizeCompetitionEditionNames } from "../scripts/lib/competition-edition-normalization";
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -177,10 +179,33 @@ async function upsertCompetitionEdition(input: {
   endsOn?: Date;
   sourceId?: string;
 }) {
+  const competition = await prisma.competition.findUnique({
+    where: { id: input.competitionId },
+    select: { slug: true, type: true },
+  });
+
+  if (!competition) {
+    throw new Error(`Missing competition for edition ${input.slug}`);
+  }
+
+  const normalizedNames = normalizeCompetitionEditionNames({
+    competitionSlug: competition.slug,
+    competitionType: competition.type,
+    editionNumber: input.editionNumber,
+    officialName: input.officialName,
+    shortName: input.shortName,
+  });
+
   return prisma.competitionEdition.upsert({
     where: { slug: input.slug },
-    update: input,
-    create: input,
+    update: {
+      ...input,
+      ...normalizedNames,
+    },
+    create: {
+      ...input,
+      ...normalizedNames,
+    },
   });
 }
 
@@ -320,10 +345,12 @@ async function upsertSeedPerson(input: {
   });
 
   if (!existing) {
+    const normalizedDisplayNameJa = normalizePersonDisplayNameJa(input.displayNameJa);
     return prisma.person.create({
       data: {
         slug: input.slug,
-        displayNameJa: input.displayNameJa,
+        displayNameJa: normalizedDisplayNameJa,
+        displayNameJaSearch: normalizeJaForLookup(normalizedDisplayNameJa),
         displayNameKana: input.displayNameKana ?? null,
         displayNameRoman: input.displayNameRoman ?? null,
         birthDate: input.birthDate ?? null,
@@ -336,6 +363,11 @@ async function upsertSeedPerson(input: {
   }
 
   const patch: Record<string, unknown> = {};
+  const normalizedDisplayNameJa = normalizePersonDisplayNameJa(input.displayNameJa);
+  if (existing.displayNameJa !== normalizedDisplayNameJa) patch.displayNameJa = normalizedDisplayNameJa;
+  if (existing.displayNameJaSearch !== normalizeJaForLookup(normalizedDisplayNameJa)) {
+    patch.displayNameJaSearch = normalizeJaForLookup(normalizedDisplayNameJa);
+  }
   if (!existing.displayNameKana && input.displayNameKana) patch.displayNameKana = input.displayNameKana;
   if (!existing.displayNameRoman && input.displayNameRoman) patch.displayNameRoman = input.displayNameRoman;
   if (!existing.birthDate && input.birthDate) patch.birthDate = input.birthDate;

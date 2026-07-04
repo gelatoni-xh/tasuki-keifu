@@ -35,6 +35,12 @@ const PLAYER_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
 const PLAYER_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
 const pageLogger = createLogger("player-detail-page");
 
+function compactJaName(value: string) {
+  const normalized = value.replace(/　/g, " ").replace(/\s+/g, " ").trim();
+
+  return /[\p{Script=Han}々]/u.test(normalized) ? normalized.replace(/ /g, "") : normalized;
+}
+
 function getPlayerSeoTier({
   memberships,
   personalBests,
@@ -151,6 +157,7 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
     locale,
     keywords: [
       player.displayNameJa,
+      ...(compactJaName(player.displayNameJa) !== player.displayNameJa ? [compactJaName(player.displayNameJa)] : []),
       player.displayNameKana ?? "",
       currentMembership?.organization.nameJa ?? "",
       university?.organization.nameJa ?? "",
@@ -439,7 +446,13 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     "@context": "https://schema.org",
     "@type": "Person",
     name: player.displayNameJa,
-    alternateName: [player.displayNameKana, player.displayNameRoman, player.displayNameZh, player.displayNameEn].filter(Boolean),
+    alternateName: [
+      ...(compactJaName(player.displayNameJa) !== player.displayNameJa ? [compactJaName(player.displayNameJa)] : []),
+      player.displayNameKana,
+      player.displayNameRoman,
+      player.displayNameZh,
+      player.displayNameEn,
+    ].filter(Boolean),
     description: playerSummary,
     birthDate: player.birthDate?.toISOString(),
     nationality: player.nationality ?? undefined,

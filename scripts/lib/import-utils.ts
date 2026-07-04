@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { AuditAction, AuditActorType, AuditReasonType, DataStatus, MembershipType, OrganizationType, type NameVariantType, type PrismaClient } from "@prisma/client";
 
 import type { RaceImportPayload } from "./import-types";
-import { normalizeDisplayNameJa } from "./name-normalization";
+import { normalizeDisplayNameJa, normalizePersonDisplayNameJa } from "./name-normalization";
 import { buildOrganizationCanonicalKey, normalizeOrganizationLabel } from "./organization-normalization";
 
 function normalizeJaName(value: string) {
@@ -126,6 +126,115 @@ function getMembershipAcademicStartDate(membership: {
   }
 
   return null;
+}
+
+function getMembershipAcademicEndDate(membership: {
+  endDate: Date | null;
+  endYear: number | null;
+}) {
+  if (membership.endDate) {
+    return membership.endDate;
+  }
+
+  if (membership.endYear) {
+    return new Date(Date.UTC(membership.endYear, 2, 31));
+  }
+
+  return null;
+}
+
+function windowsOverlap(
+  first: {
+    startDate: Date | null;
+    endDate: Date | null;
+    startYear: number | null;
+    endYear: number | null;
+  },
+  second: {
+    startDate: Date | null;
+    endDate: Date | null;
+    startYear: number | null;
+    endYear: number | null;
+  },
+) {
+  const firstStart = getMembershipAcademicStartDate(first);
+  const secondStart = getMembershipAcademicStartDate(second);
+
+  if (!firstStart || !secondStart) {
+    return null;
+  }
+
+  const firstEnd = getMembershipAcademicEndDate(first) ?? new Date(Date.UTC(9999, 11, 31));
+  const secondEnd = getMembershipAcademicEndDate(second) ?? new Date(Date.UTC(9999, 11, 31));
+
+  return firstStart <= secondEnd && secondStart <= firstEnd;
+}
+
+export async function canApplyInferredMembershipWindow(prisma: PrismaClient, input: {
+  personId: string;
+  membershipId?: string | null;
+  organizationType: OrganizationType;
+  membershipType: MembershipType;
+  startDate: Date | null;
+  endDate: Date | null;
+  startYear: number | null;
+  endYear: number | null;
+}) {
+  const candidateStart = getMembershipAcademicStartDate(input);
+
+  if (!candidateStart) {
+    return {
+      allowed: false as const,
+      reason: "missing_candidate_start",
+    };
+  }
+
+  const sameStageMemberships = await prisma.membership.findMany({
+    where: {
+      personId: input.personId,
+      type: input.membershipType,
+      ...(input.membershipId ? { id: { not: input.membershipId } } : {}),
+      organization: {
+        type: input.organizationType,
+      },
+    },
+    include: {
+      organization: {
+        select: {
+          id: true,
+          slug: true,
+          nameJa: true,
+          type: true,
+        },
+      },
+    },
+  });
+
+  for (const membership of sameStageMemberships) {
+    const otherStart = getMembershipAcademicStartDate(membership);
+    const otherEnd = getMembershipAcademicEndDate(membership);
+
+    if (!otherStart && !otherEnd) {
+      return {
+        allowed: false as const,
+        reason: "conflict_unknown_period",
+        conflictMembership: membership,
+      };
+    }
+
+    const overlap = windowsOverlap(input, membership);
+    if (overlap) {
+      return {
+        allowed: false as const,
+        reason: "conflict_overlap",
+        conflictMembership: membership,
+      };
+    }
+  }
+
+  return {
+    allowed: true as const,
+  };
 }
 
 function deriveAcademicDatesForEntry(input: {
@@ -1166,18 +1275,20 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
   }
 
   const isCompetitionOnlyTeam = input.entry.raceOrganizationSlug === "kanto-student-union";
-  const normalizedDisplayNameJa = normalizeDisplayNameJa(input.entry.displayNameJa);
+  const normalizedDisplayNameJa = normalizePersonDisplayNameJa(input.entry.displayNameJa);
 
   const person = await prisma.person.upsert({
     where: { slug: input.entry.slug },
     update: {
       displayNameJa: normalizedDisplayNameJa,
+      displayNameJaSearch: normalizeJaName(normalizedDisplayNameJa),
       ...(input.entry.displayNameKana ? { displayNameKana: input.entry.displayNameKana } : {}),
       ...(input.entry.displayNameRoman ? { displayNameRoman: input.entry.displayNameRoman } : {}),
     },
     create: {
       slug: input.entry.slug,
       displayNameJa: normalizedDisplayNameJa,
+      displayNameJaSearch: normalizeJaName(normalizedDisplayNameJa),
       displayNameKana: input.entry.displayNameKana ?? null,
       displayNameRoman: input.entry.displayNameRoman ?? null,
       type: "athlete",
@@ -1364,6 +1475,18 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
         : null;
 
     if (matchingUniversityMembership && inferredUniversityWindow) {
+      const canApplyUniversityWindow = await canApplyInferredMembershipWindow(prisma, {
+        personId: person.id,
+        membershipId: matchingUniversityMembership.id,
+        organizationType: OrganizationType.university,
+        membershipType: MembershipType.enrolled,
+        startDate: inferredUniversityWindow.universityStart,
+        endDate: inferredUniversityWindow.universityEnd,
+        startYear: inferredUniversityWindow.universityStart.getUTCFullYear(),
+        endYear: inferredUniversityWindow.universityEnd.getUTCFullYear(),
+      });
+
+      if (canApplyUniversityWindow.allowed) {
       await ensureMembership(prisma, {
         personId: person.id,
         organizationId: matchingUniversityMembership.organizationId,
@@ -1374,6 +1497,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
         endYear: inferredUniversityWindow.universityEnd.getUTCFullYear(),
         sourceId: input.sourceId,
       });
+      }
     }
 
     await ensureMembership(prisma, {
@@ -1412,16 +1536,29 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
       if (universityStartDate) {
         const inferredHighSchoolWindow = inferHighSchoolWindowFromUniversityStart(universityStartDate);
 
-        await ensureMembership(prisma, {
+        const canApplyHighSchoolWindow = await canApplyInferredMembershipWindow(prisma, {
           personId: person.id,
-          organizationId: matchingHighSchoolMembership.organizationId,
-          type: MembershipType.enrolled,
+          membershipId: matchingHighSchoolMembership.id,
+          organizationType: OrganizationType.high_school,
+          membershipType: MembershipType.enrolled,
           startDate: inferredHighSchoolWindow.highSchoolStart,
           endDate: inferredHighSchoolWindow.highSchoolEnd,
           startYear: inferredHighSchoolWindow.highSchoolStart.getUTCFullYear(),
           endYear: inferredHighSchoolWindow.highSchoolEnd.getUTCFullYear(),
-          sourceId: input.sourceId,
         });
+
+        if (canApplyHighSchoolWindow.allowed) {
+          await ensureMembership(prisma, {
+            personId: person.id,
+            organizationId: matchingHighSchoolMembership.organizationId,
+            type: MembershipType.enrolled,
+            startDate: inferredHighSchoolWindow.highSchoolStart,
+            endDate: inferredHighSchoolWindow.highSchoolEnd,
+            startYear: inferredHighSchoolWindow.highSchoolStart.getUTCFullYear(),
+            endYear: inferredHighSchoolWindow.highSchoolEnd.getUTCFullYear(),
+            sourceId: input.sourceId,
+          });
+        }
       }
     }
   }

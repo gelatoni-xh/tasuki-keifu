@@ -13,6 +13,7 @@ const HIGH_SCHOOL_EXPANSIONS: Array<[RegExp, string]> = [
   [/^東海大仰星/, "東海大学大阪仰星"],
   [/^東海大甲府/, "東海大学甲府"],
   [/^東海大(?!学)/, "東海大学"],
+  [/^関大北陽/, "関西大学北陽"],
   [/^専大/, "専修大学"],
   [/^九国大/, "九州国際大学"],
   [/^金沢学院大附高$/, "金沢学院大学付属高"],
@@ -25,6 +26,7 @@ const HIGH_SCHOOL_EXPANSIONS: Array<[RegExp, string]> = [
   [/^法政二$/, "法政大学第二"],
   [/^法大二$/, "法政大学第二"],
   [/^法政大学第二$/, "法政大学第二"],
+  [/^川崎橘/, "川崎市立橘"],
   [/^県立西京/, "西京"],
   [/^四日市工$/, "四日市工業"],
   [/^四日市工業$/, "四日市工業"],
@@ -64,6 +66,11 @@ const HIGH_SCHOOL_SUFFIX_NORMALIZATIONS: Array<[RegExp, string]> = [
   [/大附$/, "大学付属高校"],
   [/大付$/, "大学付属高校"],
   [/大柏$/, "大学柏高校"],
+];
+
+const UNIVERSITY_EXPANSIONS: Array<[RegExp, string]> = [
+  [/^東京農大/, "東京農業大学"],
+  [/^東農大/, "東京農業大学"],
 ];
 
 export function normalizeOrganizationLabel(value: string) {
@@ -119,6 +126,10 @@ export function normalizeOrganizationIdentity(nameJa: string, type: Organization
     normalized = normalized
       .replace(/國學院/g, "国学院")
       .replace(/大學/g, "大学");
+
+    for (const [pattern, replacement] of UNIVERSITY_EXPANSIONS) {
+      normalized = normalized.replace(pattern, replacement);
+    }
   }
 
   return normalized.trim();

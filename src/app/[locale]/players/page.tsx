@@ -59,6 +59,10 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "club",
 ];
 
+function normalizeJaSearchQuery(value: string) {
+  return value.replace(/　/g, " ").replace(/\s+/g, "");
+}
+
 function buildPlayersPath(locale: string, params: Record<string, string | number | undefined>) {
   const searchParams = new URLSearchParams();
 
@@ -106,6 +110,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   const locale = localeParam;
   const dictionary = getDictionary(locale);
   const query = queryParams.q?.trim() ?? "";
+  const normalizedJaQuery = normalizeJaSearchQuery(query);
   const requestedOrganizationType = allowedOrganizationTypes.includes(queryParams.organizationType as OrganizationType)
     ? (queryParams.organizationType as OrganizationType)
     : "";
@@ -159,6 +164,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
       ? {
           OR: [
             { displayNameJa: { contains: query, mode: "insensitive" } },
+            ...(normalizedJaQuery
+              ? [{ displayNameJaSearch: { contains: normalizedJaQuery, mode: "insensitive" as const } }]
+              : []),
             { displayNameKana: { contains: query, mode: "insensitive" } },
             { displayNameRoman: { contains: query, mode: "insensitive" } },
             { displayNameZh: { contains: query, mode: "insensitive" } },

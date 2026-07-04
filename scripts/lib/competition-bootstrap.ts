@@ -1,4 +1,5 @@
 import { DataStatus, EventDiscipline, SourceType, type CompetitionType, type PrismaClient } from "@prisma/client";
+import { normalizeCompetitionEditionNames } from "./competition-edition-normalization";
 
 export type CompetitionBootstrapSource = {
   id: string;
@@ -86,14 +87,21 @@ export async function bootstrapCompetition(prisma: PrismaClient, config: Competi
       throw new Error(`Unknown sourceId on edition ${edition.slug}: ${edition.sourceId}`);
     }
 
+    const normalizedNames = normalizeCompetitionEditionNames({
+      competitionSlug: config.competition.slug,
+      competitionType: config.competition.type,
+      editionNumber: edition.editionNumber,
+      officialName: edition.officialName,
+      shortName: edition.shortName,
+    });
+
     const saved = await prisma.competitionEdition.upsert({
       where: { slug: edition.slug },
       update: {
         competitionId: competition.id,
         editionNumber: edition.editionNumber,
         year: edition.year,
-        officialName: edition.officialName,
-        shortName: edition.shortName,
+        ...normalizedNames,
         startsOn: edition.startsOn ? new Date(edition.startsOn) : undefined,
         endsOn: edition.endsOn ? new Date(edition.endsOn) : undefined,
         sourceId: edition.sourceId,
@@ -103,8 +111,7 @@ export async function bootstrapCompetition(prisma: PrismaClient, config: Competi
         competitionId: competition.id,
         editionNumber: edition.editionNumber,
         year: edition.year,
-        officialName: edition.officialName,
-        shortName: edition.shortName,
+        ...normalizedNames,
         startsOn: edition.startsOn ? new Date(edition.startsOn) : undefined,
         endsOn: edition.endsOn ? new Date(edition.endsOn) : undefined,
         sourceId: edition.sourceId,

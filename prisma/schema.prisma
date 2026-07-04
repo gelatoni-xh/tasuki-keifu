@@ -148,6 +148,8 @@ model Person {
   slug                 String         @unique
   /// 日文显示名
   displayNameJa        String
+  /// 去空格后的日文检索名
+  displayNameJaSearch  String         @default("")
   /// 日文读音
   displayNameKana      String?
   /// 罗马字显示名

@@ -4,7 +4,34 @@ export const NATIONAL_PREFECTURAL_EKIDEN_MEN_COMPETITION_SLUG = "national-prefec
 export const NATIONAL_PREFECTURAL_EKIDEN_MEN_COMPETITION_NAME_JA = "全国都道府県対抗男子駅伝競走大会";
 export const NATIONAL_PREFECTURAL_EKIDEN_MEN_WEBSITE_URL = "https://www.hiroshima-ekiden.com/";
 
-const EDITION_SOURCE_URLS = new Map<number, { entryUrl: string; resultUrl: string }>([
+export type NationalPrefecturalEkidenMenEditionSources = {
+  entryUrl: string | null;
+  resultUrl: string;
+  resultMirrorUrl?: string;
+  resultFormat?: "pdf" | "archive_html";
+};
+
+const CONFIRMED_ARCHIVE_RECORD_AWARDS = new Map<number, Array<{ leg: number; prefecture: string; displayNameJa: string }>>([
+  [
+    28,
+    [
+      { leg: 1, prefecture: "兵庫県", displayNameJa: "長嶋 幸宝" },
+      { leg: 4, prefecture: "長野県", displayNameJa: "山口 竣平" },
+      { leg: 5, prefecture: "長野県", displayNameJa: "吉岡 大翔" },
+    ],
+  ],
+]);
+
+const EDITION_SOURCE_URLS = new Map<number, NationalPrefecturalEkidenMenEditionSources>([
+  [
+    28,
+    {
+      entryUrl: null,
+      resultUrl: "https://www.hiroshima-ekiden.com/archive/competitions/28/",
+      resultMirrorUrl: "https://gold.jaic.org/jaic/member/okayama/2023/28ekiden/results.pdf",
+      resultFormat: "archive_html",
+    },
+  ],
   [
     29,
     {
@@ -128,12 +155,20 @@ export function buildNationalPrefecturalEkidenMenResultPdfPath(edition: number) 
   return path.resolve(`tmp/todofuken/men${edition}-record.pdf`);
 }
 
+export function buildNationalPrefecturalEkidenMenResultHtmlPath(edition: number) {
+  return path.resolve(`tmp/todofuken/men${edition}-record.html`);
+}
+
 export function getNationalPrefecturalEkidenMenSourceUrls(edition: number) {
   const urls = EDITION_SOURCE_URLS.get(edition);
   if (!urls) {
     throw new Error(`Unsupported men prefectural ekiden edition: ${edition}`);
   }
   return urls;
+}
+
+export function getNationalPrefecturalEkidenMenConfirmedArchiveRecordAwards(edition: number) {
+  return CONFIRMED_ARCHIVE_RECORD_AWARDS.get(edition) ?? [];
 }
 
 export function normalizeWhitespace(value: string) {
