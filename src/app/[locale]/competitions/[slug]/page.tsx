@@ -47,25 +47,6 @@ function getCompetitionSeoTier({
   return "thin";
 }
 
-function buildCompetitionLocationJsonLd(competition: {
-  nameJa: string;
-  region: string | null;
-}) {
-  const locationName = competition.region
-    ? `${competition.region} (${competition.nameJa})`
-    : `${competition.nameJa} 開催地`;
-
-  return {
-    "@type": "Place",
-    name: locationName,
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: "JP",
-      ...(competition.region && competition.region !== "国際" ? { addressRegion: competition.region } : {}),
-    },
-  };
-}
-
 export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params;
 
@@ -280,26 +261,6 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     ? teamResults.reduce((sum, result) => sum + ("legSnapshots" in result ? result.legSnapshots.length : 0), 0)
     : 0;
   const leadingOrganizations = teamResults.slice(0, 5).map((result) => result.organization.nameJa);
-  const sampledAthleteRows = await getCachedValue(`competition:detail:${edition.id}:sampled-athletes:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
-    prisma.raceResult.findMany({
-      where: {
-        race: {
-          competitionEditionId: edition.id,
-        },
-      },
-      distinct: ["personId"],
-      orderBy: [{ rank: "asc" }, { markMillis: "asc" }],
-      take: 8,
-      select: {
-        person: {
-          select: {
-            displayNameJa: true,
-          },
-        },
-      },
-    }),
-  );
-  const sampledAthletes = sampledAthleteRows.map((entry) => entry.person.displayNameJa);
   const selectedRaceUnitDetails =
     activeTab === "race-units" && selectedRaceUnit
       ? await getCachedValue(`competition:detail:${edition.id}:race-unit:${selectedRaceUnit.id}:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
@@ -366,30 +327,42 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     .join(" ");
   const competitionJsonLd = {
     "@context": "https://schema.org",
-    "@type": "SportsEvent",
+    "@type": "Dataset",
     name: edition.officialName,
     alternateName: edition.shortName ?? undefined,
     description: competitionSummary,
-    startDate: edition.startsOn?.toISOString(),
-    endDate: edition.endsOn?.toISOString() ?? edition.startsOn?.toISOString(),
-    eventStatus: "https://schema.org/EventCompleted",
-    sport: "Ekiden",
-    location: buildCompetitionLocationJsonLd(edition.competition),
     url: `https://tasukikeifu.com/${locale}/competitions/${edition.slug}`,
-    isPartOf: {
-      "@type": "CreativeWork",
-      name: edition.competition.nameJa,
+    inLanguage: locale,
+    dateModified: edition.updatedAt.toISOString(),
+    temporalCoverage: edition.startsOn
+      ? edition.endsOn
+        ? `${edition.startsOn.toISOString()}/${edition.endsOn.toISOString()}`
+        : edition.startsOn.toISOString()
+      : edition.year.toString(),
+    spatialCoverage: edition.competition.region
+      ? {
+          "@type": "Place",
+          name: edition.competition.region,
+          address: {
+            "@type": "PostalAddress",
+            addressCountry: "JP",
+            ...(edition.competition.region !== "国際" ? { addressRegion: edition.competition.region } : {}),
+          },
+        }
+      : undefined,
+    keywords: [
+      edition.competition.nameJa,
+      edition.shortName ?? edition.officialName,
+      "駅伝",
+      "大会結果",
+      "区間記録",
+    ],
+    publisher: {
+      "@type": "Organization",
+      name: "襷の系譜",
+      url: "https://tasukikeifu.com",
     },
-    competitor: teamResults.slice(0, 12).map((result) => ({
-      "@type": "SportsOrganization",
-      name: result.organization.nameJa,
-      url: `https://tasukikeifu.com/${locale}/organizations/${result.organization.slug}`,
-    })),
-    performer: sampledAthletes.map((name) => ({
-      "@type": "Person",
-      name,
-    })),
-    organizer: edition.competition.organizer
+    creator: edition.competition.organizer
       ? {
           "@type": "Organization",
           name: edition.competition.organizer,
