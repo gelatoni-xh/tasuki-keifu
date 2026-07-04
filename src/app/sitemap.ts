@@ -1,23 +1,17 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { publicCompetitionTypes } from "@/lib/public-competitions";
-import { buildLocalizedUrl, siteConfig } from "@/lib/site";
+import { buildLocalizedUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries: MetadataRoute.Sitemap = [
     {
-      url: siteConfig.siteUrl,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 1,
-    },
-    {
       url: buildLocalizedUrl("ja"),
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 0.9,
+      priority: 1,
     },
     {
       url: buildLocalizedUrl("ja", "/players"),
