@@ -41,6 +41,22 @@ function compactJaName(value: string) {
   return /[\p{Script=Han}々]/u.test(normalized) ? normalized.replace(/ /g, "") : normalized;
 }
 
+function buildOrganizationNameVariants(organization: { nameJa: string; shortName?: string | null } | null | undefined) {
+  if (!organization) {
+    return [];
+  }
+
+  return [organization.nameJa, organization.shortName ?? ""].filter(Boolean);
+}
+
+function formatOrganizationLabel(organization: { nameJa: string; shortName?: string | null } | null | undefined) {
+  if (!organization) {
+    return "";
+  }
+
+  return organization.shortName ? `${organization.nameJa}（${organization.shortName}）` : organization.nameJa;
+}
+
 function getPlayerSeoTier({
   memberships,
   personalBests,
@@ -139,12 +155,20 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
     personalBests: player.personalBests.length,
     results: player._count.raceResults,
   });
-  const title = `${player.displayNameJa}の所属・記録・大会成績`;
+  const organizationVariants = Array.from(
+    new Set(
+      player.memberships.flatMap((membership) => buildOrganizationNameVariants(membership.organization)),
+    ),
+  );
+  const currentOrganizationVariants = buildOrganizationNameVariants(currentMembership?.organization);
+  const titleAffiliation =
+    currentOrganizationVariants.length > 0 ? ` | ${currentOrganizationVariants.join("・")}` : "";
+  const title = `${player.displayNameJa}の所属・記録・大会成績${titleAffiliation}`;
   const descriptionParts = [
     `${player.displayNameJa}の所属、記録、大会成績を確認できる人物資料ページです。`,
-    currentMembership?.organization.nameJa ? `現在の所属は${currentMembership.organization.nameJa}。` : null,
-    university?.organization.nameJa ? `大学は${university.organization.nameJa}。` : null,
-    highSchool?.organization.nameJa ? `出身校は${highSchool.organization.nameJa}。` : null,
+    currentMembership?.organization ? `現在の所属は${formatOrganizationLabel(currentMembership.organization)}です。` : null,
+    university?.organization ? `大学は${formatOrganizationLabel(university.organization)}です。` : null,
+    highSchool?.organization ? `出身校は${formatOrganizationLabel(highSchool.organization)}です。` : null,
     player.personalBests.length > 0 ? `主要PBを${player.personalBests.length}件収録。` : null,
     player._count.raceResults > 0 ? `大会成績を${player._count.raceResults}件収録。` : null,
     "所属変遷、関連大会、データ出典もあわせて確認できます。",
@@ -159,10 +183,10 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
       player.displayNameJa,
       ...(compactJaName(player.displayNameJa) !== player.displayNameJa ? [compactJaName(player.displayNameJa)] : []),
       player.displayNameKana ?? "",
-      currentMembership?.organization.nameJa ?? "",
-      university?.organization.nameJa ?? "",
-      highSchool?.organization.nameJa ?? "",
+      ...organizationVariants,
+      ...organizationVariants.map((name) => `${player.displayNameJa} ${name}`),
       "駅伝選手",
+      "長距離",
       "大会成績",
       "PB",
     ].filter(Boolean),

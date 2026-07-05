@@ -36,6 +36,10 @@ function getOrganizationSeoTier({
   return "thin";
 }
 
+function formatOrganizationLabel(nameJa: string, shortName: string | null) {
+  return shortName ? `${nameJa}（${shortName}）` : nameJa;
+}
+
 export async function generateMetadata({ params }: OrganizationDetailPageProps): Promise<Metadata> {
   const { locale: localeParam, slug: rawSlug } = await params;
   const slug = decodeURIComponent(rawSlug);
@@ -61,7 +65,9 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
     return {};
   }
 
-  const title = `${organization.nameJa}の所属人物・関連データ`;
+  const organizationLabels = [organization.nameJa, organization.shortName ?? ""].filter(Boolean);
+  const primaryLabel = formatOrganizationLabel(organization.nameJa, organization.shortName);
+  const title = `${primaryLabel}の所属人物・駅伝関連データ`;
   const dictionary = getDictionary(locale);
   const seoTier = getOrganizationSeoTier({
     memberships: organization._count.memberships,
@@ -70,9 +76,10 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
   });
   const description = [
     interpolate(dictionary.organizations.detailSeoIntro, {
-      name: organization.nameJa,
+      name: primaryLabel,
       type: formatOrganizationType(organization.type, locale),
     }),
+    organization.shortName ? `${organization.shortName}名義で探されることがある組織です。` : null,
     organization._count.memberships > 0
       ? interpolate(dictionary.organizations.detailSeoMemberships, {
           count: organization._count.memberships,
@@ -93,7 +100,9 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
     path: `/organizations/${slug}`,
     locale,
     keywords: [
-      organization.nameJa,
+      ...organizationLabels,
+      ...organizationLabels.map((name) => `${name} 駅伝`),
+      ...organizationLabels.map((name) => `${name} 長距離`),
       formatOrganizationType(organization.type, locale),
       "所属人物",
       "駅伝チーム",

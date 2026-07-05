@@ -47,6 +47,23 @@ function getCompetitionSeoTier({
   return "thin";
 }
 
+function buildCompetitionKeywordVariants(edition: {
+  competition: { nameJa: string };
+  officialName: string;
+  shortName: string | null;
+  year: number;
+  editionNumber: number | null;
+}) {
+  const baseName = edition.competition.nameJa;
+  const variants = [baseName, edition.shortName ?? "", edition.officialName, `${baseName} ${edition.year}`, `${baseName}${edition.year}`];
+
+  if (edition.editionNumber !== null) {
+    variants.push(`${baseName} ${edition.editionNumber}回`, `${baseName}${edition.editionNumber}回`);
+  }
+
+  return Array.from(new Set(variants.filter(Boolean)));
+}
+
 export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params;
 
@@ -87,9 +104,11 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
   const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
   const teamResultCount = edition.teamCompetitionResults?.length ?? 0;
   const seoTier = getCompetitionSeoTier({ raceCount, resultCount, teamResultCount });
+  const keywordVariants = buildCompetitionKeywordVariants(edition);
   const title = `${edition.shortName ?? edition.officialName}の結果・出場選手`;
   const description = [
     `${edition.competition.nameJa}の届次ページです。`,
+    `${edition.year}年開催の${edition.competition.nameJa}の結果ページで、${edition.competition.nameJa} ${edition.year}の記録も確認できます。`,
     `開催日は${formatDate(edition.startsOn) || "未確認"}。`,
     `${raceCount}件の競技単位と${resultCount}件の結果を収録しています。`,
   ].join(" ");
@@ -100,8 +119,7 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
     path: `/competitions/${slug}`,
     locale,
     keywords: [
-      edition.competition.nameJa,
-      edition.shortName ?? edition.officialName,
+      ...keywordVariants,
       "駅伝結果",
       "出場選手",
     ],
