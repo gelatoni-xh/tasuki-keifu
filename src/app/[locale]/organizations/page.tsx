@@ -31,14 +31,14 @@ export async function generateMetadata({ params }: Pick<OrganizationsPageProps, 
   }
 
   const title = "学校・実業団・連盟一覧";
-  const description = "学校、大学、実業団、連盟などの組織一覧ページです。所属選手や関連データを探す入口として使えます。";
+  const description = "組織名や略称で学校、大学、実業団などの組織を探せる一覧ページです。関連人物や関連データの確認入口として使えます。";
 
   return buildPageMetadata({
     title,
     description,
     path: "/organizations",
     locale: localeParam,
-    keywords: ["大学駅伝学校一覧", "実業団一覧", "連盟一覧"],
+    keywords: ["大学駅伝学校一覧", "実業団一覧", "連盟一覧", "組織名検索"],
   });
 }
 
@@ -53,6 +53,7 @@ const allowedOrganizationTypes: OrganizationType[] = [
 ];
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const pageSize = 10;
+const maxPage = 100;
 
 function normalizeSearchText(value: string | null | undefined) {
   return (value ?? "").replace(/\s+/g, "").toLocaleLowerCase();
@@ -131,7 +132,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
     ? (queryParams.status as DataStatus)
     : "";
   const prefecture = isJapanPrefecture(queryParams.prefecture) ? queryParams.prefecture : "";
-  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
+  const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
   const organizations = await prisma.organization.findMany({
     where: {
       type: organizationType,
@@ -153,8 +154,6 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
           organization.nameZh,
           organization.nameEn,
           organization.shortName,
-          organization.location,
-          organization.prefecture,
         ].some((value) => includesNormalized(value, normalizedQuery)),
       )
     : organizations;
@@ -190,6 +189,20 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
   const paginatedOrganizations = filteredOrganizations.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginationItems = getPaginationItems(currentPage, totalPages);
+  const activeFilterSummary: Array<{ label: string; value: string }> = [
+    {
+      label: dictionary.organizations.type,
+      value: formatOrganizationType(organizationType, locale),
+    },
+  ];
+
+  if (query) {
+    activeFilterSummary.unshift({ label: dictionary.common.search, value: query });
+  }
+
+  if (prefecture) {
+    activeFilterSummary.push({ label: dictionary.organizations.prefectureFilter, value: prefecture });
+  }
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -266,6 +279,27 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
             </div>
           </form>
 
+          <section className="flex flex-col gap-3 rounded-sm border border-[#e2dbcf] bg-[#f8f4ec] px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-[#2d342f]">{dictionary.common.currentFilters}</p>
+              <div className="flex flex-wrap gap-2">
+                {activeFilterSummary.map((item) => (
+                  <span className="filter-pill" key={`${item.label}-${item.value}`}>
+                    <strong>{item.label}</strong>
+                    <span>{item.value}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+            <Link
+              className="inline-flex items-center justify-center gap-2 border border-[#cfc7b8] bg-white px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
+              href={`/${locale}/organizations?type=university`}
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+              {dictionary.common.reset}
+            </Link>
+          </section>
+
           <div className="divide-y divide-[#e7e1d8] border-y border-[#ded8cc] bg-white">
             {paginatedOrganizations.length > 0 ? paginatedOrganizations.map((organization) => (
               <Link
@@ -294,6 +328,15 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
               <div className="px-4 py-10 text-center">
                 <h2 className="text-lg font-semibold">{dictionary.organizations.emptyTitle}</h2>
                 <p className="mt-2 text-sm text-[#59615c]">{dictionary.organizations.emptyDescription}</p>
+                <p className="mt-2 text-sm text-[#59615c]">{dictionary.common.noResultsHint}</p>
+                <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Link
+                    className="inline-flex items-center justify-center gap-2 border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
+                    href={`/${locale}/organizations?type=university`}
+                  >
+                    {dictionary.common.reset}
+                  </Link>
+                </div>
               </div>
             )}
           </div>

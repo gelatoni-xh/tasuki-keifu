@@ -17,6 +17,7 @@ type CascadingOrganizationFiltersProps = {
     label: string;
     value: string;
   }>;
+  organizationSearchPlaceholder: string;
   selectedOrganization: string;
   selectedOrganizationType: string;
 };
@@ -25,6 +26,7 @@ export function CascadingOrganizationFilters({
   allLabel,
   organizationLabel,
   organizationOptions,
+  organizationSearchPlaceholder,
   organizationTypeLabel,
   organizationTypes,
   selectedOrganization,
@@ -32,9 +34,14 @@ export function CascadingOrganizationFilters({
 }: CascadingOrganizationFiltersProps) {
   const [organizationType, setOrganizationType] = useState(selectedOrganizationType);
   const [organization, setOrganization] = useState(selectedOrganization);
+  const [organizationKeyword, setOrganizationKeyword] = useState("");
+  const normalizedKeyword = organizationKeyword.trim().toLocaleLowerCase();
   const filteredOrganizationOptions = organizationType
     ? organizationOptions.filter((organization) => organization.type === organizationType)
     : organizationOptions;
+  const visibleOrganizationOptions = normalizedKeyword
+    ? filteredOrganizationOptions.filter((option) => option.label.toLocaleLowerCase().includes(normalizedKeyword))
+    : filteredOrganizationOptions;
   const selectedOrganizationStillVisible = filteredOrganizationOptions.some(
     (option) => option.slug === organization,
   );
@@ -70,6 +77,15 @@ export function CascadingOrganizationFilters({
 
       <label className="filter-field">
         <span className="filter-label">{organizationLabel}</span>
+        <input
+          className="filter-input"
+          onChange={(event) => {
+            setOrganizationKeyword(event.currentTarget.value);
+          }}
+          placeholder={organizationSearchPlaceholder}
+          type="search"
+          value={organizationKeyword}
+        />
         <select
           className="filter-input"
           name="organization"
@@ -79,7 +95,7 @@ export function CascadingOrganizationFilters({
           value={selectedOrganizationStillVisible ? organization : ""}
         >
           <option value="">{allLabel}</option>
-          {filteredOrganizationOptions.map((organization) => (
+          {visibleOrganizationOptions.map((organization) => (
             <option key={organization.id} value={organization.slug}>
               {organization.label}
             </option>

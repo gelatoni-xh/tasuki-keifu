@@ -61,7 +61,7 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
     <>
       <header className="sticky top-0 z-30 border-b border-[#ded8cc] bg-[#fbfaf7]/95 backdrop-blur lg:hidden">
         <div className="px-5 py-4">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <Link href={`/${locale}`} className="block">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a1f2d]">
                 {dictionary.site.label}
@@ -70,12 +70,13 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
             </Link>
             <LocaleSwitcher
               ariaLabel="Language"
-              className="min-w-[13rem]"
+              className="w-full sm:w-auto sm:min-w-[13rem]"
               currentLocale={locale}
               options={localeOptions}
+              variant="inline"
             />
           </div>
-          <nav className="mt-4 flex flex-wrap gap-2 text-sm font-medium" aria-label="Primary">
+          <nav className="mt-4 grid grid-cols-2 gap-2 text-sm font-medium sm:flex sm:flex-wrap" aria-label="Primary">
             {navigationItems.map((item) => {
               const active = isActivePath(normalizedPath, item.href);
 
@@ -83,8 +84,8 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
                 <Link
                   className={
                     active
-                      ? "border border-[#b53b4d] bg-[#8a1f2d] px-3 py-2 text-white"
-                      : "border border-[#ded8cc] bg-white px-3 py-2 text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
+                      ? "border border-[#b53b4d] bg-[#8a1f2d] px-3 py-2 text-center text-white"
+                      : "border border-[#ded8cc] bg-white px-3 py-2 text-center text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
                   }
                   href={`/${locale}${item.href}`}
                   key={item.href}
@@ -94,7 +95,7 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
               );
             })}
           </nav>
-          <nav className="mt-3 flex flex-wrap gap-2 text-sm" aria-label="Secondary">
+          <nav className="mt-3 grid gap-2 text-sm sm:flex sm:flex-wrap" aria-label="Secondary">
             {secondaryNavigationItems.map((item) => {
               const active = isActivePath(normalizedPath, item.href);
 
@@ -102,8 +103,8 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
                 <Link
                   className={
                     active
-                      ? "border border-[#8a1f2d] bg-[#8a1f2d] px-3 py-2 text-white shadow-sm"
-                      : "border border-[#ded8cc] bg-white px-3 py-2 text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
+                      ? "border border-[#8a1f2d] bg-[#8a1f2d] px-3 py-2 text-center text-white shadow-sm"
+                      : "border border-[#ded8cc] bg-white px-3 py-2 text-center text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
                   }
                   href={`/${locale}${item.href}`}
                   key={item.href}

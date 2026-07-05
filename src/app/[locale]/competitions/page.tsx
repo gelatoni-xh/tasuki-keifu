@@ -26,19 +26,20 @@ export async function generateMetadata({ params }: Pick<CompetitionsPageProps, "
     return {};
   }
 
-  const title = "駅伝大会一覧・結果検索";
-  const description = "駅伝大会一覧ページです。大会名や開催年から大会を探し、各大会の結果、出場選手、区間情報の確認入口として使えます。";
+  const title = "駅伝大会一覧・大会名検索";
+  const description = "大会名や届次で駅伝大会を探せる一覧ページです。各大会の結果や区間情報の確認入口として使えます。";
 
   return buildPageMetadata({
     title,
     description,
     path: "/competitions",
     locale: localeParam,
-    keywords: ["駅伝大会一覧", "駅伝結果", "大会検索"],
+    keywords: ["駅伝大会一覧", "駅伝結果", "大会検索", "大会名検索"],
   });
 }
 
 const pageSize = 10;
+const maxPage = 100;
 
 function normalizeSearchText(value: string | null | undefined) {
   return (value ?? "").replace(/\s+/g, "").toLocaleLowerCase();
@@ -96,7 +97,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
   const dictionary = getDictionary(locale);
   const query = queryParams.q?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
-  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
+  const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
   const editions = await prisma.competitionEdition.findMany({
     where: {
       competition: {
@@ -125,7 +126,6 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
           edition.competition.nameJa,
           edition.competition.nameZh,
           edition.competition.nameEn,
-          edition.year?.toString(),
         ].some((value) => includesNormalized(value, normalizedQuery)),
       )
     : editions;

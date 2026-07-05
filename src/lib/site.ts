@@ -12,7 +12,8 @@ const openGraphLocaleMap: Record<Locale, string> = {
 
 export const siteConfig = {
   name: "襷の系譜",
-  searchName: "駅伝データベース 襷の系譜",
+  searchName: "襷の系譜",
+  alternateSiteNames: ["Tasuki Keifu", "駅伝データベース 襷の系譜"],
   description: "高校・大学・実業団をつなぐ駅伝データベース",
   keywords: [
     "駅伝",
@@ -91,5 +92,25 @@ export function buildPageMetadata({
       title,
       description,
     },
+  };
+}
+
+export function buildWebsiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.searchName,
+    alternateName: siteConfig.alternateSiteNames,
+    url: buildAbsoluteUrl("/").toString(),
+  };
+}
+
+export function buildOrganizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteConfig.searchName,
+    alternateName: siteConfig.alternateSiteNames,
+    url: buildAbsoluteUrl("/").toString(),
   };
 }

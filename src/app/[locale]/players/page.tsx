@@ -34,21 +34,22 @@ export async function generateMetadata({ params }: Pick<PlayersPageProps, "param
     return {};
   }
 
-  const title = "駅伝人物一覧・所属・PB検索";
-  const description = "人物を名前、学校、所属、状態から検索できる一覧ページです。所属、出身校、PBの確認入口として使えます。";
+  const title = "駅伝人物一覧・人物名検索";
+  const description = "人物名で駅伝の人物を探せる一覧ページです。所属、出身校、PBの確認入口として使えます。";
 
   return buildPageMetadata({
     title,
     description,
     path: "/players",
     locale: localeParam,
-    keywords: ["駅伝人物一覧", "駅伝選手一覧", "PB検索", "所属検索"],
+    keywords: ["駅伝人物一覧", "駅伝選手一覧", "人物名検索", "駅伝人物検索"],
   });
 }
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const allowedPersonTypes: PersonType[] = ["athlete", "coach", "staff"];
 const pageSize = 10;
+const maxPage = 100;
 const allowedOrganizationTypes: OrganizationType[] = [
   "junior_high_school",
   "high_school",
@@ -99,6 +100,40 @@ function getPaginationItems(currentPage: number, totalPages: number) {
   return items;
 }
 
+function buildPlayerFilterSummary(params: {
+  dictionary: ReturnType<typeof getDictionary>;
+  hometown: string;
+  organizationLabel: string;
+  organizationTypeLabel: string;
+  personTypeLabel: string;
+  query: string;
+}) {
+  const { dictionary, hometown, organizationLabel, organizationTypeLabel, personTypeLabel, query } = params;
+  const summary: Array<{ label: string; value: string }> = [];
+
+  if (query) {
+    summary.push({ label: dictionary.common.search, value: query });
+  }
+
+  if (organizationTypeLabel) {
+    summary.push({ label: dictionary.players.organizationTypeFilter, value: organizationTypeLabel });
+  }
+
+  if (organizationLabel) {
+    summary.push({ label: dictionary.players.organizationFilter, value: organizationLabel });
+  }
+
+  if (personTypeLabel) {
+    summary.push({ label: dictionary.players.personTypeFilter, value: personTypeLabel });
+  }
+
+  if (hometown) {
+    summary.push({ label: dictionary.players.hometownFilter, value: hometown });
+  }
+
+  return summary;
+}
+
 export default async function PlayersPage({ params, searchParams }: PlayersPageProps) {
   const { locale: localeParam } = await params;
   const queryParams = await searchParams;
@@ -133,7 +168,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     ? (queryParams.type as PersonType)
     : "";
   const hometown = isJapanPrefecture(queryParams.hometown) ? queryParams.hometown : "";
-  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
+  const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
   const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status || personType || hometown);
   const pagePathWithQuery = `/players${hasActiveFilters ? `?${new URLSearchParams(
     Object.entries({
@@ -171,22 +206,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             { displayNameRoman: { contains: query, mode: "insensitive" } },
             { displayNameZh: { contains: query, mode: "insensitive" } },
             { displayNameEn: { contains: query, mode: "insensitive" } },
-            {
-              memberships: {
-                some: {
-                  organization: {
-                    OR: [
-                      { nameJa: { contains: query, mode: "insensitive" } },
-                      { nameKana: { contains: query, mode: "insensitive" } },
-                      { nameRoman: { contains: query, mode: "insensitive" } },
-                      { nameZh: { contains: query, mode: "insensitive" } },
-                      { nameEn: { contains: query, mode: "insensitive" } },
-                      { shortName: { contains: query, mode: "insensitive" } },
-                    ],
-                  },
-                },
-              },
-            },
           ],
         }
       : {}),
@@ -243,6 +262,14 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     hometown,
   };
   const paginationItems = getPaginationItems(currentPage, totalPages);
+  const activeFilterSummary = buildPlayerFilterSummary({
+    dictionary,
+    hometown,
+    organizationLabel: selectedOrganization?.shortName ?? selectedOrganization?.nameJa ?? "",
+    organizationTypeLabel: organizationType ? formatOrganizationType(organizationType, locale) : "",
+    personTypeLabel: personType ? formatPersonType(personType, locale) : "",
+    query,
+  });
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -295,6 +322,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                   label: formatOrganizationType(type, locale),
                   value: type,
                 }))}
+                organizationSearchPlaceholder={dictionary.common.organizationFilterPlaceholder}
                 selectedOrganization={organizationSlug}
                 selectedOrganizationType={organizationType}
               />
@@ -340,6 +368,29 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               </Link>
             </div>
           </form>
+
+          {activeFilterSummary.length > 0 ? (
+            <section className="flex flex-col gap-3 rounded-sm border border-[#e2dbcf] bg-[#f8f4ec] px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-[#2d342f]">{dictionary.common.currentFilters}</p>
+                <div className="flex flex-wrap gap-2">
+                  {activeFilterSummary.map((item) => (
+                    <span className="filter-pill" key={`${item.label}-${item.value}`}>
+                      <strong>{item.label}</strong>
+                      <span>{item.value}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <Link
+                className="inline-flex items-center justify-center gap-2 border border-[#cfc7b8] bg-white px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
+                href={`/${locale}/players`}
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+                {dictionary.common.reset}
+              </Link>
+            </section>
+          ) : null}
 
           <section className="overflow-hidden border border-[#ded8cc] bg-white">
             <div className="hidden grid-cols-[1.1fr_1fr_1fr_1.2fr] border-b border-[#ded8cc] bg-[#f2eee7] px-4 py-3 text-sm font-semibold text-[#59615c] md:grid">
@@ -401,6 +452,15 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               <div className="px-4 py-10 text-center">
                 <h2 className="text-lg font-semibold">{dictionary.players.emptyTitle}</h2>
                 <p className="mt-2 text-sm text-[#59615c]">{dictionary.players.emptyDescription}</p>
+                <p className="mt-2 text-sm text-[#59615c]">{dictionary.common.noResultsHint}</p>
+                <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Link
+                    className="inline-flex items-center justify-center gap-2 border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
+                    href={`/${locale}/players`}
+                  >
+                    {dictionary.common.reset}
+                  </Link>
+                </div>
               </div>
             )}
           </section>

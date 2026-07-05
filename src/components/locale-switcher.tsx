@@ -14,13 +14,62 @@ type LocaleSwitcherProps = {
     href: string;
   }>;
   className?: string;
+  variant?: "card" | "inline";
 };
 
-export function LocaleSwitcher({ ariaLabel, currentLocale, options, className }: LocaleSwitcherProps) {
+export function LocaleSwitcher({
+  ariaLabel,
+  className,
+  currentLocale,
+  options,
+  variant = "card",
+}: LocaleSwitcherProps) {
   const router = useRouter();
   const id = useId();
   const [, startTransition] = useTransition();
   const currentLabel = options.find((option) => option.value === currentLocale)?.label ?? currentLocale;
+  const select = (
+    <select
+      aria-label={ariaLabel}
+      className="w-full appearance-none border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2.5 text-sm font-medium text-[#2d342f] outline-none transition focus:border-[#8a1f2d]"
+      defaultValue={currentLocale}
+      id={id}
+      onChange={(event) => {
+        const nextHref = options.find((option) => option.value === event.target.value)?.href;
+
+        if (!nextHref) {
+          return;
+        }
+
+        startTransition(() => {
+          router.push(nextHref);
+        });
+      }}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  );
+
+  if (variant === "inline") {
+    return (
+      <div className={className}>
+        <div className="border border-[#d8cfbf] bg-white px-3 py-3 shadow-[0_10px_24px_rgba(31,36,33,0.06)]">
+          <div className="mb-2 flex items-center gap-2">
+            <Languages className="h-4 w-4 text-[#8a1f2d]" aria-hidden="true" />
+            <label className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#8a1f2d]" htmlFor={id}>
+              {ariaLabel}
+            </label>
+            <span className="ml-auto text-xs text-[#7a807a]">{currentLabel}</span>
+          </div>
+          {select}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>
@@ -33,29 +82,7 @@ export function LocaleSwitcher({ ariaLabel, currentLocale, options, className }:
         </div>
         <div className="px-3 py-3">
           <p className="mb-2 text-xs text-[#7a807a]">当前: {currentLabel}</p>
-          <select
-            aria-label={ariaLabel}
-            className="w-full appearance-none border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2.5 text-sm font-medium text-[#2d342f] outline-none transition focus:border-[#8a1f2d]"
-            defaultValue={currentLocale}
-            id={id}
-            onChange={(event) => {
-              const nextHref = options.find((option) => option.value === event.target.value)?.href;
-
-              if (!nextHref) {
-                return;
-              }
-
-              startTransition(() => {
-                router.push(nextHref);
-              });
-            }}
-          >
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          {select}
         </div>
       </div>
     </div>
