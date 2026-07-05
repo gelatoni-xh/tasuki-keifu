@@ -1,67 +1,23 @@
-import type { CompetitionType, OrganizationType } from "@prisma/client";
-
-export type RelationReasonType = "direct_matchup" | "teammate_overlap" | "frequent_same_stage";
+import type { CompetitionType, EventDiscipline, OrganizationType } from "@prisma/client";
 
 export type RelationStageKey = "high_school" | "university" | "corporate_team";
 
-export type RelationReason =
-  | {
-      type: "direct_matchup";
-      kind: "ekiden";
-      count: number;
-      priority: number;
-    }
-  | {
-      type: "direct_matchup";
-      kind: "cross_stage";
-      count: number;
-      stages: RelationStageKey[];
-      priority: number;
-    }
-  | {
-      type: "direct_matchup";
-      kind: "same_stage";
-      count: number;
-      priority: number;
-    }
-  | {
-      type: "direct_matchup";
-      kind: "latest_competition";
-      competitionName: string;
-      priority: number;
-    }
-  | {
-      type: "teammate_overlap";
-      kind: "overlap_years";
-      years: number;
-      priority: number;
-    }
-  | {
-      type: "teammate_overlap";
-      kind: "shared_editions";
-      editions: string[];
-      priority: number;
-    }
-  | {
-      type: "frequent_same_stage";
-      kind: "repeat_stage";
-      stage: RelationStageKey | null;
-      count: number;
-      priority: number;
-    };
-
-export type RelationSummary = {
-  directMatchupCount: number;
-  teammateOverlapYears: number | null;
-  sameStageMeetCount: number;
+export type PlayerRelationContext = {
+  sharedTeamStages: RelationStageKey[];
+  sharedHometown: boolean;
+  sharedHighSchool: boolean;
+  sharedUniversity: boolean;
 };
 
 export type PlayerRelationEntry = {
   relatedPersonId: string;
-  relationScore: number;
-  reasons: RelationReason[];
-  summary: RelationSummary;
-  lastRelatedAt: string | null;
+  matchupCount: number;
+  latestMatchAt: string | null;
+  latestCompetitionEditionId: string | null;
+  latestCompetitionName: string | null;
+  stageCount: number;
+  hasHeadToHeadDetail: boolean;
+  context: PlayerRelationContext;
 };
 
 export type PlayerRelationCachePayload = {
@@ -75,8 +31,10 @@ export type DirectMatchupSourceItem = {
   raceName: string;
   leg: number | null;
   startsAt: Date | null;
+  competitionEditionId: string | null;
   competitionType: CompetitionType | null;
   competitionName: string;
+  discipline: EventDiscipline;
 };
 
 export type DirectMatchupAggregate = {
@@ -87,15 +45,79 @@ export type DirectMatchupAggregate = {
   races: DirectMatchupSourceItem[];
 };
 
-export type TeammateAggregate = {
+export type PlayerRelationContextAggregate = {
   relatedPersonId: string;
-  overlapYears: number;
-  sharedEditionLabels: string[];
-  organizationTypes: Set<OrganizationType>;
+  sharedTeamStages: Set<RelationStageKey>;
+  sharedHometown: boolean;
+  sharedHighSchool: boolean;
+  sharedUniversity: boolean;
 };
 
-export type FrequentStageAggregate = {
-  relatedPersonId: string;
-  count: number;
-  stages: Set<RelationStageKey>;
+export type MembershipWindow = {
+  organizationId: string;
+  organizationType: OrganizationType;
+  startDate: Date | null;
+  endDate: Date | null;
+  startYear: number | null;
+  endYear: number | null;
+};
+
+export type HeadToHeadComparisonStatus = "left_ahead" | "right_ahead" | "tie" | "not_comparable";
+
+export type HeadToHeadSummary = {
+  matchupCount: number;
+  leftAheadCount: number;
+  rightAheadCount: number;
+  tieCount: number;
+  comparableCount: number;
+  ekidenMatchupCount: number;
+  firstMatchAt: string | null;
+  latestMatchAt: string | null;
+  stageCounts: {
+    highSchool: number;
+    university: number;
+    corporateTeam: number;
+  };
+};
+
+export type HeadToHeadMatch = {
+  raceId: string;
+  raceResultLeftId: string;
+  raceResultRightId: string;
+  raceDate: string | null;
+  competitionEditionId: string | null;
+  competitionName: string;
+  raceName: string;
+  stage: RelationStageKey | null;
+  discipline: EventDiscipline | null;
+  isEkiden: boolean;
+  left: {
+    personId: string;
+    rank: number | null;
+    mark: string | null;
+    markMillis: number | null;
+    notes: string | null;
+  };
+  right: {
+    personId: string;
+    rank: number | null;
+    mark: string | null;
+    markMillis: number | null;
+    notes: string | null;
+  };
+  comparison: {
+    status: HeadToHeadComparisonStatus;
+    rankDiff: number | null;
+    markDiffMillis: number | null;
+  };
+};
+
+export type PlayerHeadToHeadPayload = {
+  pairKey: string;
+  leftPersonId: string;
+  rightPersonId: string;
+  generatedAt: string;
+  summary: HeadToHeadSummary;
+  context: PlayerRelationContext;
+  matches: HeadToHeadMatch[];
 };

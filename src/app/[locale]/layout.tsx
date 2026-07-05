@@ -3,15 +3,16 @@ import { isLocale } from "@/lib/i18n";
 
 type LocaleLayoutProps = {
   children: React.ReactNode;
-  params: Promise<{
-    locale: string;
-  }>;
+  params: Promise<unknown>;
 };
 
 export async function generateMetadata({ params }: Omit<LocaleLayoutProps, "children">): Promise<Metadata> {
-  const { locale } = await params;
+  const resolvedParams = await params;
+  const locale = typeof resolvedParams === "object" && resolvedParams !== null && "locale" in resolvedParams
+    ? (resolvedParams as { locale?: string }).locale
+    : undefined;
 
-  if (!isLocale(locale) || locale === "ja") {
+  if (typeof locale !== "string" || !isLocale(locale) || locale === "ja") {
     return {};
   }
 

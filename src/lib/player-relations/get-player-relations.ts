@@ -25,7 +25,12 @@ function isRelationPayload(value: unknown): value is PlayerRelationCachePayload 
   }
 
   return payload.topRelations.every((entry) =>
-    Array.isArray(entry.reasons) && entry.reasons.every((reason) => typeof reason === "object" && reason !== null && "kind" in reason),
+    typeof entry.relatedPersonId === "string" &&
+    typeof entry.matchupCount === "number" &&
+    typeof entry.stageCount === "number" &&
+    typeof entry.hasHeadToHeadDetail === "boolean" &&
+    typeof entry.context === "object" &&
+    entry.context !== null,
   );
 }
 

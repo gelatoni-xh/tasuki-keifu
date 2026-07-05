@@ -21,7 +21,7 @@ import {
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { buildPageMetadata } from "@/lib/site";
-import type { PlayerRelationEntry, RelationReason, RelationStageKey } from "@/lib/player-relations/types";
+import type { PlayerRelationEntry, RelationStageKey } from "@/lib/player-relations/types";
 
 type PlayerDetailPageProps = {
   params: Promise<{
@@ -253,55 +253,37 @@ function OrganizationInlineLink({
   );
 }
 
-function getRelationStageLabel(dictionary: ReturnType<typeof getDictionary>, stage: RelationStageKey | null) {
-  if (!stage) {
-    return dictionary.players.relationshipTags.stageGeneric;
-  }
-
-  return dictionary.players.relationshipTags.stages[stage];
+function getRelationStageLabel(dictionary: ReturnType<typeof getDictionary>, stage: RelationStageKey) {
+  return dictionary.players.headToHeadStageLabels[stage];
 }
 
-function formatRelationReason(
+function formatRelationContextTags(
   dictionary: ReturnType<typeof getDictionary>,
-  reason: RelationReason,
+  entry: PlayerRelationEntry,
 ) {
-  switch (reason.type) {
-    case "direct_matchup":
-      switch (reason.kind) {
-        case "ekiden":
-          return interpolate(dictionary.players.relationshipTags.directEkiden, { count: reason.count });
-        case "cross_stage": {
-          const stageNames = reason.stages.map((stage) => getRelationStageLabel(dictionary, stage));
-          return interpolate(dictionary.players.relationshipTags.directCrossStage, {
-            count: reason.count,
-            start: stageNames[0] ?? dictionary.players.relationshipTags.stageGeneric,
-            end: stageNames[stageNames.length - 1] ?? dictionary.players.relationshipTags.stageGeneric,
-          });
-        }
-        case "same_stage":
-          return interpolate(dictionary.players.relationshipTags.directSameStage, { count: reason.count });
-        case "latest_competition":
-          return interpolate(dictionary.players.relationshipTags.directLatestCompetition, {
-            competition: reason.competitionName,
-          });
-      }
-      break;
-    case "teammate_overlap":
-      switch (reason.kind) {
-        case "overlap_years":
-          return interpolate(dictionary.players.relationshipTags.teammateOverlapYears, { years: reason.years });
-        case "shared_editions":
-          return interpolate(dictionary.players.relationshipTags.teammateSharedEditions, {
-            editions: reason.editions.join(" / "),
-          });
-      }
-      break;
-    case "frequent_same_stage":
-      return interpolate(dictionary.players.relationshipTags.frequentSameStage, {
-        stage: getRelationStageLabel(dictionary, reason.stage),
-        count: reason.count,
-      });
+  const tags: string[] = [];
+
+  for (const stage of entry.context.sharedTeamStages) {
+    tags.push(dictionary.players.sharedTeamStages[stage]);
   }
+
+  if (entry.context.sharedHometown) {
+    tags.push(dictionary.players.sharedHometown);
+  }
+
+  if (entry.context.sharedHighSchool) {
+    tags.push(dictionary.players.sharedHighSchool);
+  }
+
+  if (entry.context.sharedUniversity) {
+    tags.push(dictionary.players.sharedUniversity);
+  }
+
+  if (entry.stageCount >= 2) {
+    tags.push(interpolate(dictionary.players.crossStageMatchup, { count: entry.stageCount }));
+  }
+
+  return tags;
 }
 
 export default async function PlayerDetailPage({ params }: PlayerDetailPageProps) {
@@ -430,7 +412,10 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
     return [{
         ...related,
-        relationshipTags: entry.reasons.map((reason: RelationReason) => formatRelationReason(dictionary, reason)),
+        matchupCountLabel: interpolate(dictionary.players.matchupCount, { count: entry.matchupCount }),
+        relationshipTags: formatRelationContextTags(dictionary, entry),
+        canViewHeadToHead: entry.hasHeadToHeadDetail,
+        latestCompetitionName: entry.latestCompetitionName,
     }];
   });
   const hasPersonalBests = player.personalBests.length > 0;
@@ -801,20 +786,50 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
 
           <section className="border border-[#ded8cc] bg-white p-5">
             <h2 className="text-lg font-semibold">{dictionary.players.relatedPlayers}</h2>
+            <p className="mt-1 text-sm text-[#59615c]">{dictionary.players.relatedPlayersSubtitle}</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {relatedPlayersWithTags.length > 0 ? (
                 relatedPlayersWithTags.map((related) => (
-                  <Link
+                  <div
                     className="border border-[#e7e1d8] p-3 transition hover:border-[#8a1f2d]"
-                    data-analytics-event="player_to_related_player_click"
-                    data-analytics-link-type="related_player"
-                    href={`/${locale}/players/${related.slug}`}
                     key={related.id}
                   >
-                    <p className="font-semibold">{related.displayNameJa}</p>
-                    <p className="mt-1 text-sm text-[#59615c]">
-                      {related.memberships.map((membership: (typeof related.memberships)[number]) => membership.organization.nameJa).join(" / ")}
-                    </p>
+                    <div className="flex items-start justify-between gap-4">
+                      <Link
+                        className="group block min-w-0 flex-1 rounded-sm border border-[#e7e1d8] bg-[#fcfaf5] px-3 py-2 transition hover:border-[#d1b7a4] hover:bg-[#f7f1e7]"
+                        data-analytics-event="player_to_related_player_click"
+                        data-analytics-link-type="related_player"
+                        href={`/${locale}/players/${related.slug}`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="truncate text-lg font-semibold text-[#1f2421] transition group-hover:text-[#8a1f2d]">
+                            {related.displayNameJa}
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            className="shrink-0 text-[#8a1f2d] transition group-hover:translate-x-0.5"
+                          >
+                            →
+                          </span>
+                        </span>
+                        <span className="mt-1 block text-sm text-[#59615c]">
+                          {related.memberships.map((membership: (typeof related.memberships)[number]) => membership.organization.nameJa).join(" / ")}
+                        </span>
+                      </Link>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium text-[#8a1f2d]">{related.matchupCountLabel}</p>
+                      {related.canViewHeadToHead ? (
+                        <Link
+                          className="inline-flex shrink-0 items-center border border-[#8a1f2d] px-3 py-1 text-sm font-medium text-[#8a1f2d] transition hover:bg-[#8a1f2d] hover:text-white"
+                          data-analytics-event="player_to_head_to_head_click"
+                          data-analytics-link-type="head_to_head"
+                          href={`/${locale}/players/${player.slug}/head-to-head/${related.slug}`}
+                        >
+                          {dictionary.players.viewHeadToHead}
+                        </Link>
+                      ) : null}
+                    </div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {related.relationshipTags.map((tag: string) => (
                         <span className="border border-[#ded8cc] px-2 py-1 text-xs text-[#8a1f2d]" key={tag}>
@@ -822,7 +837,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                         </span>
                       ))}
                     </div>
-                  </Link>
+                  </div>
                 ))
               ) : (
                 <p className="text-sm text-[#59615c]">{dictionary.players.relatedPlayersEmpty}</p>

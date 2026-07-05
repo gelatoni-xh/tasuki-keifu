@@ -1,18 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { getStageLabel } from "@/lib/player-relations/relation-helpers";
 import type { DirectMatchupAggregate, RelationStageKey } from "@/lib/player-relations/types";
-
-function getStageLabel(organizationType: string | null | undefined): RelationStageKey | null {
-  switch (organizationType) {
-    case "high_school":
-      return "high_school";
-    case "university":
-      return "university";
-    case "corporate_team":
-      return "corporate_team";
-    default:
-      return null;
-  }
-}
 
 export async function buildDirectMatchups(personId: string) {
   const playerResults = await prisma.raceResult.findMany({
@@ -52,7 +40,9 @@ export async function buildDirectMatchups(personId: string) {
       },
       race: {
         select: {
+          competitionEditionId: true,
           name: true,
+          discipline: true,
           leg: true,
           startsAt: true,
           competitionEdition: {
@@ -98,8 +88,10 @@ export async function buildDirectMatchups(personId: string) {
       raceName: result.race.name,
       leg: result.race.leg,
       startsAt: result.race.startsAt,
+      competitionEditionId: result.race.competitionEditionId,
       competitionType: result.race.competitionEdition.competition.type,
       competitionName: result.race.competitionEdition.officialName,
+      discipline: result.race.discipline,
     });
 
     aggregates.set(result.personId, current);
