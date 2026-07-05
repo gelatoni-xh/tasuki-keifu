@@ -122,7 +122,6 @@
     "headToHeadOverview": "Overview",
     "headToHeadContext": "Shared context",
     "headToHeadHistory": "Matchup history",
-    "headToHeadStageDistribution": "Stage distribution",
     "headToHeadNoData": "No head-to-head details are available yet.",
     "headToHeadLeftAhead": "{name} finished ahead",
     "headToHeadRightAhead": "{name} finished ahead",

@@ -289,23 +289,6 @@ export default async function HeadToHeadPage({ params }: HeadToHeadPageProps) {
             )}
           </section>
 
-          <section className="border border-[#ded8cc] bg-white p-5">
-            <h2 className="text-lg font-semibold">{dictionary.players.headToHeadStageDistribution}</h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <div className="border border-[#f0ebe1] p-4">
-                <p className="text-sm text-[#59615c]">{dictionary.players.headToHeadStageLabels.high_school}</p>
-                <p className="mt-2 text-2xl font-semibold">{payload.summary.stageCounts.highSchool}</p>
-              </div>
-              <div className="border border-[#f0ebe1] p-4">
-                <p className="text-sm text-[#59615c]">{dictionary.players.headToHeadStageLabels.university}</p>
-                <p className="mt-2 text-2xl font-semibold">{payload.summary.stageCounts.university}</p>
-              </div>
-              <div className="border border-[#f0ebe1] p-4">
-                <p className="text-sm text-[#59615c]">{dictionary.players.headToHeadStageLabels.corporate_team}</p>
-                <p className="mt-2 text-2xl font-semibold">{payload.summary.stageCounts.corporateTeam}</p>
-              </div>
-            </div>
-          </section>
         </div>
       </main>
     </div>
