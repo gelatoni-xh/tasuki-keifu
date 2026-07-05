@@ -148,6 +148,7 @@
     "listDescription": "収録済みの大会届次と結果を確認できます。",
     "resultCount": "{count}件",
     "searchPlaceholder": "大会名・届次で検索",
+    "competitionFilter": "主赛事",
     "backToList": "大会一覧へ",
     "edition": "届次",
     "date": "日付",

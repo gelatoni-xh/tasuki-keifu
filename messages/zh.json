@@ -148,6 +148,7 @@
     "listDescription": "查看已收录的赛事届次和比赛结果。",
     "resultCount": "{count}项",
     "searchPlaceholder": "按赛事名、届次搜索",
+    "competitionFilter": "主赛事",
     "backToList": "返回赛事一览",
     "edition": "届次",
     "date": "日期",

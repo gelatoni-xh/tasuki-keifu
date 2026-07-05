@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { DataStatus, OrganizationType, PersonType, Prisma } from "@prisma/client";
+import type { DataStatus, OrganizationType, Prisma } from "@prisma/client";
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CascadingOrganizationFilters } from "@/components/cascading-organization-filters";
@@ -21,7 +21,6 @@ type PlayersPageProps = {
     organizationType?: string;
     organization?: string;
     status?: string;
-    type?: string;
     hometown?: string;
     page?: string;
   }>;
@@ -47,7 +46,6 @@ export async function generateMetadata({ params }: Pick<PlayersPageProps, "param
 }
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
-const allowedPersonTypes: PersonType[] = ["athlete", "coach", "staff"];
 const pageSize = 10;
 const maxPage = 100;
 const allowedOrganizationTypes: OrganizationType[] = [
@@ -100,40 +98,6 @@ function getPaginationItems(currentPage: number, totalPages: number) {
   return items;
 }
 
-function buildPlayerFilterSummary(params: {
-  dictionary: ReturnType<typeof getDictionary>;
-  hometown: string;
-  organizationLabel: string;
-  organizationTypeLabel: string;
-  personTypeLabel: string;
-  query: string;
-}) {
-  const { dictionary, hometown, organizationLabel, organizationTypeLabel, personTypeLabel, query } = params;
-  const summary: Array<{ label: string; value: string }> = [];
-
-  if (query) {
-    summary.push({ label: dictionary.common.search, value: query });
-  }
-
-  if (organizationTypeLabel) {
-    summary.push({ label: dictionary.players.organizationTypeFilter, value: organizationTypeLabel });
-  }
-
-  if (organizationLabel) {
-    summary.push({ label: dictionary.players.organizationFilter, value: organizationLabel });
-  }
-
-  if (personTypeLabel) {
-    summary.push({ label: dictionary.players.personTypeFilter, value: personTypeLabel });
-  }
-
-  if (hometown) {
-    summary.push({ label: dictionary.players.hometownFilter, value: hometown });
-  }
-
-  return summary;
-}
-
 export default async function PlayersPage({ params, searchParams }: PlayersPageProps) {
   const { locale: localeParam } = await params;
   const queryParams = await searchParams;
@@ -164,19 +128,15 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   const status = allowedStatuses.includes(queryParams.status as DataStatus)
     ? (queryParams.status as DataStatus)
     : "";
-  const personType = allowedPersonTypes.includes(queryParams.type as PersonType)
-    ? (queryParams.type as PersonType)
-    : "";
   const hometown = isJapanPrefecture(queryParams.hometown) ? queryParams.hometown : "";
   const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
-  const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status || personType || hometown);
+  const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status || hometown);
   const pagePathWithQuery = `/players${hasActiveFilters ? `?${new URLSearchParams(
     Object.entries({
       q: query,
       organizationType,
       organization: organizationSlug,
       status,
-      type: personType,
       hometown,
     }).filter(([, value]) => value),
   ).toString()}` : ""}`;
@@ -192,7 +152,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   });
 
   const playerWhere: Prisma.PersonWhereInput = {
-    ...(personType ? { type: personType } : {}),
     ...(status ? { status } : {}),
     ...(hometown ? { hometown } : {}),
     ...(query
@@ -258,18 +217,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     organizationType,
     organization: organizationSlug,
     status,
-    type: personType,
     hometown,
   };
   const paginationItems = getPaginationItems(currentPage, totalPages);
-  const activeFilterSummary = buildPlayerFilterSummary({
-    dictionary,
-    hometown,
-    organizationLabel: selectedOrganization?.shortName ?? selectedOrganization?.nameJa ?? "",
-    organizationTypeLabel: organizationType ? formatOrganizationType(organizationType, locale) : "",
-    personTypeLabel: personType ? formatPersonType(personType, locale) : "",
-    query,
-  });
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -293,7 +243,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
             data-analytics-event={hasActiveFilters ? "players_filter_apply" : "players_search_submit"}
             data-analytics-form="players_search"
           >
-            <div className="grid gap-3 lg:grid-cols-[1.15fr_0.9fr_0.75fr_0.7fr_0.85fr_auto_auto]">
+            <div className="grid gap-3 lg:grid-cols-[1.4fr_0.82fr_1.05fr_0.9fr_auto_auto]">
               <label className="filter-field">
                 <span className="filter-label">{dictionary.common.search}</span>
                 <div className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
@@ -322,22 +272,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                   label: formatOrganizationType(type, locale),
                   value: type,
                 }))}
-                organizationSearchPlaceholder={dictionary.common.organizationFilterPlaceholder}
                 selectedOrganization={organizationSlug}
                 selectedOrganizationType={organizationType}
               />
-
-              <label className="filter-field">
-                <span className="filter-label">{dictionary.players.personTypeFilter}</span>
-                <select className="filter-input" defaultValue={personType} name="type">
-                  <option value="">{dictionary.common.all}</option>
-                  {allowedPersonTypes.map((personTypeOption) => (
-                    <option key={personTypeOption} value={personTypeOption}>
-                      {formatPersonType(personTypeOption, locale)}
-                    </option>
-                  ))}
-                </select>
-              </label>
 
               <label className="filter-field">
                 <span className="filter-label">{dictionary.players.hometownFilter}</span>
@@ -368,29 +305,6 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               </Link>
             </div>
           </form>
-
-          {activeFilterSummary.length > 0 ? (
-            <section className="flex flex-col gap-3 rounded-sm border border-[#e2dbcf] bg-[#f8f4ec] px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="space-y-3">
-                <p className="text-sm font-semibold text-[#2d342f]">{dictionary.common.currentFilters}</p>
-                <div className="flex flex-wrap gap-2">
-                  {activeFilterSummary.map((item) => (
-                    <span className="filter-pill" key={`${item.label}-${item.value}`}>
-                      <strong>{item.label}</strong>
-                      <span>{item.value}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <Link
-                className="inline-flex items-center justify-center gap-2 border border-[#cfc7b8] bg-white px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
-                href={`/${locale}/players`}
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-                {dictionary.common.reset}
-              </Link>
-            </section>
-          ) : null}
 
           <section className="overflow-hidden border border-[#ded8cc] bg-white">
             <div className="hidden grid-cols-[1.1fr_1fr_1fr_1.2fr] border-b border-[#ded8cc] bg-[#f2eee7] px-4 py-3 text-sm font-semibold text-[#59615c] md:grid">

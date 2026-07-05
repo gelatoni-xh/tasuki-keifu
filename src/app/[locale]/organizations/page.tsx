@@ -127,7 +127,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
   const normalizedQuery = normalizeSearchText(query);
   const organizationType = allowedOrganizationTypes.includes(queryParams.type as OrganizationType)
     ? (queryParams.type as OrganizationType)
-    : "university";
+    : "";
   const status = allowedStatuses.includes(queryParams.status as DataStatus)
     ? (queryParams.status as DataStatus)
     : "";
@@ -135,7 +135,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
   const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
   const organizations = await prisma.organization.findMany({
     where: {
-      type: organizationType,
+      ...(organizationType ? { type: organizationType } : {}),
       ...(status ? { status } : {}),
       ...(prefecture ? { prefecture } : {}),
     },
@@ -189,20 +189,6 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
   const paginatedOrganizations = filteredOrganizations.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginationItems = getPaginationItems(currentPage, totalPages);
-  const activeFilterSummary: Array<{ label: string; value: string }> = [
-    {
-      label: dictionary.organizations.type,
-      value: formatOrganizationType(organizationType, locale),
-    },
-  ];
-
-  if (query) {
-    activeFilterSummary.unshift({ label: dictionary.common.search, value: query });
-  }
-
-  if (prefecture) {
-    activeFilterSummary.push({ label: dictionary.organizations.prefectureFilter, value: prefecture });
-  }
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
@@ -241,6 +227,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
               <label className="filter-field">
                 <span className="filter-label">{dictionary.organizations.type}</span>
                 <select className="filter-input" defaultValue={organizationType} name="type">
+                  <option value="">{dictionary.common.all}</option>
                   {allowedOrganizationTypes.map((type) => (
                     <option key={type} value={type}>
                       {formatOrganizationType(type, locale)}
@@ -271,34 +258,13 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
 
               <Link
                 className="inline-flex items-center justify-center gap-2 self-end border border-[#cfc7b8] px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
-                href={`/${locale}/organizations?type=university`}
+                href={`/${locale}/organizations`}
               >
                 <X className="h-4 w-4" aria-hidden="true" />
                 {dictionary.common.reset}
               </Link>
             </div>
           </form>
-
-          <section className="flex flex-col gap-3 rounded-sm border border-[#e2dbcf] bg-[#f8f4ec] px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-3">
-              <p className="text-sm font-semibold text-[#2d342f]">{dictionary.common.currentFilters}</p>
-              <div className="flex flex-wrap gap-2">
-                {activeFilterSummary.map((item) => (
-                  <span className="filter-pill" key={`${item.label}-${item.value}`}>
-                    <strong>{item.label}</strong>
-                    <span>{item.value}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-            <Link
-              className="inline-flex items-center justify-center gap-2 border border-[#cfc7b8] bg-white px-4 py-2 text-sm font-medium text-[#59615c] transition hover:text-[#8a1f2d]"
-              href={`/${locale}/organizations?type=university`}
-            >
-              <X className="h-4 w-4" aria-hidden="true" />
-              {dictionary.common.reset}
-            </Link>
-          </section>
 
           <div className="divide-y divide-[#e7e1d8] border-y border-[#ded8cc] bg-white">
             {paginatedOrganizations.length > 0 ? paginatedOrganizations.map((organization) => (
@@ -332,7 +298,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
                 <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <Link
                     className="inline-flex items-center justify-center gap-2 border border-[#8a1f2d] bg-[#8a1f2d] px-4 py-2 text-sm font-medium text-white"
-                    href={`/${locale}/organizations?type=university`}
+                    href={`/${locale}/organizations`}
                   >
                     {dictionary.common.reset}
                   </Link>

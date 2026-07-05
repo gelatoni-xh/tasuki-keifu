@@ -15,6 +15,7 @@ type CompetitionsPageProps = {
   }>;
   searchParams: Promise<{
     q?: string;
+    competition?: string;
     page?: string;
   }>;
 };
@@ -109,6 +110,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
   const locale = localeParam;
   const dictionary = getDictionary(locale);
   const query = queryParams.q?.trim() ?? "";
+  const competitionSlug = queryParams.competition?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
   const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
   const editions = await prisma.competitionEdition.findMany({
@@ -131,17 +133,26 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
     },
     orderBy: [{ year: "desc" }, { startsOn: "desc" }, { officialName: "asc" }],
   });
-  const filteredEditions = normalizedQuery
-    ? editions.filter((edition) =>
-        [
-          edition.officialName,
-          edition.shortName,
-          edition.competition.nameJa,
-          edition.competition.nameZh,
-          edition.competition.nameEn,
-        ].some((value) => includesNormalized(value, normalizedQuery)),
-      )
-    : editions;
+  const competitionOptions = Array.from(
+    new Map(
+      editions
+        .map((edition) => edition.competition)
+        .sort((left, right) => left.nameJa.localeCompare(right.nameJa, "ja"))
+        .map((competition) => [competition.slug, competition]),
+    ).values(),
+  );
+  const filteredEditions = editions.filter((edition) => {
+    const matchesCompetition = !competitionSlug || edition.competition.slug === competitionSlug;
+    const matchesQuery = !normalizedQuery || [
+      edition.officialName,
+      edition.shortName,
+      edition.competition.nameJa,
+      edition.competition.nameZh,
+      edition.competition.nameEn,
+    ].some((value) => includesNormalized(value, normalizedQuery));
+
+    return matchesCompetition && matchesQuery;
+  });
   const totalPages = Math.max(1, Math.ceil(filteredEditions.length / pageSize));
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
   const paginatedEditions = filteredEditions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -149,7 +160,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
-      <SiteHeader locale={locale} path={buildCompetitionsPath(locale, { q: query })} />
+      <SiteHeader locale={locale} path={buildCompetitionsPath(locale, { q: query, competition: competitionSlug })} />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">
           <header className="flex flex-col justify-between gap-4 border-b border-[#ded8cc] pb-6 sm:flex-row sm:items-end">
@@ -163,7 +174,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
           </header>
 
           <form action={`/${locale}/competitions`} className="border border-[#ded8cc] bg-white p-4">
-            <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+            <div className="grid gap-3 lg:grid-cols-[1fr_0.85fr_auto_auto]">
               <label className="filter-field">
                 <span className="filter-label">{dictionary.common.search}</span>
                 <div className="flex items-center gap-2 border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2">
@@ -176,6 +187,18 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
                     type="search"
                   />
                 </div>
+              </label>
+
+              <label className="filter-field">
+                <span className="filter-label">{dictionary.competitions.competitionFilter}</span>
+                <select className="filter-input" defaultValue={competitionSlug} name="competition">
+                  <option value="">{dictionary.common.all}</option>
+                  {competitionOptions.map((competition) => (
+                    <option key={competition.id} value={competition.slug}>
+                      {competition.nameJa}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <button
@@ -251,7 +274,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
                       ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
                       : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
                   }`}
-                  href={buildCompetitionsPath(locale, { q: query, page: currentPage - 1 })}
+                  href={buildCompetitionsPath(locale, { q: query, competition: competitionSlug, page: currentPage - 1 })}
                 >
                   <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                   {dictionary.competitions.previousPage}
@@ -270,7 +293,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
                             ? "border-[#8a1f2d] bg-[#8a1f2d] text-white"
                             : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
                         }`}
-                        href={buildCompetitionsPath(locale, { q: query, page: item })}
+                        href={buildCompetitionsPath(locale, { q: query, competition: competitionSlug, page: item })}
                         key={item}
                       >
                         {item}
@@ -285,7 +308,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
                       ? "pointer-events-none border-[#e7e1d8] text-[#b8b0a5]"
                       : "border-[#cfc7b8] text-[#8a1f2d] hover:border-[#8a1f2d]"
                   }`}
-                  href={buildCompetitionsPath(locale, { q: query, page: currentPage + 1 })}
+                  href={buildCompetitionsPath(locale, { q: query, competition: competitionSlug, page: currentPage + 1 })}
                 >
                   {dictionary.competitions.nextPage}
                   <ChevronRight className="h-4 w-4" aria-hidden="true" />

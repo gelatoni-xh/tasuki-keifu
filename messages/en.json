@@ -148,6 +148,7 @@
     "listDescription": "Browse recorded competition editions and results.",
     "resultCount": "{count} editions",
     "searchPlaceholder": "Search by competition name or edition",
+    "competitionFilter": "Series",
     "backToList": "Back to competitions",
     "edition": "Edition",
     "date": "Date",
