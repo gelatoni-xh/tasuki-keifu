@@ -5,6 +5,9 @@ export const publicCompetitionTypes: CompetitionType[] = [
   "high_school_ekiden",
   "corporate_ekiden",
   "mixed_ekiden",
+  "track_meet",
+  "road_race",
+  "marathon",
 ];
 
 export function isPublicCompetitionType(type: CompetitionType | null | undefined) {
