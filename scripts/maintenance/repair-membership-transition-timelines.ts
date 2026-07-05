@@ -303,20 +303,19 @@ function buildTimelinePatches(rows: MembershipRow[]) {
         }
       }
 
-      if (universityEnd) {
+      if (universityEnd && corporateTeams.length === 1) {
         const inferredCorporateStart = deriveCorporateStartFromUniversityEnd(universityEnd);
 
-        for (const corporateTeam of corporateTeams) {
-          const patch = buildPatchIfCompatible({
-            membership: corporateTeam,
-            inferred: inferredCorporateStart,
-            reasonNote: `Inferred corporate team start from known university end for ${corporateTeam.person.displayNameJa}`,
-            rule: "corp_after_university",
-          });
+        const [corporateTeam] = corporateTeams;
+        const patch = buildPatchIfCompatible({
+          membership: corporateTeam,
+          inferred: inferredCorporateStart,
+          reasonNote: `Inferred corporate team start from known university end for ${corporateTeam.person.displayNameJa}`,
+          rule: "corp_after_university",
+        });
 
-          if (patch) {
-            patches.push(patch);
-          }
+        if (patch) {
+          patches.push(patch);
         }
       }
     }

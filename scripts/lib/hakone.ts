@@ -115,6 +115,10 @@ export function extractNotesFromBlock(block: string) {
 }
 
 export function buildHakonePbNotes(edition: number) {
+  if (edition === 96) {
+    return `第${edition}回箱根駅伝 NTV ページに公認最高タイムの掲載がないため、PB は未導入。`;
+  }
+
   return `第${edition}回箱根駅伝 NTV ページの公認最高タイム摘要。PB の正式確認は後続タスクで再確認。`;
 }
 
