@@ -64,6 +64,19 @@ function buildCompetitionKeywordVariants(edition: {
   return Array.from(new Set(variants.filter(Boolean)));
 }
 
+function formatCompetitionEditionDisplayName(edition: {
+  competition: { nameJa: string };
+  officialName: string;
+  shortName: string | null;
+  editionNumber: number | null;
+}) {
+  if (edition.editionNumber !== null) {
+    return `第${edition.editionNumber}回 ${edition.competition.nameJa}`;
+  }
+
+  return edition.shortName ?? edition.officialName;
+}
+
 export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params;
 
@@ -105,7 +118,8 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
   const teamResultCount = edition.teamCompetitionResults?.length ?? 0;
   const seoTier = getCompetitionSeoTier({ raceCount, resultCount, teamResultCount });
   const keywordVariants = buildCompetitionKeywordVariants(edition);
-  const title = `${edition.shortName ?? edition.officialName}の結果・出場選手`;
+  const displayName = formatCompetitionEditionDisplayName(edition);
+  const title = `${displayName}の結果・出場選手`;
   const description = [
     `${edition.competition.nameJa}の届次ページです。`,
     `${edition.year}年開催の${edition.competition.nameJa}の結果ページで、${edition.competition.nameJa} ${edition.year}の記録も確認できます。`,
@@ -205,6 +219,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   }
 
   const editionSlug = edition.slug;
+  const displayName = formatCompetitionEditionDisplayName(edition);
 
   const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
   const teamResultCount = await getCachedValue(`competition:detail:${edition.id}:team-result-count:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
@@ -234,11 +249,12 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     resultCount,
     teamResultCount,
   });
+  const isEkidenCompetition = edition.competition.type?.includes("ekiden") ?? false;
   const hasEkidenTeamResults = teamResultCount > 0;
   const maxSnapshotLeg = latestSnapshot?.leg ?? 0;
   const hasRaceUnits = edition.races.length > 0;
   const availableTabs = [
-    { key: "overview", label: dictionary.competitions.tabOverview, enabled: true },
+    { key: "overview", label: dictionary.competitions.tabOverview, enabled: isEkidenCompetition },
     { key: "team-results", label: dictionary.competitions.tabTeamResults, enabled: hasEkidenTeamResults },
     { key: "snapshots", label: dictionary.competitions.tabSnapshots, enabled: maxSnapshotLeg > 0 },
     { key: "race-units", label: dictionary.competitions.tabRaceUnits, enabled: hasRaceUnits },
@@ -251,8 +267,8 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     activeTab === "race-units"
       ? edition.races.find((race) => race.slug === queryParams.raceUnit) ?? edition.races[0] ?? null
       : null;
-  const needsTeamResults = activeTab === "overview" || activeTab === "team-results" || activeTab === "snapshots";
-  const needsSnapshots = activeTab === "overview" || activeTab === "snapshots";
+  const needsTeamResults = (isEkidenCompetition && activeTab === "overview") || activeTab === "team-results" || activeTab === "snapshots";
+  const needsSnapshots = (isEkidenCompetition && activeTab === "overview") || activeTab === "snapshots";
   const teamResults = needsTeamResults
     ? await getCachedValue(`competition:detail:${edition.id}:team-results:${needsSnapshots ? "with-snapshots" : "summary"}:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
         prisma.teamCompetitionResult.findMany({
@@ -457,7 +473,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
             </div>
             <div className="mt-4 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
               <div>
-                <h1 className="text-4xl font-semibold">{edition.shortName ?? edition.officialName}</h1>
+                <h1 className="text-4xl font-semibold">{displayName}</h1>
                 <p className="mt-3 text-sm text-[#59615c]">
                   {formatDate(edition.startsOn) || dictionary.common.emptyDash}
                   {edition.endsOn ? ` - ${formatDate(edition.endsOn)}` : ""}

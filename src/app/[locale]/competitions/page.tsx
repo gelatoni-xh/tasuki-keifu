@@ -41,6 +41,19 @@ export async function generateMetadata({ params }: Pick<CompetitionsPageProps, "
 const pageSize = 10;
 const maxPage = 100;
 
+function formatCompetitionEditionDisplayName(edition: {
+  competition: { nameJa: string };
+  officialName: string;
+  shortName: string | null;
+  editionNumber: number | null;
+}) {
+  if (edition.editionNumber !== null) {
+    return `第${edition.editionNumber}回 ${edition.competition.nameJa}`;
+  }
+
+  return edition.shortName ?? edition.officialName;
+}
+
 function normalizeSearchText(value: string | null | undefined) {
   return (value ?? "").replace(/\s+/g, "").toLocaleLowerCase();
 }
@@ -186,6 +199,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
           <div className="divide-y divide-[#e7e1d8] border-y border-[#ded8cc] bg-white">
             {paginatedEditions.length > 0 ? paginatedEditions.map((edition) => {
               const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
+              const displayName = formatCompetitionEditionDisplayName(edition);
 
               return (
                 <Link
@@ -197,7 +211,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8a1f2d]">
                       {edition.competition.nameJa}
                     </p>
-                    <h2 className="mt-2 text-xl font-semibold">{edition.shortName ?? edition.officialName}</h2>
+                    <h2 className="mt-2 text-xl font-semibold">{displayName}</h2>
                   </div>
                   <div className="text-sm text-[#59615c]">
                     <p className="text-xs font-medium text-[#8b938e]">{dictionary.competitions.date}</p>
