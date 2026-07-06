@@ -26,6 +26,58 @@ type CompetitionEditionPageProps = {
 const COMPETITION_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
 const COMPETITION_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
 const pageLogger = createLogger("competition-detail-page");
+const DISCIPLINE_DISTANCE_ORDER: Record<string, number> = {
+  m800: 800,
+  m1500: 1500,
+  m3000: 3000,
+  m3000sc: 3000,
+  m5000: 5000,
+  m10000: 10000,
+  ten_mile: 16093,
+  half_marathon: 21098,
+  marathon: 42195,
+  ekiden_leg: Number.MAX_SAFE_INTEGER,
+};
+
+function parseHeatOrder(heat: string | null | undefined) {
+  if (!heat) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const match = heat.match(/(\d+)/u);
+  return match ? Number.parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+}
+
+function compareRaceUnits(
+  left: { discipline: string; distanceMeters?: number | null; heat?: string | null; name: string; startsAt?: Date | null },
+  right: { discipline: string; distanceMeters?: number | null; heat?: string | null; name: string; startsAt?: Date | null },
+) {
+  const leftDistance = left.distanceMeters ?? DISCIPLINE_DISTANCE_ORDER[left.discipline] ?? Number.MAX_SAFE_INTEGER;
+  const rightDistance = right.distanceMeters ?? DISCIPLINE_DISTANCE_ORDER[right.discipline] ?? Number.MAX_SAFE_INTEGER;
+  if (leftDistance !== rightDistance) {
+    return leftDistance - rightDistance;
+  }
+
+  const leftIsSc = left.discipline.endsWith("sc");
+  const rightIsSc = right.discipline.endsWith("sc");
+  if (leftIsSc !== rightIsSc) {
+    return leftIsSc ? 1 : -1;
+  }
+
+  const leftHeat = parseHeatOrder(left.heat);
+  const rightHeat = parseHeatOrder(right.heat);
+  if (leftHeat !== rightHeat) {
+    return leftHeat - rightHeat;
+  }
+
+  const leftStart = left.startsAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+  const rightStart = right.startsAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+  if (leftStart !== rightStart) {
+    return leftStart - rightStart;
+  }
+
+  return left.name.localeCompare(right.name, "ja");
+}
 
 function getCompetitionSeoTier({
   raceCount,
@@ -182,7 +234,9 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
             slug: true,
             name: true,
             discipline: true,
+            heat: true,
             leg: true,
+            distanceMeters: true,
             startsAt: true,
             source: true,
             _count: {
@@ -219,9 +273,10 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   }
 
   const editionSlug = edition.slug;
+  const sortedRaces = [...edition.races].sort(compareRaceUnits);
   const displayName = formatCompetitionEditionDisplayName(edition);
 
-  const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
+  const resultCount = sortedRaces.reduce((sum, race) => sum + race._count.raceResults, 0);
   const teamResultCount = await getCachedValue(`competition:detail:${edition.id}:team-result-count:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
     prisma.teamCompetitionResult.count({
       where: {
@@ -252,7 +307,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const isEkidenCompetition = edition.competition.type?.includes("ekiden") ?? false;
   const hasEkidenTeamResults = teamResultCount > 0;
   const maxSnapshotLeg = latestSnapshot?.leg ?? 0;
-  const hasRaceUnits = edition.races.length > 0;
+  const hasRaceUnits = sortedRaces.length > 0;
   const availableTabs = [
     { key: "overview", label: dictionary.competitions.tabOverview, enabled: isEkidenCompetition },
     { key: "team-results", label: dictionary.competitions.tabTeamResults, enabled: hasEkidenTeamResults },
@@ -265,7 +320,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     : availableTabs[0]?.key ?? "overview";
   const selectedRaceUnit =
     activeTab === "race-units"
-      ? edition.races.find((race) => race.slug === queryParams.raceUnit) ?? edition.races[0] ?? null
+      ? sortedRaces.find((race) => race.slug === queryParams.raceUnit) ?? sortedRaces[0] ?? null
       : null;
   const needsTeamResults = (isEkidenCompetition && activeTab === "overview") || activeTab === "team-results" || activeTab === "snapshots";
   const needsSnapshots = (isEkidenCompetition && activeTab === "overview") || activeTab === "snapshots";
@@ -322,7 +377,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
     locale,
     slug,
     tab: activeTab,
-    race_count: edition.races.length,
+    race_count: sortedRaces.length,
     result_count: resultCount,
     team_result_count: teamResultCount,
     snapshot_count: totalTeamSnapshotCount,
@@ -353,7 +408,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
 
   const competitionSummary = [
     `${edition.shortName ?? edition.officialName}は、${edition.competition.nameJa}の届次データページです。`,
-    `${edition.races.length}件の競技単位と${resultCount}件の結果を収録しています。`,
+    `${sortedRaces.length}件の競技単位と${resultCount}件の結果を収録しています。`,
     hasEkidenTeamResults ? `${teamResults.length}チームの成績を掲載しています。` : null,
     leadingOrganizations.length > 0 ? `上位・主要チームとして${leadingOrganizations.join("、")}などを確認できます。` : null,
   ]
@@ -484,7 +539,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
               </div>
               <div className="flex gap-3 text-sm text-[#59615c]">
                 <span className="border border-[#ded8cc] px-3 py-1">
-                  {interpolate(dictionary.competitions.raceCount, { count: edition.races.length })}
+                  {interpolate(dictionary.competitions.raceCount, { count: sortedRaces.length })}
                 </span>
                 <span className="border border-[#ded8cc] px-3 py-1">
                   {dictionary.competitions.resultCountLabel}: {resultCount}
@@ -532,7 +587,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">
                       {dictionary.competitions.raceUnits}
                     </p>
-                    <p className="mt-2 text-3xl font-semibold">{edition.races.length}</p>
+                    <p className="mt-2 text-3xl font-semibold">{sortedRaces.length}</p>
                   </div>
                   <div className="border border-[#e7e1d8] bg-[#fcfaf6] p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#8a1f2d]">
@@ -664,11 +719,11 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
             {activeTab === "race-units" ? (
               <section className="space-y-5">
                 <h2 className="text-xl font-semibold">{dictionary.competitions.raceUnits}</h2>
-                {edition.races.length > 0 ? (
+                {sortedRaces.length > 0 ? (
                   <>
                     <nav className="border border-[#ded8cc] bg-[#f6f1e8] p-3" aria-label={dictionary.competitions.raceUnits}>
                       <div className="flex flex-wrap gap-2">
-                        {edition.races.map((race) => {
+                        {sortedRaces.map((race) => {
                           const isActiveRace = selectedRaceUnit?.id === race.id;
 
                           return (
