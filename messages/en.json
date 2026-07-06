@@ -228,6 +228,7 @@
     "missing": "Missing"
   },
   "discipline": {
+    "m800": "800m",
     "m1500": "1500m",
     "m3000": "3000m",
     "m3000sc": "3000mSC",

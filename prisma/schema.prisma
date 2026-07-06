@@ -77,6 +77,7 @@ enum SourceType {
 
 /// 比赛项目类型
 enum EventDiscipline {
+  m800
   m1500
   m3000
   m3000sc
