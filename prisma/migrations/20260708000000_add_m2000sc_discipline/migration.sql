@@ -1,0 +1,1 @@
+ALTER TYPE "EventDiscipline" ADD VALUE IF NOT EXISTS 'm2000sc';

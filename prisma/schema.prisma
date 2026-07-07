@@ -79,6 +79,7 @@ enum SourceType {
 enum EventDiscipline {
   m800
   m1500
+  m2000sc
   m3000
   m3000sc
   m5000

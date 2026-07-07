@@ -29,6 +29,7 @@ const pageLogger = createLogger("competition-detail-page");
 const DISCIPLINE_DISTANCE_ORDER: Record<string, number> = {
   m800: 800,
   m1500: 1500,
+  m2000sc: 2000,
   m3000: 3000,
   m3000sc: 3000,
   m5000: 5000,
