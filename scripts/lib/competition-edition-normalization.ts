@@ -30,7 +30,7 @@ export function normalizeCompetitionEditionNames(input: NormalizeCompetitionEdit
   const normalizedName = `第${input.editionNumber}回${label}`;
 
   return {
-    officialName: normalizedName,
-    shortName: normalizedName,
+    officialName: input.officialName,
+    shortName: input.shortName ?? normalizedName,
   };
 }
