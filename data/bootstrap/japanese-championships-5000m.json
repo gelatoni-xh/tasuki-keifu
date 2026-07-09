@@ -43,6 +43,14 @@
       "notes": "JAAF公式結果PDF。男子5000m決勝の順位、記録、OP、DNS、DNFを確認できる。PB/SB欄はない。"
     },
     {
+      "id": "source-jch-107-result",
+      "name": "JAAF 第107回日本選手権 リザルトブック",
+      "url": "https://www.jaaf.or.jp/files/upload/202306/04_201132.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式結果PDF。男子800m、男子1500m、男子3000mSCの予選・決勝に関する順位、記録、DNS、DNF、DQ、PB、CR、Q/qを確認できる。"
+    },
+    {
       "id": "source-jch-108-5000m-result",
       "name": "JAAF 第108回日本選手権 全てのリザルト",
       "url": "https://www.jaaf.or.jp/files/upload/202407/01_06270630all.pdf",
@@ -129,7 +137,7 @@
       "officialName": "第107回日本陸上競技選手権大会",
       "shortName": "第107回日本選手権",
       "startsOn": "2023-06-01T00:00:00.000Z",
-      "endsOn": "2023-06-01T00:00:00.000Z",
+      "endsOn": "2023-06-04T00:00:00.000Z",
       "sourceId": "source-jch-107-5000m-result"
     },
     {
@@ -203,6 +211,86 @@
       "distanceMeters": 5000,
       "startsAt": "2023-06-01T19:30:00.000+09:00",
       "sourceId": "source-jch-107-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-800-heat-1",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子800m 予選 1組",
+      "discipline": "m800",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2023-06-03T14:00:00.000+09:00",
+      "sourceId": "source-jch-107-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-800-heat-2",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子800m 予選 2組",
+      "discipline": "m800",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2023-06-03T14:00:00.000+09:00",
+      "sourceId": "source-jch-107-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-800-heat-3",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子800m 予選 3組",
+      "discipline": "m800",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2023-06-03T14:00:00.000+09:00",
+      "sourceId": "source-jch-107-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-800-final",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子800m 決勝",
+      "discipline": "m800",
+      "round": "final",
+      "distanceMeters": 800,
+      "startsAt": "2023-06-04T17:00:00.000+09:00",
+      "sourceId": "source-jch-107-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-1500-heat-1",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子1500m 予選 1組",
+      "discipline": "m1500",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2023-06-01T13:55:00.000+09:00",
+      "sourceId": "source-jch-107-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-1500-heat-2",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子1500m 予選 2組",
+      "discipline": "m1500",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2023-06-01T13:55:00.000+09:00",
+      "sourceId": "source-jch-107-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-1500-final",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子1500m 決勝",
+      "discipline": "m1500",
+      "round": "final",
+      "distanceMeters": 1500,
+      "startsAt": "2023-06-02T19:10:00.000+09:00",
+      "sourceId": "source-jch-107-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-3000sc-final",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "final",
+      "distanceMeters": 3000,
+      "startsAt": "2023-06-02T19:32:00.000+09:00",
+      "sourceId": "source-jch-107-result"
     },
     {
       "slug": "japanese-championships-5000m-108-men-final",
