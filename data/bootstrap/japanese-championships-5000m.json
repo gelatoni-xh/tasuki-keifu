@@ -1,0 +1,274 @@
+{
+  "competition": {
+    "slug": "japanese-championships-5000m",
+    "nameJa": "日本陸上競技選手権大会",
+    "nameRoman": "Japanese Championships",
+    "nameZh": "日本田径锦标赛",
+    "nameEn": "Japanese Championships",
+    "type": "track_meet",
+    "region": "愛知県",
+    "websiteUrl": "https://www.jaaf.or.jp/jch/110/"
+  },
+  "sources": [
+    {
+      "id": "source-jch-104-5000m-result",
+      "name": "JAAF 第104回日本選手権長距離 リザルト",
+      "url": "https://www.jaaf.or.jp/files/competition/document/1535-7.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式結果PDF。男子5000m決勝の順位、記録、NJR、PB、OP、DNS、DNFを確認できる。"
+    },
+    {
+      "id": "source-jch-105-5000m-result",
+      "name": "JAAF 第105回日本選手権 リザルトブック",
+      "url": "https://www.jaaf.or.jp/files/upload/202106/27_192418.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式総合結果PDF。男子5000m決勝の順位、記録、OP、DNF、PBを確認できる。"
+    },
+    {
+      "id": "source-jch-106-5000m-result",
+      "name": "JAAF 第106回日本選手権 リザルトブック",
+      "url": "https://www.jaaf.or.jp/files/upload/202206/12_203027.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式総合結果PDF。男子5000m決勝の順位、記録、OP、PBを確認できる。"
+    },
+    {
+      "id": "source-jch-107-5000m-result",
+      "name": "JAAF 第107回日本選手権 リザルトブック",
+      "url": "https://www.jaaf.or.jp/files/upload/202306/04_201132.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式結果PDF。男子5000m決勝の順位、記録、OP、DNS、DNFを確認できる。PB/SB欄はない。"
+    },
+    {
+      "id": "source-jch-108-5000m-result",
+      "name": "JAAF 第108回日本選手権 全てのリザルト",
+      "url": "https://www.jaaf.or.jp/files/upload/202407/01_06270630all.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式総合結果PDF。男子5000m決勝の順位、記録、OP、DNF、CR/PBコメントを確認できる。"
+    },
+    {
+      "id": "source-jch-109-5000m-result",
+      "name": "JAAF 第109回日本選手権 全てのリザルト",
+      "url": "https://www.jaaf.or.jp/files/upload/202508/25_115843.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式総合結果PDF。男子5000mの予選3組と決勝の順位、記録、DNS、DNF、通過(Q)を確認できる。PB/SB欄はない。"
+    },
+    {
+      "id": "source-jch-110-5000m-result",
+      "name": "JAAF 第110回日本選手権 リザルトブック",
+      "url": "https://www.jaaf.or.jp/files/upload/202606/resultall.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式総合結果PDF。男子5000mの予選3組と決勝の順位、記録、DNS、DNF、通過(Q)を確認できる。PB/SB欄はない。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "japanese-championships-5000m-104",
+      "editionNumber": 104,
+      "year": 2020,
+      "officialName": "第104回日本陸上競技選手権大会長距離",
+      "shortName": "第104回日本選手権長距離",
+      "startsOn": "2020-12-04T00:00:00.000Z",
+      "endsOn": "2020-12-04T00:00:00.000Z",
+      "sourceId": "source-jch-104-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-105",
+      "editionNumber": 105,
+      "year": 2021,
+      "officialName": "第105回日本陸上競技選手権大会",
+      "shortName": "第105回日本選手権",
+      "startsOn": "2021-06-24T00:00:00.000Z",
+      "endsOn": "2021-06-27T00:00:00.000Z",
+      "sourceId": "source-jch-105-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-106",
+      "editionNumber": 106,
+      "year": 2022,
+      "officialName": "第106回日本陸上競技選手権大会",
+      "shortName": "第106回日本選手権",
+      "startsOn": "2022-06-09T00:00:00.000Z",
+      "endsOn": "2022-06-12T00:00:00.000Z",
+      "sourceId": "source-jch-106-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107",
+      "editionNumber": 107,
+      "year": 2023,
+      "officialName": "第107回日本陸上競技選手権大会",
+      "shortName": "第107回日本選手権",
+      "startsOn": "2023-06-01T00:00:00.000Z",
+      "endsOn": "2023-06-01T00:00:00.000Z",
+      "sourceId": "source-jch-107-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-108",
+      "editionNumber": 108,
+      "year": 2024,
+      "officialName": "第108回日本陸上競技選手権大会",
+      "shortName": "第108回日本選手権",
+      "startsOn": "2024-06-29T00:00:00.000Z",
+      "endsOn": "2024-06-29T00:00:00.000Z",
+      "sourceId": "source-jch-108-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109",
+      "editionNumber": 109,
+      "year": 2025,
+      "officialName": "第109回日本陸上競技選手権大会",
+      "shortName": "第109回日本選手権",
+      "startsOn": "2025-07-04T00:00:00.000Z",
+      "endsOn": "2025-07-06T00:00:00.000Z",
+      "sourceId": "source-jch-109-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-110",
+      "editionNumber": 110,
+      "year": 2026,
+      "officialName": "第110回日本陸上競技選手権大会",
+      "shortName": "第110回日本選手権",
+      "startsOn": "2026-06-12T00:00:00.000Z",
+      "endsOn": "2026-06-14T00:00:00.000Z",
+      "sourceId": "source-jch-110-5000m-result"
+    }
+  ],
+  "races": [
+    {
+      "slug": "japanese-championships-5000m-104-men-final",
+      "editionSlug": "japanese-championships-5000m-104",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "final",
+      "distanceMeters": 5000,
+      "startsAt": "2020-12-04T16:24:00.000+09:00",
+      "sourceId": "source-jch-104-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-105-men-final",
+      "editionSlug": "japanese-championships-5000m-105",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "final",
+      "distanceMeters": 5000,
+      "startsAt": "2021-06-24T18:55:00.000+09:00",
+      "sourceId": "source-jch-105-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-106-men-final",
+      "editionSlug": "japanese-championships-5000m-106",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "final",
+      "distanceMeters": 5000,
+      "startsAt": "2022-06-09T19:30:00.000+09:00",
+      "sourceId": "source-jch-106-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-107-men-final",
+      "editionSlug": "japanese-championships-5000m-107",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "final",
+      "distanceMeters": 5000,
+      "startsAt": "2023-06-01T19:30:00.000+09:00",
+      "sourceId": "source-jch-107-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-108-men-final",
+      "editionSlug": "japanese-championships-5000m-108",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "final",
+      "distanceMeters": 5000,
+      "startsAt": "2024-06-28T20:00:00.000+09:00",
+      "sourceId": "source-jch-108-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-heat-1",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子5000m 予選 1組",
+      "discipline": "m5000",
+      "heat": "1",
+      "distanceMeters": 5000,
+      "startsAt": "2025-07-04T17:10:00.000+09:00",
+      "sourceId": "source-jch-109-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-heat-2",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子5000m 予選 2組",
+      "discipline": "m5000",
+      "heat": "2",
+      "distanceMeters": 5000,
+      "startsAt": "2025-07-04T17:10:00.000+09:00",
+      "sourceId": "source-jch-109-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-heat-3",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子5000m 予選 3組",
+      "discipline": "m5000",
+      "heat": "3",
+      "distanceMeters": 5000,
+      "startsAt": "2025-07-04T17:10:00.000+09:00",
+      "sourceId": "source-jch-109-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-final",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "final",
+      "distanceMeters": 5000,
+      "startsAt": "2025-07-06T18:05:00.000+09:00",
+      "sourceId": "source-jch-109-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-110-men-heat-1",
+      "editionSlug": "japanese-championships-5000m-110",
+      "name": "男子5000m 予選 1組",
+      "discipline": "m5000",
+      "heat": "1",
+      "distanceMeters": 5000,
+      "startsAt": "2026-06-12T17:10:00.000+09:00",
+      "sourceId": "source-jch-110-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-110-men-heat-2",
+      "editionSlug": "japanese-championships-5000m-110",
+      "name": "男子5000m 予選 2組",
+      "discipline": "m5000",
+      "heat": "2",
+      "distanceMeters": 5000,
+      "startsAt": "2026-06-12T17:10:00.000+09:00",
+      "sourceId": "source-jch-110-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-110-men-heat-3",
+      "editionSlug": "japanese-championships-5000m-110",
+      "name": "男子5000m 予選 3組",
+      "discipline": "m5000",
+      "heat": "3",
+      "distanceMeters": 5000,
+      "startsAt": "2026-06-12T17:10:00.000+09:00",
+      "sourceId": "source-jch-110-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-110-men-final",
+      "editionSlug": "japanese-championships-5000m-110",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "final",
+      "distanceMeters": 5000,
+      "startsAt": "2026-06-14T18:05:00.000+09:00",
+      "sourceId": "source-jch-110-5000m-result"
+    }
+  ]
+}
