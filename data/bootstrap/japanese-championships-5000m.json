@@ -19,6 +19,14 @@
       "notes": "JAAF公式結果PDF。男子5000m決勝の順位、記録、NJR、PB、OP、DNS、DNFを確認できる。"
     },
     {
+      "id": "source-jch-104-3000sc-result",
+      "name": "JAAF 第104回日本選手権長距離 リザルト",
+      "url": "https://www.jaaf.or.jp/files/competition/document/1535-7.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式結果PDF。男子3000mSC決勝の順位、記録、PB、DQ,S5、OPを確認できる。"
+    },
+    {
       "id": "source-jch-105-5000m-result",
       "name": "JAAF 第105回日本選手権 リザルトブック",
       "url": "https://www.jaaf.or.jp/files/upload/202106/27_192418.pdf",
@@ -197,6 +205,16 @@
       "distanceMeters": 5000,
       "startsAt": "2020-12-04T16:24:00.000+09:00",
       "sourceId": "source-jch-104-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-104-men-3000sc-final",
+      "editionSlug": "japanese-championships-5000m-104",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "final",
+      "distanceMeters": 3000,
+      "startsAt": "2020-12-04T16:05:00.000+09:00",
+      "sourceId": "source-jch-104-3000sc-result"
     },
     {
       "slug": "japanese-championships-5000m-105-men-final",
