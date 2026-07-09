@@ -1,0 +1,192 @@
+{
+  "competition": {
+    "slug": "japanese-student-individual-championships",
+    "nameJa": "日本学生陸上競技個人選手権大会",
+    "nameRoman": "All Japan University Track&Field Challenge Meeting",
+    "nameZh": "日本学生田径个人锦标赛",
+    "nameEn": "All Japan University Track&Field Challenge Meeting",
+    "type": "track_meet",
+    "region": "神奈川県",
+    "websiteUrl": "https://www.iuau.jp/ev2026/26kosen/26kojin.html"
+  },
+  "sources": [
+    {
+      "id": "source-japanese-student-individual-championships-2025-overview",
+      "name": "IUAU 2025日本学生陸上競技個人選手権大会 大会ページ",
+      "url": "https://www.iuau.jp/ev2025/25kosen/25kojin.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "2025年4月25日から27日まで開催された公式大会ページ。大会正式名称、開催日、会場、関連する公式結果導線を確認できる。"
+    },
+    {
+      "id": "source-japanese-student-individual-championships-2025-results",
+      "name": "IUAU 2025日本学生陸上競技個人選手権大会 公式結果サイト",
+      "url": "https://www.iuau.jp/ev2025/25kosen/res/kyougi.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "公式HTML結果サイト。男子800m予選・準決勝・決勝、男子1500m予選・決勝、男子5000m決勝、男子3000mSC決勝、男子10000m決勝の順位、記録、所属、学年、Q/q/NGR/DNS/DNFを確認できる。PB/SB表記はない。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "japanese-student-individual-championships-2025",
+      "year": 2025,
+      "officialName": "2025日本学生陸上競技個人選手権大会",
+      "shortName": "2025日本学生個人",
+      "startsOn": "2025-04-25T00:00:00.000Z",
+      "endsOn": "2025-04-27T00:00:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-overview"
+    }
+  ],
+  "races": [
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-heat-1",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 予選1組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-26T02:44:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-heat-2",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 予選2組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-26T02:49:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-heat-3",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 予選3組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-26T02:54:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-heat-4",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 予選4組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "4",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-26T02:57:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-heat-5",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 予選5組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "5",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-26T03:02:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-semifinal-1",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 準決勝1組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-26T06:12:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-semifinal-2",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 準決勝2組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-26T06:18:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-800-final",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子800m 決勝",
+      "discipline": "m800",
+      "round": "決勝",
+      "distanceMeters": 800,
+      "startsAt": "2025-04-27T03:04:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-1500-heat-1",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子1500m 予選1組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2025-04-25T00:35:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-1500-heat-2",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子1500m 予選2組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2025-04-25T00:42:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-1500-final",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子1500m 決勝",
+      "discipline": "m1500",
+      "round": "決勝",
+      "distanceMeters": 1500,
+      "startsAt": "2025-04-25T07:13:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-5000-final",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "決勝",
+      "distanceMeters": 5000,
+      "startsAt": "2025-04-27T04:19:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-3000sc-final",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "決勝",
+      "distanceMeters": 3000,
+      "startsAt": "2025-04-27T02:30:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2025-men-10000-final",
+      "editionSlug": "japanese-student-individual-championships-2025",
+      "name": "男子10000m 決勝",
+      "discipline": "m10000",
+      "round": "決勝",
+      "distanceMeters": 10000,
+      "startsAt": "2025-04-25T09:08:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2025-results"
+    }
+  ]
+}

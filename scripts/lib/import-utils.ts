@@ -33,6 +33,10 @@ const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
     "nakagawa-takumi-masuda-seifu",
     "person-e4b8ade5b79d20e68b93e6b5",
   ],
+  [
+    "maeda-hinata-kagoshima-josei",
+    "person-e5898de794b020e999bde590",
+  ],
 ] as const;
 
 const KNOWN_TRUE_SAME_NAME_SLUG_PAIRS = new Set(
