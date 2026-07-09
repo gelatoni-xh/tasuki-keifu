@@ -1,0 +1,258 @@
+{
+  "competition": {
+    "slug": "japan-intercollegiate-championships",
+    "nameJa": "日本学生陸上競技対校選手権大会",
+    "nameRoman": "All Japan Inter University Track&Field Championships",
+    "nameZh": "日本学生田径对校锦标赛",
+    "nameEn": "All Japan Inter University Track&Field Championships",
+    "type": "track_meet",
+    "region": "埼玉県",
+    "websiteUrl": "https://www.iuau.jp/ev2021/90ic/90ic.html"
+  },
+  "sources": [
+    {
+      "id": "source-japan-intercollegiate-championships-2021-overview",
+      "name": "IUAU 第90回日本学生陸上競技対校選手権 大会ページ",
+      "url": "https://www.iuau.jp/ev2021/90ic/90ic.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "2021年9月17日から19日まで開催された公式大会页面。大会正式名称、開催日、会場、公式結果導線を確認できる。"
+    },
+    {
+      "id": "source-japan-intercollegiate-championships-2021-results",
+      "name": "IUAU 第90回日本学生陸上競技対校選手権 公式結果サイト",
+      "url": "https://www.iuau.jp/ev2021/90ic/res/kyougi.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "公式HTML結果サイト。男子800m予選・準決勝・決勝、男子1500m予選・決勝、男子5000m決勝、男子10000m決勝、男子3000mSC決勝の順位、記録、所属、学年、Q/q/DNS/DNFなどの公式コメントを確認できる。PB/SB表記はない。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "japan-intercollegiate-championships-2021",
+      "year": 2021,
+      "officialName": "天皇賜盃第90回日本学生陸上競技対校選手権大会",
+      "shortName": "2021日本インカレ",
+      "startsOn": "2021-09-17T00:00:00.000Z",
+      "endsOn": "2021-09-19T00:00:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-overview"
+    }
+  ],
+  "races": [
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-heat-1",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 予選1組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-18T03:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-heat-2",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 予選2組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-18T03:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-heat-3",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 予選3組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-18T03:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-heat-4",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 予選4組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "4",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-18T03:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-heat-5",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 予選5組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "5",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-18T03:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-heat-6",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 予選6組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "6",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-18T03:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-heat-7",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 予選7組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "7",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-18T03:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-semifinal-1",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 準決勝1組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-19T00:20:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-semifinal-2",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 準決勝2組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-19T00:20:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-semifinal-3",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 準決勝3組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-19T00:20:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-800-final",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子800m 決勝",
+      "discipline": "m800",
+      "round": "決勝",
+      "distanceMeters": 800,
+      "startsAt": "2021-09-19T04:05:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-1500-heat-1",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子1500m 予選1組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2021-09-17T01:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-1500-heat-2",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子1500m 予選2組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2021-09-17T01:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-1500-heat-3",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子1500m 予選3組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 1500,
+      "startsAt": "2021-09-17T01:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-1500-heat-4",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子1500m 予選4組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "4",
+      "distanceMeters": 1500,
+      "startsAt": "2021-09-17T01:35:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-1500-heat-5",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子1500m 予選5組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "5",
+      "distanceMeters": 1500,
+      "startsAt": "2021-09-17T01:15:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-1500-final",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子1500m 決勝",
+      "discipline": "m1500",
+      "round": "決勝",
+      "distanceMeters": 1500,
+      "startsAt": "2021-09-17T07:25:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-5000-final",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "決勝",
+      "distanceMeters": 5000,
+      "startsAt": "2021-09-19T05:35:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-10000-final",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子10000m 決勝",
+      "discipline": "m10000",
+      "round": "決勝",
+      "distanceMeters": 10000,
+      "startsAt": "2021-09-17T09:45:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2021-men-3000sc-final",
+      "editionSlug": "japan-intercollegiate-championships-2021",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "決勝",
+      "distanceMeters": 3000,
+      "startsAt": "2021-09-19T02:40:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2021-results"
+    }
+  ]
+}
