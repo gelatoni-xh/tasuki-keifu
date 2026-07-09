@@ -1,0 +1,159 @@
+{
+  "competition": {
+    "slug": "japanese-student-individual-championships",
+    "nameJa": "日本学生陸上競技個人選手権大会",
+    "nameRoman": "All Japan University Track&Field Challenge Meeting",
+    "nameZh": "日本学生田径个人锦标赛",
+    "nameEn": "All Japan University Track&Field Challenge Meeting",
+    "type": "track_meet",
+    "region": "神奈川県",
+    "websiteUrl": "https://www.iuau.jp/ev2022/22kosen/22kojin.html"
+  },
+  "sources": [
+    {
+      "id": "source-japanese-student-individual-championships-2022-overview",
+      "name": "IUAU 2022日本学生陸上競技個人選手権大会 大会ページ",
+      "url": "https://www.iuau.jp/ev2022/22kosen/22kojin.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "2022年4月15日から17日まで開催された公式大会ページ。大会正式名称、開催日、会場、公式結果導線を確認できる。"
+    },
+    {
+      "id": "source-japanese-student-individual-championships-2022-results",
+      "name": "IUAU 2022日本学生陸上競技個人選手権大会 公式結果サイト",
+      "url": "https://www.iuau.jp/ev2022/22kosen/res/kyougi.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "公式HTML結果サイト。男子800m予選・決勝、男子1500m予選・決勝、男子5000m決勝、男子10000m決勝、男子3000mSC決勝の順位、記録、所属、学年、Q/q/NGR/DNSを確認できる。PB/SB表記はない。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "japanese-student-individual-championships-2022",
+      "year": 2022,
+      "officialName": "2022日本学生陸上競技個人選手権大会",
+      "shortName": "2022日本学生個人",
+      "startsOn": "2022-04-15T00:00:00.000Z",
+      "endsOn": "2022-04-17T00:00:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-overview"
+    }
+  ],
+  "races": [
+    {
+      "slug": "japanese-student-individual-championships-2022-men-800-heat-1",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子800m 予選1組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2022-04-16T04:33:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-800-heat-2",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子800m 予選2組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2022-04-16T04:37:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-800-heat-3",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子800m 予選3組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2022-04-16T04:40:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-800-heat-4",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子800m 予選4組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "4",
+      "distanceMeters": 800,
+      "startsAt": "2022-04-16T04:44:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-800-final",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子800m 決勝",
+      "discipline": "m800",
+      "round": "決勝",
+      "distanceMeters": 800,
+      "startsAt": "2022-04-17T03:29:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-1500-heat-1",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子1500m 予選1組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2022-04-15T02:39:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-1500-heat-2",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子1500m 予選2組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2022-04-15T02:50:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-1500-final",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子1500m 決勝",
+      "discipline": "m1500",
+      "round": "決勝",
+      "distanceMeters": 1500,
+      "startsAt": "2022-04-15T07:01:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-5000-final",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "決勝",
+      "distanceMeters": 5000,
+      "startsAt": "2022-04-17T05:40:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-10000-final",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子10000m 決勝",
+      "discipline": "m10000",
+      "round": "決勝",
+      "distanceMeters": 10000,
+      "startsAt": "2022-04-15T09:18:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2022-men-3000sc-final",
+      "editionSlug": "japanese-student-individual-championships-2022",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "決勝",
+      "distanceMeters": 3000,
+      "startsAt": "2022-04-17T02:20:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2022-results"
+    }
+  ]
+}
