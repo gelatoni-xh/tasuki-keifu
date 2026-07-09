@@ -1,0 +1,236 @@
+{
+  "competition": {
+    "slug": "japan-intercollegiate-championships",
+    "nameJa": "日本学生陸上競技対校選手権大会",
+    "nameRoman": "All Japan Inter University Track&Field Championships",
+    "nameZh": "日本学生田径对校锦标赛",
+    "nameEn": "All Japan Inter University Track&Field Championships",
+    "type": "track_meet",
+    "region": "岡山県",
+    "websiteUrl": "https://iuau.jp/ev2025/94ic/94ic.html"
+  },
+  "sources": [
+    {
+      "id": "source-japan-intercollegiate-championships-2025-overview",
+      "name": "IUAU 第94回日本学生陸上競技対校選手権大会 大会ページ",
+      "url": "https://iuau.jp/ev2025/94ic/94ic.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "2025年6月5日から8日まで開催された公式大会ページ。大会正式名称、開催日、会場、公式結果導線を確認できる。"
+    },
+    {
+      "id": "source-japan-intercollegiate-championships-2025-results",
+      "name": "IUAU 第94回日本学生陸上競技対校選手権大会 公式結果サイト",
+      "url": "https://www.iuau.jp/ev2025/94ic/res/kyougi.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "公式HTML結果サイト。男子800m予選・準決勝・決勝、男子1500m予選・決勝、男子5000m決勝、男子10000m決勝、男子3000mSC決勝の順位、記録、所属、学年、Q/q/NGR/DNS/DNF/YCを確認できる。PB/SB表記はない。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "japan-intercollegiate-championships-2025",
+      "year": 2025,
+      "officialName": "天皇賜盃第94回日本学生陸上競技対校選手権大会",
+      "shortName": "2025日本インカレ",
+      "startsOn": "2025-06-05T00:00:00.000Z",
+      "endsOn": "2025-06-08T00:00:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-overview"
+    }
+  ],
+  "races": [
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-heat-1",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 予選1組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T02:23:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-heat-2",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 予選2組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T02:27:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-heat-3",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 予選3組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T02:32:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-heat-4",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 予選4組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "4",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T02:35:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-heat-5",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 予選5組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "5",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T02:38:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-heat-6",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 予選6組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "6",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T02:42:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-heat-7",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 予選7組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "7",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T02:48:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-semifinal-1",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 準決勝1組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T08:45:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-semifinal-2",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 準決勝2組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T08:54:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-semifinal-3",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 準決勝3組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-07T09:02:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-800-final",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子800m 決勝",
+      "discipline": "m800",
+      "round": "決勝",
+      "distanceMeters": 800,
+      "startsAt": "2025-06-08T02:30:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-1500-heat-1",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子1500m 予選1組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2025-06-05T07:57:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-1500-heat-2",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子1500m 予選2組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2025-06-05T08:06:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-1500-heat-3",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子1500m 予選3組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 1500,
+      "startsAt": "2025-06-05T08:13:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-1500-final",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子1500m 決勝",
+      "discipline": "m1500",
+      "round": "決勝",
+      "distanceMeters": 1500,
+      "startsAt": "2025-06-06T06:45:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-5000-final",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子5000m 決勝",
+      "discipline": "m5000",
+      "round": "決勝",
+      "distanceMeters": 5000,
+      "startsAt": "2025-06-07T09:37:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-10000-final",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子10000m 決勝",
+      "discipline": "m10000",
+      "round": "決勝",
+      "distanceMeters": 10000,
+      "startsAt": "2025-06-05T10:00:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    },
+    {
+      "slug": "japan-intercollegiate-championships-2025-men-3000sc-final",
+      "editionSlug": "japan-intercollegiate-championships-2025",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "決勝",
+      "distanceMeters": 3000,
+      "startsAt": "2025-06-08T04:26:00.000Z",
+      "sourceId": "source-japan-intercollegiate-championships-2025-results"
+    }
+  ]
+}
