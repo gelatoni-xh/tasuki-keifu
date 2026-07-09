@@ -20,6 +20,7 @@ import {
 } from "@/lib/membership";
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
+import { getPlayerSeoTier } from "@/lib/seo";
 import { buildPageMetadata } from "@/lib/site";
 import type { PlayerRelationEntry, RelationStageKey } from "@/lib/player-relations/types";
 
@@ -55,26 +56,6 @@ function formatOrganizationLabel(organization: { nameJa: string; shortName?: str
   }
 
   return organization.shortName ? `${organization.nameJa}（${organization.shortName}）` : organization.nameJa;
-}
-
-function getPlayerSeoTier({
-  memberships,
-  personalBests,
-  results,
-}: {
-  memberships: number;
-  personalBests: number;
-  results: number;
-}) {
-  if (results >= 5 || memberships >= 3 || personalBests >= 3) {
-    return "primary";
-  }
-
-  if ((results >= 2 && memberships >= 1) || personalBests >= 1 || memberships >= 2) {
-    return "secondary";
-  }
-
-  return "thin";
 }
 
 function renderCompetitionEditionName({

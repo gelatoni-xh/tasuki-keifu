@@ -10,6 +10,7 @@ import { getCachedValue } from "@/lib/server-cache";
 import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
+import { getCompetitionSeoTier } from "@/lib/seo";
 import { buildPageMetadata } from "@/lib/site";
 
 type CompetitionEditionPageProps = {
@@ -97,26 +98,6 @@ function compareRaceUnits(
   }
 
   return left.name.localeCompare(right.name, "ja");
-}
-
-function getCompetitionSeoTier({
-  raceCount,
-  resultCount,
-  teamResultCount,
-}: {
-  raceCount: number;
-  resultCount: number;
-  teamResultCount: number;
-}) {
-  if (raceCount >= 6 && resultCount >= 100 && teamResultCount >= 1) {
-    return "primary";
-  }
-
-  if (resultCount >= 10 || raceCount >= 2) {
-    return "secondary";
-  }
-
-  return "thin";
 }
 
 function buildCompetitionKeywordVariants(edition: {

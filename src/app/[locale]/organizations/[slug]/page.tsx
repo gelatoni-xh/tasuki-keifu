@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { groupMembershipsByRole, isCurrentMembership, isMembershipPeriodUnknown } from "@/lib/membership";
+import { getOrganizationSeoTier } from "@/lib/seo";
 import { buildPageMetadata } from "@/lib/site";
 
 type OrganizationDetailPageProps = {
@@ -15,26 +16,6 @@ type OrganizationDetailPageProps = {
     slug: string;
   }>;
 };
-
-function getOrganizationSeoTier({
-  memberships,
-  raceResults,
-  teamResults,
-}: {
-  memberships: number;
-  raceResults: number;
-  teamResults: number;
-}) {
-  if (memberships >= 15 || raceResults >= 28 || teamResults >= 4) {
-    return "primary";
-  }
-
-  if (memberships >= 6 || raceResults >= 7 || teamResults >= 1) {
-    return "secondary";
-  }
-
-  return "thin";
-}
 
 function formatOrganizationLabel(nameJa: string, shortName: string | null) {
   return shortName ? `${nameJa}（${shortName}）` : nameJa;

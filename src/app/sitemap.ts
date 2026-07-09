@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
-import { publicCompetitionTypes } from "@/lib/public-competitions";
+import {
+  getIndexableCompetitions,
+  getIndexableOrganizations,
+  getIndexablePlayers,
+} from "@/lib/search-discovery";
 import { buildLocalizedUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -35,22 +38,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const [players, competitions, organizations] = await Promise.all([
-      prisma.person.findMany({
-        select: { slug: true, updatedAt: true },
-      }),
-      prisma.competitionEdition.findMany({
-        where: {
-          competition: {
-            type: {
-              in: publicCompetitionTypes,
-            },
-          },
-        },
-        select: { slug: true, updatedAt: true },
-      }),
-      prisma.organization.findMany({
-        select: { slug: true, updatedAt: true },
-      }),
+      getIndexablePlayers(),
+      getIndexableCompetitions(),
+      getIndexableOrganizations(),
     ]);
 
     return [
