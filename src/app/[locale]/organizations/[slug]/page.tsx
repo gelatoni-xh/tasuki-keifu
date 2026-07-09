@@ -8,7 +8,7 @@ import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMar
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { groupMembershipsByRole, isCurrentMembership, isMembershipPeriodUnknown } from "@/lib/membership";
 import { getOrganizationSeoTier } from "@/lib/seo";
-import { buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 
 type OrganizationDetailPageProps = {
   params: Promise<{
@@ -37,6 +37,7 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
         select: {
           memberships: true,
           raceResults: true,
+          teamCompetitionResults: true,
         },
       },
     },
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
   const seoTier = getOrganizationSeoTier({
     memberships: organization._count.memberships,
     raceResults: organization._count.raceResults,
-    teamResults: 0,
+    teamResults: organization._count.teamCompetitionResults,
   });
   const description = [
     interpolate(dictionary.organizations.detailSeoIntro, {
@@ -179,8 +180,8 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
   const highlightedEditions = ekidenResults.slice(0, 5).map((result) => result.competitionEdition.shortName ?? result.competitionEdition.officialName);
   const highlightedPeople = organization.memberships
     .slice(0, 8)
-    .map((membership) => membership.person.displayNameJa)
-    .filter((name, index, list) => list.indexOf(name) === index);
+    .map((membership) => membership.person)
+    .filter((person, index, list) => list.findIndex((entry) => entry.id === person.id) === index);
   const organizationSummary = [
     interpolate(dictionary.organizations.detailSummaryIntro, {
       name: organization.nameJa,
@@ -204,6 +205,12 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
   ]
     .filter(Boolean)
     .join(" ");
+  const organizationStatItems = [
+    { label: "在籍人物", value: organization.memberships.length },
+    { label: "現役在籍", value: currentMemberships.length },
+    { label: "駅伝成績", value: ekidenResults.length },
+    { label: "注目大会", value: highlightedEditions.length },
+  ];
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "SportsOrganization",
@@ -211,12 +218,18 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
     alternateName: organization.shortName ?? undefined,
     description: organizationSummary,
     sport: "Ekiden",
-    url: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
-    location: organization.prefecture ?? undefined,
+    url: buildLocalizedUrl(locale, `/organizations/${organization.slug}`),
+    location: organization.prefecture
+      ? {
+          "@type": "Place",
+          name: organization.prefecture,
+        }
+      : undefined,
     sameAs: organization.websiteUrl ?? undefined,
-    member: highlightedPeople.map((name) => ({
+    member: highlightedPeople.map((person) => ({
       "@type": "Person",
-      name,
+      name: person.displayNameJa,
+      url: buildLocalizedUrl(locale, `/players/${person.slug}`),
     })),
   };
   const breadcrumbJsonLd = {
@@ -227,19 +240,19 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
         "@type": "ListItem",
         position: 1,
         name: "襷の系譜",
-        item: `https://tasukikeifu.com/${locale}`,
+        item: buildLocalizedUrl(locale),
       },
       {
         "@type": "ListItem",
         position: 2,
         name: dictionary.organizations.listTitle,
-        item: `https://tasukikeifu.com/${locale}/organizations`,
+        item: buildLocalizedUrl(locale, "/organizations"),
       },
       {
         "@type": "ListItem",
         position: 3,
         name: organization.nameJa,
-        item: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
+        item: buildLocalizedUrl(locale, `/organizations/${organization.slug}`),
       },
     ],
   };
@@ -278,6 +291,14 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
                   {organizationSummary}
                 </p>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+                  {organizationStatItems.map((item) => (
+                    <div className="border border-[#e7e1d8] bg-[#fcfaf5] px-3 py-2" key={item.label}>
+                      <dt className="text-xs uppercase tracking-[0.12em] text-[#8b938e]">{item.label}</dt>
+                      <dd className="mt-1 text-lg font-semibold text-[#1f2421]">{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
               <div className="flex flex-col items-start gap-3">
                 {organization.websiteUrl ? (

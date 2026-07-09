@@ -21,7 +21,7 @@ import {
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { getPlayerSeoTier } from "@/lib/seo";
-import { buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 import type { PlayerRelationEntry, RelationStageKey } from "@/lib/player-relations/types";
 
 type PlayerDetailPageProps = {
@@ -432,6 +432,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
   ]
     .filter(Boolean)
     .join(" ");
+  const playerStatItems = [
+    { label: "所属履歴", value: sortedMemberships.length },
+    { label: "PB", value: player.personalBests.length },
+    { label: "大会成績", value: totalRaceResults },
+    { label: "関連選手", value: relatedPlayersWithTags.length },
+  ];
   const playerJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -452,15 +458,36 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
           name: player.hometown,
         }
       : undefined,
+    alumniOf: [highSchool?.organization, university?.organization]
+      .filter((organization): organization is NonNullable<typeof organization> => Boolean(organization))
+      .map((organization) => ({
+        "@type": "SportsOrganization",
+        name: organization.nameJa,
+        url: buildLocalizedUrl(locale, `/organizations/${organization.slug}`),
+      })),
     memberOf: [...new Map(player.memberships.map((membership) => [membership.organization.id, membership.organization])).values()]
       .slice(0, 6)
       .map((organization) => ({
         "@type": "SportsOrganization",
         name: organization.nameJa,
-        url: `https://tasukikeifu.com/${locale}/organizations/${organization.slug}`,
+        url: buildLocalizedUrl(locale, `/organizations/${organization.slug}`),
       })),
-    url: `https://tasukikeifu.com/${locale}/players/${player.slug}`,
+    knowsAbout: ["駅伝", "陸上長距離", ...keyCompetitionNames].slice(0, 8),
+    url: buildLocalizedUrl(locale, `/players/${player.slug}`),
   };
+  const relatedPlayersJsonLd = relatedPlayersWithTags.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: `${player.displayNameJa}の関連選手`,
+        itemListElement: relatedPlayersWithTags.map((related, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: buildLocalizedUrl(locale, `/players/${related.slug}`),
+          name: related.displayNameJa,
+        })),
+      }
+    : null;
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -469,19 +496,19 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
         "@type": "ListItem",
         position: 1,
         name: "襷の系譜",
-        item: `https://tasukikeifu.com/${locale}`,
+        item: buildLocalizedUrl(locale),
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "人物一覧",
-        item: `https://tasukikeifu.com/${locale}/players`,
+        item: buildLocalizedUrl(locale, "/players"),
       },
       {
         "@type": "ListItem",
         position: 3,
         name: player.displayNameJa,
-        item: `https://tasukikeifu.com/${locale}/players/${player.slug}`,
+        item: buildLocalizedUrl(locale, `/players/${player.slug}`),
       },
     ],
   };
@@ -492,6 +519,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(playerJsonLd) }}
       />
+      {relatedPlayersJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(relatedPlayersJsonLd) }}
+        />
+      ) : null}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -517,6 +550,14 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
                   {playerSummary}
                 </p>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+                  {playerStatItems.map((item) => (
+                    <div className="border border-[#e7e1d8] bg-[#fcfaf5] px-3 py-2" key={item.label}>
+                      <dt className="text-xs uppercase tracking-[0.12em] text-[#8b938e]">{item.label}</dt>
+                      <dd className="mt-1 text-lg font-semibold text-[#1f2421]">{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
               <div className="flex flex-wrap gap-2">
                 <span className="border border-[#ded8cc] px-3 py-1 text-sm text-[#59615c]">
