@@ -1,0 +1,216 @@
+{
+  "competition": {
+    "slug": "japanese-student-individual-championships",
+    "nameJa": "日本学生陸上競技個人選手権大会",
+    "nameRoman": "All Japan University Track&Field Challenge Meeting",
+    "nameZh": "日本学生田径个人锦标赛",
+    "nameEn": "All Japan University Track&Field Challenge Meeting",
+    "type": "track_meet",
+    "region": "神奈川県",
+    "websiteUrl": "https://www.iuau.jp/ev2021/21kojin/21kojin.html"
+  },
+  "sources": [
+    {
+      "id": "source-japanese-student-individual-championships-2021-overview",
+      "name": "IUAU 2021日本学生陸上競技個人選手権大会 大会ページ",
+      "url": "https://www.iuau.jp/ev2021/21kojin/21kojin.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "2021年6月4日から6日まで開催された公式大会ページ。大会正式名称、開催日、会場、公式結果導線を確認できる。"
+    },
+    {
+      "id": "source-japanese-student-individual-championships-2021-results",
+      "name": "IUAU 2021日本学生陸上競技個人選手権大会 公式結果サイト",
+      "url": "https://www.iuau.jp/ev2021/21kojin/res/kyougi.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "公式HTML結果サイト。男子800m予選・準決勝・決勝、男子1500m予選・決勝、男子5000mタイムレース2組、男子3000mSC決勝の順位、記録、所属、学年、Q/DNS/NGRを確認できる。PB/SB表記はない。5000m総合結果ページは集計表示のためレース実体としては扱わない。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "japanese-student-individual-championships-2021",
+      "year": 2021,
+      "officialName": "2021日本学生陸上競技個人選手権大会",
+      "shortName": "2021日本学生個人",
+      "startsOn": "2021-06-04T00:00:00.000Z",
+      "endsOn": "2021-06-06T00:00:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-overview"
+    }
+  ],
+  "races": [
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-heat-1",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 予選1組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T03:57:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-heat-2",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 予選2組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T04:10:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-heat-3",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 予選3組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T04:13:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-heat-4",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 予選4組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "4",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T04:18:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-heat-5",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 予選5組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "5",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T04:21:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-heat-6",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 予選6組",
+      "discipline": "m800",
+      "round": "予選",
+      "heat": "6",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T04:25:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-semi-1",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 準決勝1組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T09:40:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-semi-2",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 準決勝2組",
+      "discipline": "m800",
+      "round": "準決勝",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-05T09:52:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-800-final",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子800m 決勝",
+      "discipline": "m800",
+      "round": "決勝",
+      "distanceMeters": 800,
+      "startsAt": "2021-06-06T05:25:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-1500-heat-1",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子1500m 予選1組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2021-06-04T03:45:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-1500-heat-2",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子1500m 予選2組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2021-06-04T03:50:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-1500-heat-3",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子1500m 予選3組",
+      "discipline": "m1500",
+      "round": "予選",
+      "heat": "3",
+      "distanceMeters": 1500,
+      "startsAt": "2021-06-04T03:59:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-1500-final",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子1500m 決勝",
+      "discipline": "m1500",
+      "round": "決勝",
+      "distanceMeters": 1500,
+      "startsAt": "2021-06-04T08:52:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-5000-heat-1",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子5000m タイムレース1組",
+      "discipline": "m5000",
+      "round": "タイムレース",
+      "heat": "1",
+      "distanceMeters": 5000,
+      "startsAt": "2021-06-05T07:44:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-5000-heat-2",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子5000m タイムレース2組",
+      "discipline": "m5000",
+      "round": "タイムレース",
+      "heat": "2",
+      "distanceMeters": 5000,
+      "startsAt": "2021-06-05T08:03:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    },
+    {
+      "slug": "japanese-student-individual-championships-2021-men-3000sc-final",
+      "editionSlug": "japanese-student-individual-championships-2021",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "決勝",
+      "distanceMeters": 3000,
+      "startsAt": "2021-06-06T03:06:00.000Z",
+      "sourceId": "source-japanese-student-individual-championships-2021-results"
+    }
+  ]
+}
