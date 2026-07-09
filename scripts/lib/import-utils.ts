@@ -28,6 +28,23 @@ function reverseRomanOrder(value: string) {
   return parts.slice().reverse().join(" ");
 }
 
+const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
+  [
+    "nakagawa-takumi-masuda-seifu",
+    "person-e4b8ade5b79d20e68b93e6b5",
+  ],
+] as const;
+
+const KNOWN_TRUE_SAME_NAME_SLUG_PAIRS = new Set(
+  KNOWN_TRUE_SAME_NAME_SLUG_GROUPS.flatMap((group) =>
+    group.flatMap((left) => group.filter((right) => right !== left).map((right) => `${left}::${right}`)),
+  ),
+);
+
+function isKnownTrueSameNameSlugPair(leftSlug: string, rightSlug: string) {
+  return KNOWN_TRUE_SAME_NAME_SLUG_PAIRS.has(`${leftSlug}::${rightSlug}`);
+}
+
 function slugifyFallback(value: string) {
   const ascii = value
     .normalize("NFKC")
@@ -794,6 +811,7 @@ export async function validateRaceImportDuplicates(prisma: PrismaClient, entries
 
     const blockingJaConflicts = normalizedJaConflicts.filter(
       (person) =>
+        !isKnownTrueSameNameSlugPair(entry.slug, person.slug) &&
         !allowedSameNameSchoolMismatches.some((allowed) => allowed.slug === person.slug) &&
         !allowedSameNameUniversityMismatches.some((allowed) => allowed.slug === person.slug),
     );

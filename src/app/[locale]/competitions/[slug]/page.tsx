@@ -49,9 +49,22 @@ function parseHeatOrder(heat: string | null | undefined) {
   return match ? Number.parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
 }
 
+function parseRoundOrder(round: string | null | undefined) {
+  switch (round) {
+    case "予選":
+      return 1;
+    case "準決勝":
+      return 2;
+    case "決勝":
+      return 3;
+    default:
+      return Number.MAX_SAFE_INTEGER;
+  }
+}
+
 function compareRaceUnits(
-  left: { discipline: string; distanceMeters?: number | null; heat?: string | null; name: string; startsAt?: Date | null },
-  right: { discipline: string; distanceMeters?: number | null; heat?: string | null; name: string; startsAt?: Date | null },
+  left: { discipline: string; distanceMeters?: number | null; round?: string | null; heat?: string | null; name: string; startsAt?: Date | null },
+  right: { discipline: string; distanceMeters?: number | null; round?: string | null; heat?: string | null; name: string; startsAt?: Date | null },
 ) {
   const leftDistance = left.distanceMeters ?? DISCIPLINE_DISTANCE_ORDER[left.discipline] ?? Number.MAX_SAFE_INTEGER;
   const rightDistance = right.distanceMeters ?? DISCIPLINE_DISTANCE_ORDER[right.discipline] ?? Number.MAX_SAFE_INTEGER;
@@ -63,6 +76,12 @@ function compareRaceUnits(
   const rightIsSc = right.discipline.endsWith("sc");
   if (leftIsSc !== rightIsSc) {
     return leftIsSc ? 1 : -1;
+  }
+
+  const leftRound = parseRoundOrder(left.round);
+  const rightRound = parseRoundOrder(right.round);
+  if (leftRound !== rightRound) {
+    return leftRound - rightRound;
   }
 
   const leftHeat = parseHeatOrder(left.heat);
@@ -235,6 +254,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
             slug: true,
             name: true,
             discipline: true,
+            round: true,
             heat: true,
             leg: true,
             distanceMeters: true,
