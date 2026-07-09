@@ -59,6 +59,14 @@
       "notes": "JAAF公式総合結果PDF。男子5000mの予選3組と決勝の順位、記録、DNS、DNF、通過(Q)を確認できる。PB/SB欄はない。"
     },
     {
+      "id": "source-jch-109-result",
+      "name": "JAAF 第109回日本選手権 全てのリザルト",
+      "url": "https://www.jaaf.or.jp/files/upload/202508/25_115843.pdf",
+      "type": "jaaf",
+      "reliability": 5,
+      "notes": "JAAF公式総合結果PDF。男子800m、男子1500m、男子3000mSCの予選・決勝に関する順位、記録、DNS、DNF、CR/Q/qを確認できる。PB/SB欄はない。"
+    },
+    {
       "id": "source-jch-110-5000m-result",
       "name": "JAAF 第110回日本選手権 リザルトブック",
       "url": "https://www.jaaf.or.jp/files/upload/202606/resultall.pdf",
@@ -237,6 +245,86 @@
       "distanceMeters": 5000,
       "startsAt": "2025-07-06T18:05:00.000+09:00",
       "sourceId": "source-jch-109-5000m-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-800-heat-1",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子800m 予選 1組",
+      "discipline": "m800",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2025-07-04T18:45:00.000+09:00",
+      "sourceId": "source-jch-109-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-800-heat-2",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子800m 予選 2組",
+      "discipline": "m800",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2025-07-04T18:45:00.000+09:00",
+      "sourceId": "source-jch-109-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-800-heat-3",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子800m 予選 3組",
+      "discipline": "m800",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2025-07-04T18:45:00.000+09:00",
+      "sourceId": "source-jch-109-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-800-final",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子800m 決勝",
+      "discipline": "m800",
+      "round": "final",
+      "distanceMeters": 800,
+      "startsAt": "2025-07-05T16:45:00.000+09:00",
+      "sourceId": "source-jch-109-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-1500-heat-1",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子1500m 予選 1組",
+      "discipline": "m1500",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2025-07-05T15:05:00.000+09:00",
+      "sourceId": "source-jch-109-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-1500-heat-2",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子1500m 予選 2組",
+      "discipline": "m1500",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2025-07-05T15:05:00.000+09:00",
+      "sourceId": "source-jch-109-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-1500-final",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子1500m 決勝",
+      "discipline": "m1500",
+      "round": "final",
+      "distanceMeters": 1500,
+      "startsAt": "2025-07-06T17:00:00.000+09:00",
+      "sourceId": "source-jch-109-result"
+    },
+    {
+      "slug": "japanese-championships-5000m-109-men-3000sc-final",
+      "editionSlug": "japanese-championships-5000m-109",
+      "name": "男子3000mSC 決勝",
+      "discipline": "m3000sc",
+      "round": "final",
+      "distanceMeters": 3000,
+      "startsAt": "2025-07-04T19:10:00.000+09:00",
+      "sourceId": "source-jch-109-result"
     },
     {
       "slug": "japanese-championships-5000m-110-men-heat-1",
