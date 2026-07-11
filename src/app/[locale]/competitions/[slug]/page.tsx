@@ -63,6 +63,11 @@ function parseRoundOrder(round: string | null | undefined) {
   }
 }
 
+function parseDivisionOrder(name: string) {
+  const match = name.match(/(\d+)部/u);
+  return match ? Number.parseInt(match[1]!, 10) : 0;
+}
+
 function compareRaceUnits(
   left: { discipline: string; distanceMeters?: number | null; round?: string | null; heat?: string | null; name: string; startsAt?: Date | null },
   right: { discipline: string; distanceMeters?: number | null; round?: string | null; heat?: string | null; name: string; startsAt?: Date | null },
@@ -77,6 +82,12 @@ function compareRaceUnits(
   const rightIsSc = right.discipline.endsWith("sc");
   if (leftIsSc !== rightIsSc) {
     return leftIsSc ? 1 : -1;
+  }
+
+  const leftDivision = parseDivisionOrder(left.name);
+  const rightDivision = parseDivisionOrder(right.name);
+  if (leftDivision !== rightDivision) {
+    return leftDivision - rightDivision;
   }
 
   const leftRound = parseRoundOrder(left.round);
