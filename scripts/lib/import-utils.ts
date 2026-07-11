@@ -1373,7 +1373,6 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     !input.protectedProfileSlugs.has(input.entry.slug) &&
     !isCompetitionOnlyTeam &&
     university &&
-    highSchool &&
     dates.universityStart &&
     dates.universityEnd
   ) {
@@ -1387,6 +1386,16 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
       endYear: dates.universityEnd.getFullYear(),
       sourceId: input.sourceId,
     });
+  }
+
+  if (
+    dates &&
+    !input.protectedProfileSlugs.has(input.entry.slug) &&
+    !isCompetitionOnlyTeam &&
+    highSchool &&
+    dates.highSchoolStart &&
+    dates.highSchoolEnd
+  ) {
     await ensureMembership(prisma, {
       personId: person.id,
       organizationId: highSchool.id,
