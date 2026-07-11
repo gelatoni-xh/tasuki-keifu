@@ -45,6 +45,22 @@ const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
     "person-gmo-internet-group-c754a9bf",
     "person-jiic2021-imae-yuto-chiba-university",
   ],
+  [
+    "person-kao-1e46847f",
+    "person-kao-1e84de92",
+  ],
+  [
+    "person-jusic2021-e69c8de983a8e587b1e69d8f",
+    "hattori-kaishin",
+  ],
+  [
+    "person-hokuren2026abashiri-e58685e794b0e8b3a2e588a9",
+    "uchida-kento",
+  ],
+  [
+    "person-e988b4e69ca820e5a4a7e7bf",
+    "person-kao-0dbf5ba9",
+  ],
 ] as const;
 
 const KNOWN_TRUE_SAME_NAME_SLUG_PAIRS = new Set(
