@@ -40,6 +40,7 @@ const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
   [
     "higuchi-shota-oita-tomei",
     "person-e6a88be58fa320e7bf94e5a4",
+    "person-nittaidai329-a13e0da807bb654c9f7a",
   ],
   [
     "person-gmo-internet-group-c754a9bf",
@@ -60,6 +61,16 @@ const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
   [
     "person-e988b4e69ca820e5a4a7e7bf",
     "person-kao-0dbf5ba9",
+    "person-nittaidai329-44f26036e194dbf2ef22",
+  ],
+  [
+    "kojima-daiki-mikata",
+    "person-e5b08fe5b3b620e5a4a7e8bc",
+    "person-nittaidai329-eff162a260601d7821f4",
+  ],
+  [
+    "person-3131a30606ea0a39",
+    "person-360d85d0e8f35dc3",
   ],
 ] as const;
 
