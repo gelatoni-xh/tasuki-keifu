@@ -1,0 +1,471 @@
+{
+  "competition": {
+    "slug": "nittaidai-long-distance-meet",
+    "nameJa": "日本体育大学長距離競技会",
+    "nameRoman": "Nittaidai Long Distance Meet",
+    "nameZh": "日本体育大学长距离竞技会",
+    "nameEn": "Nittaidai Long Distance Meet",
+    "type": "track_meet",
+    "region": "神奈川県",
+    "websiteUrl": "https://ld.nssu-athletic.com/"
+  },
+  "sources": [
+    {
+      "id": "source-nittaidai-long-distance-meet-328-results",
+      "name": "第328回日本体育大学長距離競技会兼21st NITTAIDAI Challenge Games 公式結果サイト",
+      "url": "https://nittai-honbu.pecori.jp/nittai-result/328042526/shtml/TimeTable.html",
+      "type": "university_official",
+      "reliability": 5,
+      "notes": "PECORI公式結果サイト。Taikai.json と TimeTable.json、および各 ResultTrackA.json から男子800m・1500m・5000m各組と NCG男子800m・1500m・5000m の順位、記録、所属、DNS/DNF/DQ注記を確認できる。PB/SB表記はない。大会情報上の開催期間は2026年4月25日から26日。"
+    }
+  ],
+  "editions": [
+    {
+      "slug": "nittaidai-long-distance-meet-328",
+      "editionNumber": 328,
+      "year": 2026,
+      "officialName": "第328回日本体育大学長距離競技会兼21st NITTAIDAI Challenge Games",
+      "shortName": "第328回日体大長距離競技会",
+      "startsOn": "2026-04-25T00:00:00.000Z",
+      "endsOn": "2026-04-26T00:00:00.000Z",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    }
+  ],
+  "races": [
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-1",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 1組",
+      "discipline": "m5000",
+      "heat": "1",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T12:10:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-2",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 2組",
+      "discipline": "m5000",
+      "heat": "2",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T12:29:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-3",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 3組",
+      "discipline": "m5000",
+      "heat": "3",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T12:48:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-4",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 4組",
+      "discipline": "m5000",
+      "heat": "4",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T13:06:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-5",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 5組",
+      "discipline": "m5000",
+      "heat": "5",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T13:24:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-6",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 6組",
+      "discipline": "m5000",
+      "heat": "6",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T13:42:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-7",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 7組",
+      "discipline": "m5000",
+      "heat": "7",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T14:00:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-8",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 8組",
+      "discipline": "m5000",
+      "heat": "8",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T14:18:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-9",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 9組",
+      "discipline": "m5000",
+      "heat": "9",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T14:36:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-1",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 1組",
+      "discipline": "m800",
+      "heat": "1",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:32:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-10",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 10組",
+      "discipline": "m5000",
+      "heat": "10",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T14:54:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-2",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 2組",
+      "discipline": "m800",
+      "heat": "2",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:32:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-11",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 11組",
+      "discipline": "m5000",
+      "heat": "11",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T15:12:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-3",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 3組",
+      "discipline": "m800",
+      "heat": "3",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:32:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-12",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 12組",
+      "discipline": "m5000",
+      "heat": "12",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T15:29:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-4",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 4組",
+      "discipline": "m800",
+      "heat": "4",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:45:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-13",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 13組",
+      "discipline": "m5000",
+      "heat": "13",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T15:46:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-5",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 5組",
+      "discipline": "m800",
+      "heat": "5",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:45:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-14",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 14組",
+      "discipline": "m5000",
+      "heat": "14",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T16:03:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-6",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 6組",
+      "discipline": "m800",
+      "heat": "6",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:45:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-15",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 15組",
+      "discipline": "m5000",
+      "heat": "15",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T16:20:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-7",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 7組",
+      "discipline": "m800",
+      "heat": "7",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:58:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-16",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 16組",
+      "discipline": "m5000",
+      "heat": "16",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T16:37:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-8",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 8組",
+      "discipline": "m800",
+      "heat": "8",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:58:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-17",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 17組",
+      "discipline": "m5000",
+      "heat": "17",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T16:54:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-9",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 9組",
+      "discipline": "m800",
+      "heat": "9",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T12:58:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-18",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 18組",
+      "discipline": "m5000",
+      "heat": "18",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T17:11:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-800-heat-10",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子800m 10組",
+      "discipline": "m800",
+      "heat": "10",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T13:11:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-19",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 19組",
+      "discipline": "m5000",
+      "heat": "19",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T17:27:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-ncg-men-800",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "NCG男子800m",
+      "discipline": "m800",
+      "distanceMeters": 800,
+      "startsAt": "2026-04-25T13:15:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-5000-heat-20",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子5000m 20組",
+      "discipline": "m5000",
+      "heat": "20",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T17:43:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-ncg-men-5000",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "NCG男子5000m",
+      "discipline": "m5000",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T17:59:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-ncg-men-5000-heat-2",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "NCG男子5000m 2組",
+      "discipline": "m5000",
+      "distanceMeters": 5000,
+      "startsAt": "2026-04-26T18:15:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-1",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 1組",
+      "discipline": "m1500",
+      "heat": "1",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T13:57:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-2",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 2組",
+      "discipline": "m1500",
+      "heat": "2",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T13:57:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-3",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 3組",
+      "discipline": "m1500",
+      "heat": "3",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:09:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-4",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 4組",
+      "discipline": "m1500",
+      "heat": "4",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:09:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-5",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 5組",
+      "discipline": "m1500",
+      "heat": "5",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:21:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-6",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 6組",
+      "discipline": "m1500",
+      "heat": "6",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:21:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-7",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 7組",
+      "discipline": "m1500",
+      "heat": "7",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:33:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-8",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 8組",
+      "discipline": "m1500",
+      "heat": "8",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:33:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-men-1500-heat-9",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "男子1500m 9組",
+      "discipline": "m1500",
+      "heat": "9",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:45:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-ncg-men-1500",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "NCG男子1500m",
+      "discipline": "m1500",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:51:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    },
+    {
+      "slug": "nittaidai-long-distance-meet-328-ncg-men-1500-heat-2",
+      "editionSlug": "nittaidai-long-distance-meet-328",
+      "name": "NCG男子1500m 2組",
+      "discipline": "m1500",
+      "distanceMeters": 1500,
+      "startsAt": "2026-04-25T14:56:00+09:00",
+      "sourceId": "source-nittaidai-long-distance-meet-328-results"
+    }
+  ]
+}

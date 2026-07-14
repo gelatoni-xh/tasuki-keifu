@@ -72,6 +72,35 @@ const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
     "person-3131a30606ea0a39",
     "person-360d85d0e8f35dc3",
   ],
+  [
+    "inoue-daiki",
+    "inoue-daiki-tohoku-university",
+  ],
+  [
+    "person-e7949fe9a79220e893ae2de6",
+    "person-nittaidai328-dac6d2f38c6a4738ea7a",
+  ],
+  [
+    "person-kanaguri2021-e794b0e6af8de7a59ee4b880e5969c",
+    "person-hokuren2026chitose-e794b0e6af8de7a59ee4b880e5969c",
+  ],
+  [
+    "person-japan-running-news-2021-e6bb8be9878e20e88196e4b99f",
+    "person-press-kogyo-554e2fa4",
+  ],
+  [
+    "person-kanaguri2024-e9a3afe5b3b6e999b8e69697",
+    "person-kanaguri2026-e9a3afe5b3b620e999b8e69697",
+  ],
+  [
+    "person-kanaguri2025-e88d92e4ba95e4b883e6b5b7",
+    "arai-nanami",
+  ],
+  [
+    "person-e6a191e58e9f20e5a4a7e59c",
+    "person-kao-6f17f4eb",
+    "person-nittaidai328-ac0a0777128b13477117",
+  ],
 ] as const;
 
 const KNOWN_TRUE_SAME_NAME_SLUG_PAIRS = new Set(
