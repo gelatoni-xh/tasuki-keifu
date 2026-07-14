@@ -7,6 +7,11 @@ type MergeRule = {
   canonicalSlug: string;
   duplicateSlugs: string[];
   note: string;
+  canonicalSeed?: {
+    nameJa: string;
+    type: "high_school" | "university" | "club" | "corporate_team";
+    officialAliases?: string[];
+  };
 };
 
 const MERGE_RULES: MergeRule[] = [
@@ -37,6 +42,30 @@ const MERGE_RULES: MergeRule[] = [
     canonicalSlug: "org-nittaidai331-aa27484f28ba94d0ea2c",
     duplicateSlugs: ["org-nittaidai326-7ec06d32dfbc05025fd3"],
     note: "Normalize truncated high-school label to canonical school.",
+  },
+  {
+    canonicalSlug: "bunsei-university-of-art-high-school",
+    duplicateSlugs: [
+      "org-nittaidai330-e666e36075e0c6fa0a2a",
+      "org-nittaidai331-44b2db79f8863c71b7bb",
+      "hs-文星芸大附高",
+    ],
+    note: "Normalize Bunsei University of Art high-school naming variants from recent imports.",
+    canonicalSeed: {
+      nameJa: "文星芸術大学附属高校",
+      type: "high_school",
+      officialAliases: ["文星芸術大学附属高等学校"],
+    },
+  },
+  {
+    canonicalSlug: "shohei-high-school",
+    duplicateSlugs: ["org-nittaidai326-c86dcac2c9148a252948"],
+    note: "Normalize shorthand Shohei high-school label from recent imports.",
+    canonicalSeed: {
+      nameJa: "昌平高校",
+      type: "high_school",
+      officialAliases: ["昌平高等学校"],
+    },
   },
 ];
 
@@ -91,12 +120,25 @@ async function ensureOrganizationAlias(tx: PrismaLike, input: {
 }
 
 async function mergeIntoCanonical(rule: MergeRule) {
-  const canonical = await prisma.organization.findUnique({
+  let canonical = await prisma.organization.findUnique({
     where: { slug: rule.canonicalSlug },
     include: {
       nameVariants: true,
     },
   });
+
+  if (!canonical && rule.canonicalSeed) {
+    canonical = await prisma.organization.create({
+      data: {
+        slug: rule.canonicalSlug,
+        nameJa: rule.canonicalSeed.nameJa,
+        type: rule.canonicalSeed.type,
+      },
+      include: {
+        nameVariants: true,
+      },
+    });
+  }
 
   if (!canonical) {
     throw new Error(`Missing canonical organization: ${rule.canonicalSlug}`);
@@ -123,6 +165,14 @@ async function mergeIntoCanonical(rule: MergeRule) {
         type: "official",
         isPrimary: true,
       });
+
+      for (const officialAlias of rule.canonicalSeed?.officialAliases ?? []) {
+        await ensureOrganizationAlias(tx, {
+          organizationId: canonical.id,
+          value: officialAlias,
+          type: "official",
+        });
+      }
 
       await ensureOrganizationAlias(tx, {
         organizationId: canonical.id,
