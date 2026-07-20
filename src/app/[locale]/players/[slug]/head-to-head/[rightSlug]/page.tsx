@@ -110,12 +110,23 @@ export async function generateMetadata({ params }: HeadToHeadPageProps): Promise
     return {};
   }
 
-  return buildPageMetadata({
+  const metadata = buildPageMetadata({
     title: `${left.displayNameJa} vs ${right.displayNameJa}`,
     description: `${left.displayNameJa} と ${right.displayNameJa} の対決履歴ページです。`,
     path: `/players/${slug}/head-to-head/${rightSlug}`,
     locale: localeParam,
   });
+
+  metadata.robots = {
+    index: false,
+    follow: true,
+    googleBot: {
+      index: false,
+      follow: true,
+    },
+  };
+
+  return metadata;
 }
 
 export default async function HeadToHeadPage({ params }: HeadToHeadPageProps) {
