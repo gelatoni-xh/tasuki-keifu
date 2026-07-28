@@ -10,7 +10,7 @@ import { buildLocalizedUrl } from "@/lib/site";
 export const dynamic = "force-dynamic";
 
 export const sitemapIds = ["static", "players", "competitions", "organizations"] as const;
-type SitemapId = (typeof sitemapIds)[number];
+export type SitemapId = (typeof sitemapIds)[number];
 const sitemapLogger = createLogger("sitemap-route");
 
 function buildStaticEntries(lastModified: Date): MetadataRoute.Sitemap {
@@ -40,6 +40,35 @@ function buildStaticEntries(lastModified: Date): MetadataRoute.Sitemap {
       priority: 0.7,
     },
   ];
+}
+
+function getMostRecentUpdatedAt(items: Array<{ updatedAt: Date }>) {
+  return items.reduce<Date | null>((latest, item) => {
+    if (!latest || item.updatedAt > latest) {
+      return item.updatedAt;
+    }
+
+    return latest;
+  }, null);
+}
+
+export async function getSitemapLastModified(id: SitemapId) {
+  if (id === "static") {
+    return new Date();
+  }
+
+  if (id === "players") {
+    const players = await getIndexablePlayers();
+    return getMostRecentUpdatedAt(players) ?? new Date();
+  }
+
+  if (id === "competitions") {
+    const competitions = await getIndexableCompetitions();
+    return getMostRecentUpdatedAt(competitions) ?? new Date();
+  }
+
+  const organizations = await getIndexableOrganizations();
+  return getMostRecentUpdatedAt(organizations) ?? new Date();
 }
 
 export async function generateSitemaps() {

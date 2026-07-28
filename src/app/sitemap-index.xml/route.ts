@@ -1,13 +1,23 @@
 import { buildAbsoluteUrl } from "@/lib/site";
-import { sitemapIds } from "../sitemap";
+import { getSitemapLastModified, sitemapIds } from "../sitemap";
 
 export const dynamic = "force-dynamic";
 
-export function GET() {
+export async function GET() {
+  const sitemapEntries = await Promise.all(
+    sitemapIds.map(async (id) => ({
+      id,
+      loc: buildAbsoluteUrl(`/sitemap/${id}.xml`).toString(),
+      lastmod: (await getSitemapLastModified(id)).toISOString(),
+    })),
+  );
+
   const body = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...sitemapIds.map((id) => `  <sitemap><loc>${buildAbsoluteUrl(`/sitemap/${id}.xml`).toString()}</loc></sitemap>`),
+    ...sitemapEntries.map(
+      (entry) => `  <sitemap><loc>${entry.loc}</loc><lastmod>${entry.lastmod}</lastmod></sitemap>`,
+    ),
     "</sitemapindex>",
   ].join("\n");
 
