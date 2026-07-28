@@ -11,7 +11,7 @@ import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, fo
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { getCompetitionSeoTier, shouldIndexCompetitionPage } from "@/lib/seo";
-import { buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 
 type CompetitionEditionPageProps = {
   params: Promise<{
@@ -477,6 +477,43 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
         }
       : undefined,
   };
+  const competitionEventJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: displayName,
+    alternateName: edition.shortName ?? undefined,
+    description: competitionSummary,
+    startDate: edition.startsOn?.toISOString(),
+    endDate: edition.endsOn?.toISOString() ?? edition.startsOn?.toISOString(),
+    eventStatus:
+      edition.endsOn && edition.endsOn < new Date()
+        ? "https://schema.org/EventCompleted"
+        : edition.startsOn && edition.startsOn < new Date()
+          ? "https://schema.org/EventCompleted"
+          : "https://schema.org/EventScheduled",
+    organizer: {
+      "@type": "Organization",
+      name: edition.competition.organizer ?? "襷の系譜",
+      url: "https://tasukikeifu.com",
+    },
+    location: {
+      "@type": "Place",
+      name: edition.competition.region ?? displayName,
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: "JP",
+        ...(edition.competition.region && edition.competition.region !== "国際"
+          ? { addressRegion: edition.competition.region }
+          : {}),
+      },
+    },
+    performer: teamResults.slice(0, 10).map((result) => ({
+      "@type": "SportsOrganization",
+      name: result.organization.nameJa,
+      url: buildLocalizedUrl(locale, `/organizations/${result.organization.slug}`),
+    })),
+    url: `https://tasukikeifu.com/${locale}/competitions/${edition.slug}`,
+  };
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -520,6 +557,10 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(competitionJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(competitionEventJsonLd) }}
       />
       <script
         type="application/ld+json"
