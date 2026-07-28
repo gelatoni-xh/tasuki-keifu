@@ -20,7 +20,7 @@ import {
 } from "@/lib/membership";
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
-import { getPlayerSeoTier } from "@/lib/seo";
+import { getPlayerSeoTier, shouldIndexPlayerPage } from "@/lib/seo";
 import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 import type { PlayerRelationEntry, RelationStageKey } from "@/lib/player-relations/types";
 
@@ -173,7 +173,12 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
     ].filter(Boolean),
   });
 
-  if (seoTier === "thin") {
+  if (!shouldIndexPlayerPage({
+    slug,
+    memberships: player.memberships.length,
+    personalBests: player.personalBests.length,
+    results: player._count.raceResults,
+  })) {
     metadata.robots = {
       index: false,
       follow: true,

@@ -1,5 +1,15 @@
 export type SeoTier = "primary" | "secondary" | "thin";
 
+const organizationFallbackSlugPattern = /^(hs|jhs|club|univ)-/;
+
+export function isOpaquePlayerSlug(slug: string) {
+  return slug.startsWith("person-");
+}
+
+export function isFallbackOrganizationSlug(slug: string) {
+  return organizationFallbackSlugPattern.test(slug);
+}
+
 export function getPlayerSeoTier({
   memberships,
   personalBests,
@@ -62,4 +72,67 @@ export function getCompetitionSeoTier({
 
 export function isIndexableSeoTier(seoTier: SeoTier) {
   return seoTier !== "thin";
+}
+
+export function shouldIndexPlayerPage({
+  slug,
+  memberships,
+  personalBests,
+  results,
+}: {
+  slug: string;
+  memberships: number;
+  personalBests: number;
+  results: number;
+}) {
+  const seoTier = getPlayerSeoTier({ memberships, personalBests, results });
+  if (isIndexableSeoTier(seoTier)) {
+    return true;
+  }
+
+  if (isOpaquePlayerSlug(slug)) {
+    return false;
+  }
+
+  return memberships >= 1 || personalBests >= 1 || results >= 1;
+}
+
+export function shouldIndexOrganizationPage({
+  slug,
+  memberships,
+  raceResults,
+  teamResults,
+}: {
+  slug: string;
+  memberships: number;
+  raceResults: number;
+  teamResults: number;
+}) {
+  const seoTier = getOrganizationSeoTier({ memberships, raceResults, teamResults });
+  if (isIndexableSeoTier(seoTier)) {
+    return true;
+  }
+
+  if (isFallbackOrganizationSlug(slug)) {
+    return false;
+  }
+
+  return memberships >= 1 || raceResults >= 1 || teamResults >= 1;
+}
+
+export function shouldIndexCompetitionPage({
+  raceCount,
+  resultCount,
+  teamResultCount,
+}: {
+  raceCount: number;
+  resultCount: number;
+  teamResultCount: number;
+}) {
+  const seoTier = getCompetitionSeoTier({ raceCount, resultCount, teamResultCount });
+  if (isIndexableSeoTier(seoTier)) {
+    return true;
+  }
+
+  return resultCount >= 1 || teamResultCount >= 1;
 }

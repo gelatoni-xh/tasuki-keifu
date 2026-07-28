@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { formatDate, formatMembershipRole, formatOrganizationType, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { groupMembershipsByRole, isCurrentMembership, isMembershipPeriodUnknown } from "@/lib/membership";
-import { getOrganizationSeoTier } from "@/lib/seo";
+import { getOrganizationSeoTier, shouldIndexOrganizationPage } from "@/lib/seo";
 import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 
 type OrganizationDetailPageProps = {
@@ -91,7 +91,12 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
     ],
   });
 
-  if (seoTier === "thin") {
+  if (!shouldIndexOrganizationPage({
+    slug,
+    memberships: organization._count.memberships,
+    raceResults: organization._count.raceResults,
+    teamResults: organization._count.teamCompetitionResults,
+  })) {
     metadata.robots = {
       index: false,
       follow: true,

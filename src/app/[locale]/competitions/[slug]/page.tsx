@@ -10,7 +10,7 @@ import { getCachedValue } from "@/lib/server-cache";
 import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
-import { getCompetitionSeoTier } from "@/lib/seo";
+import { getCompetitionSeoTier, shouldIndexCompetitionPage } from "@/lib/seo";
 import { buildPageMetadata } from "@/lib/site";
 
 type CompetitionEditionPageProps = {
@@ -203,7 +203,11 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
     ],
   });
 
-  if (seoTier === "thin") {
+  if (!shouldIndexCompetitionPage({
+    raceCount,
+    resultCount,
+    teamResultCount,
+  })) {
     metadata.robots = {
       index: false,
       follow: true,

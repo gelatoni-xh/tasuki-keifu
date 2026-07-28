@@ -1,10 +1,9 @@
 import { publicCompetitionTypes } from "@/lib/public-competitions";
 import { prisma } from "@/lib/prisma";
 import {
-  getCompetitionSeoTier,
-  getOrganizationSeoTier,
-  getPlayerSeoTier,
-  isIndexableSeoTier,
+  shouldIndexCompetitionPage,
+  shouldIndexOrganizationPage,
+  shouldIndexPlayerPage,
 } from "@/lib/seo";
 
 export async function getIndexablePlayers() {
@@ -23,13 +22,12 @@ export async function getIndexablePlayers() {
   });
 
   return players.filter((player) =>
-    isIndexableSeoTier(
-      getPlayerSeoTier({
-        memberships: player._count.memberships,
-        personalBests: player._count.personalBests,
-        results: player._count.raceResults,
-      }),
-    ),
+    shouldIndexPlayerPage({
+      slug: player.slug,
+      memberships: player._count.memberships,
+      personalBests: player._count.personalBests,
+      results: player._count.raceResults,
+    }),
   );
 }
 
@@ -49,13 +47,12 @@ export async function getIndexableOrganizations() {
   });
 
   return organizations.filter((organization) =>
-    isIndexableSeoTier(
-      getOrganizationSeoTier({
-        memberships: organization._count.memberships,
-        raceResults: organization._count.raceResults,
-        teamResults: organization._count.teamCompetitionResults,
-      }),
-    ),
+    shouldIndexOrganizationPage({
+      slug: organization.slug,
+      memberships: organization._count.memberships,
+      raceResults: organization._count.raceResults,
+      teamResults: organization._count.teamCompetitionResults,
+    }),
   );
 }
 
@@ -94,12 +91,10 @@ export async function getIndexableCompetitions() {
     const resultCount = competition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
     const teamResultCount = competition.teamCompetitionResults.length;
 
-    return isIndexableSeoTier(
-      getCompetitionSeoTier({
-        raceCount,
-        resultCount,
-        teamResultCount,
-      }),
-    );
+    return shouldIndexCompetitionPage({
+      raceCount,
+      resultCount,
+      teamResultCount,
+    });
   });
 }
