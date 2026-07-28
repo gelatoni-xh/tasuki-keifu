@@ -27,15 +27,15 @@ export async function generateMetadata({ params }: Pick<CompetitionsPageProps, "
     return {};
   }
 
-  const title = "駅伝大会一覧・大会名検索";
-  const description = "大会名や届次で駅伝大会を探せる一覧ページです。各大会の結果や区間情報の確認入口として使えます。";
+  const title = "駅伝大会一覧 | 年度・結果・出場選手検索";
+  const description = "大会名、年度、届次から駅伝大会を探せる一覧ページです。各大会の結果、出場選手、区間情報、開催日の確認入口として使えます。";
 
   return buildPageMetadata({
     title,
     description,
     path: "/competitions",
     locale: localeParam,
-    keywords: ["駅伝大会一覧", "駅伝結果", "大会検索", "大会名検索"],
+    keywords: ["駅伝大会一覧", "駅伝結果", "大会検索", "大会名検索", "年度別大会", "出場選手", "大会記録"],
   });
 }
 

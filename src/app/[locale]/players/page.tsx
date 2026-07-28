@@ -33,15 +33,15 @@ export async function generateMetadata({ params }: Pick<PlayersPageProps, "param
     return {};
   }
 
-  const title = "駅伝人物一覧・人物名検索";
-  const description = "人物名で駅伝の人物を探せる一覧ページです。所属、出身校、PBの確認入口として使えます。";
+  const title = "駅伝選手・人物一覧 | 所属・大学・高校・PB検索";
+  const description = "人物名から駅伝選手・関係人物を探せる一覧ページです。現在の所属、大学、高校、出身地、PB、大会成績の確認入口として使えます。";
 
   return buildPageMetadata({
     title,
     description,
     path: "/players",
     locale: localeParam,
-    keywords: ["駅伝人物一覧", "駅伝選手一覧", "人物名検索", "駅伝人物検索"],
+    keywords: ["駅伝人物一覧", "駅伝選手一覧", "人物名検索", "駅伝人物検索", "所属検索", "大学検索", "高校検索", "PB検索"],
   });
 }
 

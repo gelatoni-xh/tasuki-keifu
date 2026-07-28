@@ -30,15 +30,15 @@ export async function generateMetadata({ params }: Pick<OrganizationsPageProps, 
     return {};
   }
 
-  const title = "学校・実業団・連盟一覧";
-  const description = "組織名や略称で学校、大学、実業団などの組織を探せる一覧ページです。関連人物や関連データの確認入口として使えます。";
+  const title = "学校・大学・実業団一覧 | 所属選手・駅伝成績検索";
+  const description = "学校、大学、実業団、クラブ、連盟などの組織を探せる一覧ページです。所属選手、関連人物、駅伝成績、地域情報の確認入口として使えます。";
 
   return buildPageMetadata({
     title,
     description,
     path: "/organizations",
     locale: localeParam,
-    keywords: ["大学駅伝学校一覧", "実業団一覧", "連盟一覧", "組織名検索"],
+    keywords: ["大学駅伝学校一覧", "実業団一覧", "連盟一覧", "組織名検索", "所属選手", "陸上部", "駅伝成績"],
   });
 }
 
