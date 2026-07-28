@@ -430,6 +430,17 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     .slice(0, 5)
     .map((result) => result.race.competitionEdition.shortName ?? result.race.competitionEdition.officialName)
     .filter((name, index, list) => list.indexOf(name) === index);
+  const highlightedCompetitionEditions = Array.from(
+    new Map(
+      sortedRaceResults.slice(0, 12).map((result) => [
+        result.race.competitionEdition.slug,
+        {
+          slug: result.race.competitionEdition.slug,
+          label: result.race.competitionEdition.shortName ?? result.race.competitionEdition.officialName,
+        },
+      ]),
+    ).values(),
+  ).slice(0, 4);
   const playerSummary = [
     `${player.displayNameJa}の人物データページです。`,
     currentMembership?.organization.nameJa ? `現在の所属は${currentMembership.organization.nameJa}です。` : null,
@@ -559,6 +570,30 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
                   {playerSummary}
                 </p>
+                <div className="mt-4 flex flex-wrap gap-2 text-sm">
+                  {currentMembership?.organization ? (
+                    <OrganizationInlineLink locale={locale} organization={currentMembership.organization} />
+                  ) : null}
+                  {university?.organization && university.organization.id !== currentMembership?.organization?.id ? (
+                    <OrganizationInlineLink locale={locale} organization={university.organization} />
+                  ) : null}
+                  {highSchool?.organization &&
+                  highSchool.organization.id !== currentMembership?.organization?.id &&
+                  highSchool.organization.id !== university?.organization?.id ? (
+                    <OrganizationInlineLink locale={locale} organization={highSchool.organization} />
+                  ) : null}
+                  {highlightedCompetitionEditions.map((edition) => (
+                    <Link
+                      className="border border-[#ded8cc] px-3 py-1 text-[#8a1f2d] underline-offset-4 hover:underline"
+                      data-analytics-event="player_to_competition_click"
+                      data-analytics-link-type="player_header_highlight"
+                      href={`/${locale}/competitions/${edition.slug}`}
+                      key={edition.slug}
+                    >
+                      {edition.label}
+                    </Link>
+                  ))}
+                </div>
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
                   {playerStatItems.map((item) => (
                     <div className="border border-[#e7e1d8] bg-[#fcfaf5] px-3 py-2" key={item.label}>

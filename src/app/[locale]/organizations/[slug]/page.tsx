@@ -296,6 +296,30 @@ export default async function OrganizationDetailPage({ params }: OrganizationDet
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
                   {organizationSummary}
                 </p>
+                <div className="mt-4 flex flex-wrap gap-2 text-sm">
+                  {highlightedPeople.slice(0, 4).map((person) => (
+                    <Link
+                      className="border border-[#ded8cc] px-3 py-1 text-[#8a1f2d] underline-offset-4 hover:underline"
+                      data-analytics-event="player_profile_view"
+                      data-analytics-link-type="organization_header_player"
+                      href={`/${locale}/players/${person.slug}`}
+                      key={person.id}
+                    >
+                      {person.displayNameJa}
+                    </Link>
+                  ))}
+                  {ekidenResults.slice(0, 3).map((result) => (
+                    <Link
+                      className="border border-[#ded8cc] px-3 py-1 text-[#8a1f2d] underline-offset-4 hover:underline"
+                      data-analytics-event="organization_to_competition_click"
+                      data-analytics-link-type="organization_header_competition"
+                      href={`/${locale}/competitions/${result.competitionEdition.slug}`}
+                      key={result.id}
+                    >
+                      {result.competitionEdition.shortName ?? result.competitionEdition.officialName}
+                    </Link>
+                  ))}
+                </div>
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
                   {organizationStatItems.map((item) => (
                     <div className="border border-[#e7e1d8] bg-[#fcfaf5] px-3 py-2" key={item.label}>

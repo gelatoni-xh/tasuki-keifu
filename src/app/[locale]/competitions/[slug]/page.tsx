@@ -555,6 +555,30 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
                   {competitionSummary}
                 </p>
+                <div className="mt-4 flex flex-wrap gap-2 text-sm">
+                  {teamResults.slice(0, 5).map((result) => (
+                    <Link
+                      className="border border-[#ded8cc] px-3 py-1 text-[#8a1f2d] underline-offset-4 hover:underline"
+                      data-analytics-event="competition_to_organization_click"
+                      data-analytics-link-type="competition_header_team"
+                      href={`/${locale}/organizations/${result.organization.slug}`}
+                      key={result.id}
+                    >
+                      {result.organization.nameJa}
+                    </Link>
+                  ))}
+                  {sortedRaces.slice(0, 3).map((race) => (
+                    <Link
+                      className="border border-[#ded8cc] px-3 py-1 text-[#8a1f2d] underline-offset-4 hover:underline"
+                      data-analytics-event="competition_tab_navigation"
+                      data-analytics-link-type="competition_header_race_unit"
+                      href={buildCompetitionEditionHref("race-units", race.slug)}
+                      key={race.id}
+                    >
+                      {race.name}
+                    </Link>
+                  ))}
+                </div>
               </div>
               <div className="flex gap-3 text-sm text-[#59615c]">
                 <span className="border border-[#ded8cc] px-3 py-1">
