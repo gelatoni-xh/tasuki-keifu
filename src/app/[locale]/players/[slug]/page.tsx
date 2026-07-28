@@ -131,22 +131,22 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
   const currentMembership = getCurrentMembership(player.memberships);
   const university = getUniversityMembership(player.memberships);
   const highSchool = getHighSchoolMembership(player.memberships);
-  const seoTier = getPlayerSeoTier({
-    memberships: player.memberships.length,
-    personalBests: player.personalBests.length,
-    results: player._count.raceResults,
-  });
   const organizationVariants = Array.from(
     new Set(
       player.memberships.flatMap((membership) => buildOrganizationNameVariants(membership.organization)),
     ),
   );
-  const currentOrganizationVariants = buildOrganizationNameVariants(currentMembership?.organization);
-  const titleAffiliation =
-    currentOrganizationVariants.length > 0 ? ` | ${currentOrganizationVariants.join("・")}` : "";
-  const title = `${player.displayNameJa}の所属・記録・大会成績${titleAffiliation}`;
+  const titleFacts = [
+    currentMembership?.organization ? `現在 ${formatOrganizationLabel(currentMembership.organization)}` : null,
+    university?.organization ? `大学 ${formatOrganizationLabel(university.organization)}` : null,
+    highSchool?.organization ? `高校 ${formatOrganizationLabel(highSchool.organization)}` : null,
+  ].filter(Boolean);
+  const title =
+    titleFacts.length > 0
+      ? `${player.displayNameJa} | ${titleFacts.join(" | ")} | 記録・大会成績`
+      : `${player.displayNameJa} | 所属・記録・大会成績`;
   const descriptionParts = [
-    `${player.displayNameJa}の所属、記録、大会成績を確認できる人物資料ページです。`,
+    `${player.displayNameJa}の現在の所属、大学、高校、記録、大会成績を確認できる人物資料ページです。`,
     currentMembership?.organization ? `現在の所属は${formatOrganizationLabel(currentMembership.organization)}です。` : null,
     university?.organization ? `大学は${formatOrganizationLabel(university.organization)}です。` : null,
     highSchool?.organization ? `出身校は${formatOrganizationLabel(highSchool.organization)}です。` : null,
@@ -166,6 +166,10 @@ export async function generateMetadata({ params }: PlayerDetailPageProps): Promi
       player.displayNameKana ?? "",
       ...organizationVariants,
       ...organizationVariants.map((name) => `${player.displayNameJa} ${name}`),
+      `${player.displayNameJa} 現在`,
+      `${player.displayNameJa} 大学`,
+      `${player.displayNameJa} 高校`,
+      `${player.displayNameJa} 出身`,
       "駅伝選手",
       "長距離",
       "大会成績",

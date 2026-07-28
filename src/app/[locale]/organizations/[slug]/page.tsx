@@ -49,13 +49,8 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
 
   const organizationLabels = [organization.nameJa, organization.shortName ?? ""].filter(Boolean);
   const primaryLabel = formatOrganizationLabel(organization.nameJa, organization.shortName);
-  const title = `${primaryLabel}の所属人物・駅伝関連データ`;
+  const title = `${primaryLabel} | 所属選手・陸上長距離・駅伝成績`;
   const dictionary = getDictionary(locale);
-  const seoTier = getOrganizationSeoTier({
-    memberships: organization._count.memberships,
-    raceResults: organization._count.raceResults,
-    teamResults: organization._count.teamCompetitionResults,
-  });
   const description = [
     interpolate(dictionary.organizations.detailSeoIntro, {
       name: primaryLabel,
@@ -66,6 +61,9 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
       ? interpolate(dictionary.organizations.detailSeoMemberships, {
           count: organization._count.memberships,
         })
+      : null,
+    organization._count.teamCompetitionResults > 0
+      ? `駅伝のチーム成績を${organization._count.teamCompetitionResults}件収録しています。`
       : null,
     organization.prefecture
       ? interpolate(dictionary.organizations.detailSeoLocation, {
@@ -85,6 +83,8 @@ export async function generateMetadata({ params }: OrganizationDetailPageProps):
       ...organizationLabels,
       ...organizationLabels.map((name) => `${name} 駅伝`),
       ...organizationLabels.map((name) => `${name} 長距離`),
+      ...organizationLabels.map((name) => `${name} 陸上部`),
+      ...organizationLabels.map((name) => `${name} 所属選手`),
       formatOrganizationType(organization.type, locale),
       "所属人物",
       "駅伝チーム",

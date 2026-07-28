@@ -180,15 +180,14 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
   const raceCount = edition.races.length;
   const resultCount = edition.races.reduce((sum, race) => sum + race._count.raceResults, 0);
   const teamResultCount = edition.teamCompetitionResults?.length ?? 0;
-  const seoTier = getCompetitionSeoTier({ raceCount, resultCount, teamResultCount });
   const keywordVariants = buildCompetitionKeywordVariants(edition);
   const displayName = formatCompetitionEditionDisplayName(edition);
-  const title = `${displayName}の結果・出場選手`;
+  const title = `${displayName} | 結果・出場選手・大会記録`;
   const description = [
-    `${edition.competition.nameJa}の届次ページです。`,
-    `${edition.year}年開催の${edition.competition.nameJa}の結果ページで、${edition.competition.nameJa} ${edition.year}の記録も確認できます。`,
+    `${edition.year}年開催の${displayName}の結果ページです。`,
+    `${edition.competition.nameJa}の出場選手、順位、記録をまとめて確認できます。`,
     `開催日は${formatDate(edition.startsOn) || "未確認"}。`,
-    `${raceCount}件の競技単位と${resultCount}件の結果を収録しています。`,
+    `${raceCount}件の競技単位、${resultCount}件の個人成績、${teamResultCount}件のチーム成績を収録しています。`,
   ].join(" ");
 
   const metadata = buildPageMetadata({
@@ -198,6 +197,9 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
     locale,
     keywords: [
       ...keywordVariants,
+      ...keywordVariants.map((name) => `${name} 結果`),
+      ...keywordVariants.map((name) => `${name} 出場選手`),
+      ...keywordVariants.map((name) => `${name} 記録`),
       "駅伝結果",
       "出場選手",
     ],
