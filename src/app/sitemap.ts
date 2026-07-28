@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { createLogger } from "@/lib/logger";
 import {
   getIndexableCompetitions,
   getIndexableOrganizations,
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 const sitemapIds = ["static", "players", "competitions", "organizations"] as const;
 type SitemapId = (typeof sitemapIds)[number];
+const sitemapLogger = createLogger("sitemap-route");
 
 function buildStaticEntries(lastModified: Date): MetadataRoute.Sitemap {
   return [
@@ -41,6 +43,9 @@ function buildStaticEntries(lastModified: Date): MetadataRoute.Sitemap {
 }
 
 export async function generateSitemaps() {
+  sitemapLogger.info("sitemap_index_generated", {
+    sitemap_ids: sitemapIds,
+  });
   return sitemapIds.map((id) => ({ id }));
 }
 
@@ -54,44 +59,73 @@ export default async function sitemap({
 
   try {
     if (resolvedId === "static") {
-      return buildStaticEntries(now);
+      const entries = buildStaticEntries(now);
+      sitemapLogger.info("sitemap_generated", {
+        sitemap_id: resolvedId,
+        entry_count: entries.length,
+      });
+      return entries;
     }
 
     if (resolvedId === "players") {
       const players = await getIndexablePlayers();
 
-      return players.map((player) => ({
+      const entries = players.map((player) => ({
         url: buildLocalizedUrl("ja", `/players/${player.slug}`),
         lastModified: player.updatedAt,
         changeFrequency: "weekly" as const,
         priority: 0.8,
       }));
+      sitemapLogger.info("sitemap_generated", {
+        sitemap_id: resolvedId,
+        entry_count: entries.length,
+      });
+      return entries;
     }
 
     if (resolvedId === "competitions") {
       const competitions = await getIndexableCompetitions();
 
-      return competitions.map((competition) => ({
+      const entries = competitions.map((competition) => ({
         url: buildLocalizedUrl("ja", `/competitions/${competition.slug}`),
         lastModified: competition.updatedAt,
         changeFrequency: "weekly" as const,
         priority: 0.7,
       }));
+      sitemapLogger.info("sitemap_generated", {
+        sitemap_id: resolvedId,
+        entry_count: entries.length,
+      });
+      return entries;
     }
 
     if (resolvedId === "organizations") {
       const organizations = await getIndexableOrganizations();
 
-      return organizations.map((organization) => ({
+      const entries = organizations.map((organization) => ({
         url: buildLocalizedUrl("ja", `/organizations/${organization.slug}`),
         lastModified: organization.updatedAt,
         changeFrequency: "weekly" as const,
         priority: 0.6,
       }));
+      sitemapLogger.info("sitemap_generated", {
+        sitemap_id: resolvedId,
+        entry_count: entries.length,
+      });
+      return entries;
     }
 
-    return buildStaticEntries(now);
-  } catch {
+    const fallbackEntries = buildStaticEntries(now);
+    sitemapLogger.warn("sitemap_generated_with_unknown_id", {
+      sitemap_id: resolvedId,
+      entry_count: fallbackEntries.length,
+    });
+    return fallbackEntries;
+  } catch (error) {
+    sitemapLogger.error("sitemap_generation_failed", {
+      sitemap_id: resolvedId,
+      error,
+    });
     return resolvedId === "static" ? buildStaticEntries(now) : [];
   }
 }
