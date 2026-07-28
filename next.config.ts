@@ -1,5 +1,71 @@
 import type { NextConfig } from "next";
 
+const playerSlugRedirects = [
+  {
+    source: "/ja/players/person-nittaidai324-5e12a45e5b3a94345664",
+    destination: "/ja/players/nakagawa-takumi-masuda-seifu",
+  },
+  {
+    source: "/ja/players/person-e4b8ade5b79d20e68b93e6b5",
+    destination: "/ja/players/nakagawa-takumi-masuda-seifu",
+  },
+  {
+    source: "/ja/players/person-e4bd90e897a420e58ca0",
+    destination: "/ja/players/sato-takumi-sapporo-gakuin",
+  },
+  {
+    source: "/ja/players/person-e5898de794b020e999bde590",
+    destination: "/ja/players/maeda-hinata-kagoshima-josei",
+  },
+  {
+    source: "/ja/players/person-nittaidai329-eff162a260601d7821f4",
+    destination: "/ja/players/kojima-daiki-mikata",
+  },
+  {
+    source: "/ja/players/person-nittaidai324-1611f58a45b3bd8b24f5",
+    destination: "/ja/players/kojima-daiki-mikata",
+  },
+  {
+    source: "/ja/players/person-e5b08fe5b3b620e5a4a7e8bc",
+    destination: "/ja/players/kojima-daiki-mikata",
+  },
+  {
+    source: "/ja/players/person-jusic2021-e69c8de983a8e587b1e69d8f",
+    destination: "/ja/players/hattori-kaishin",
+  },
+  {
+    source: "/ja/players/person-nittaidai329-a13e0da807bb654c9f7a",
+    destination: "/ja/players/higuchi-shota-oita-tomei",
+  },
+  {
+    source: "/ja/players/person-e6a88be58fa320e7bf94e5a4",
+    destination: "/ja/players/higuchi-shota-oita-tomei",
+  },
+  {
+    source: "/ja/players/person-kanaguri2025-e6ba90e8a395e8b2b4",
+    destination: "/ja/players/minamoto-hiroki",
+  },
+  {
+    source: "/ja/players/person-kao-4367c7eb",
+    destination: "/ja/players/ishii-yukichi",
+  },
+  {
+    source: "/ja/players/person-kanaguri2025-e88d92e4ba95e4b883e6b5b7",
+    destination: "/ja/players/arai-nanami",
+  },
+  {
+    source: "/ja/players/person-e897a4e4ba9520e99b84e5a4",
+    destination: "/ja/players/fujii-yudai-oita-nishi",
+  },
+  {
+    source: "/ja/players/person-e8a5bfe794b020e5a3aee5bf",
+    destination: "/ja/players/nishida-soji-kokoku-high-school",
+  },
+].map((redirect) => ({
+  ...redirect,
+  permanent: true,
+}));
+
 const nextConfig: NextConfig = {
   output: "standalone",
   turbopack: {
@@ -7,6 +73,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      ...playerSlugRedirects,
       {
         source: "/ja/players/haruto-miyamoto",
         destination: "/ja/players/miyamoto-haruto",
