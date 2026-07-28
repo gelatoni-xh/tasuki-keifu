@@ -73,6 +73,11 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: "/sitemap.xml",
+        destination: "/sitemap-index.xml",
+        permanent: true,
+      },
       ...playerSlugRedirects,
       {
         source: "/ja/players/haruto-miyamoto",

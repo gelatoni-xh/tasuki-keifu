@@ -9,7 +9,7 @@ import { buildLocalizedUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
-const sitemapIds = ["static", "players", "competitions", "organizations"] as const;
+export const sitemapIds = ["static", "players", "competitions", "organizations"] as const;
 type SitemapId = (typeof sitemapIds)[number];
 const sitemapLogger = createLogger("sitemap-route");
 
