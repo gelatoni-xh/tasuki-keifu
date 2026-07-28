@@ -114,6 +114,11 @@ export function buildWebsiteJsonLd() {
     name: siteConfig.searchName,
     alternateName: siteConfig.alternateSiteNames,
     url: buildAbsoluteUrl("/").toString(),
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${buildLocalizedUrl(siteConfig.defaultLocale, "/players")}?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
   };
 }
 
