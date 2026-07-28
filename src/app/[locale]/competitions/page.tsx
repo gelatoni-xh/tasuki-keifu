@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { publicCompetitionTypes } from "@/lib/public-competitions";
-import { buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 
 type CompetitionsPageProps = {
   params: Promise<{
@@ -157,9 +157,26 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
   const paginatedEditions = filteredEditions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginationItems = getPaginationItems(currentPage, totalPages);
+  const competitionsListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "駅伝大会一覧",
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    numberOfItems: paginatedEditions.length,
+    itemListElement: paginatedEditions.map((edition, index) => ({
+      "@type": "ListItem",
+      position: (currentPage - 1) * pageSize + index + 1,
+      url: buildLocalizedUrl(locale, `/competitions/${edition.slug}`),
+      name: formatCompetitionEditionDisplayName(edition),
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(competitionsListJsonLd) }}
+      />
       <SiteHeader locale={locale} path={buildCompetitionsPath(locale, { q: query, competition: competitionSlug })} />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">

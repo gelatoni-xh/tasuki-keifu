@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { formatOrganizationType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
-import { buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 
 type OrganizationsPageProps = {
   params: Promise<{
@@ -189,9 +189,26 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
   const paginatedOrganizations = filteredOrganizations.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginationItems = getPaginationItems(currentPage, totalPages);
+  const organizationsListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "組織一覧",
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    numberOfItems: paginatedOrganizations.length,
+    itemListElement: paginatedOrganizations.map((organization, index) => ({
+      "@type": "ListItem",
+      position: (currentPage - 1) * pageSize + index + 1,
+      url: buildLocalizedUrl(locale, `/organizations/${organization.slug}`),
+      name: organization.nameJa,
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationsListJsonLd) }}
+      />
       <SiteHeader
         locale={locale}
         path={buildOrganizationsPath(locale, { q: query, type: organizationType, status, prefecture })}

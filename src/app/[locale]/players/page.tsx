@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { formatDiscipline, formatOrganizationType, formatPersonType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
-import { buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
 import { getCurrentMembership, getHighSchoolMembership, getUniversityMembership } from "@/lib/membership";
 
 type PlayersPageProps = {
@@ -220,9 +220,26 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     hometown,
   };
   const paginationItems = getPaginationItems(currentPage, totalPages);
+  const playersListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "駅伝人物一覧",
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    numberOfItems: paginatedPlayers.length,
+    itemListElement: paginatedPlayers.map((player, index) => ({
+      "@type": "ListItem",
+      position: (currentPage - 1) * pageSize + index + 1,
+      url: buildLocalizedUrl(locale, `/players/${player.slug}`),
+      name: player.displayNameJa,
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(playersListJsonLd) }}
+      />
       <SiteHeader locale={locale} path={pagePathWithQuery} />
       <main className="px-5 py-10">
         <div className="mx-auto max-w-6xl space-y-8">
