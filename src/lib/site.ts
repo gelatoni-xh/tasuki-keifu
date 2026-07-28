@@ -44,9 +44,19 @@ export function buildLocalizedUrl(locale: Locale, path = "") {
   return buildAbsoluteUrl(buildLocalizedPath(locale, path)).toString();
 }
 
-export function buildLocaleAlternates(path = "") {
+function getCanonicalLocale(locale: Locale) {
+  return locale === siteConfig.defaultLocale ? locale : siteConfig.defaultLocale;
+}
+
+function getIndexableLocales() {
+  return [siteConfig.defaultLocale];
+}
+
+export function buildLocaleAlternates(path = "", locale: Locale = siteConfig.defaultLocale) {
+  const alternateLocales = locale === siteConfig.defaultLocale ? getIndexableLocales() : [siteConfig.defaultLocale];
+
   return Object.fromEntries(
-    locales.map((locale) => [locale, buildLocalizedUrl(locale, path)]),
+    alternateLocales.map((alternateLocale) => [alternateLocale, buildLocalizedUrl(alternateLocale, path)]),
   );
 }
 
@@ -67,6 +77,8 @@ export function buildPageMetadata({
   keywords = [],
   type = "website",
 }: BuildMetadataInput): Metadata {
+  const canonicalLocale = getCanonicalLocale(locale);
+
   return {
     title,
     description,
@@ -76,8 +88,8 @@ export function buildPageMetadata({
     publisher: siteConfig.name,
     category: "Sports",
     alternates: {
-      canonical: buildLocalizedPath(locale, path),
-      languages: buildLocaleAlternates(path),
+      canonical: buildLocalizedPath(canonicalLocale, path),
+      languages: buildLocaleAlternates(path, locale),
     },
     openGraph: {
       type,
