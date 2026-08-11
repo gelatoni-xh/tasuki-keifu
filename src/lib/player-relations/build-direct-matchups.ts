@@ -48,6 +48,7 @@ export async function buildDirectMatchups(personId: string) {
           competitionEdition: {
             select: {
               officialName: true,
+              startsOn: true,
               competition: {
                 select: {
                   type: true,
@@ -83,16 +84,17 @@ export async function buildDirectMatchups(personId: string) {
       current.stages.add(stageLabel);
     }
 
-    current.races.push({
-      raceId: result.raceId,
-      raceName: result.race.name,
-      leg: result.race.leg,
-      startsAt: result.race.startsAt,
-      competitionEditionId: result.race.competitionEditionId,
-      competitionType: result.race.competitionEdition.competition.type,
-      competitionName: result.race.competitionEdition.officialName,
-      discipline: result.race.discipline,
-    });
+      current.races.push({
+        raceId: result.raceId,
+        raceName: result.race.name,
+        leg: result.race.leg,
+        startsAt: result.race.startsAt,
+        competitionEditionId: result.race.competitionEditionId,
+        competitionEditionStartsOn: result.race.competitionEdition.startsOn,
+        competitionType: result.race.competitionEdition.competition.type,
+        competitionName: result.race.competitionEdition.officialName,
+        discipline: result.race.discipline,
+      });
 
     aggregates.set(result.personId, current);
   }

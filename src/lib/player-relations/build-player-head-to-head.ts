@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getStageLabel } from "@/lib/player-relations/relation-helpers";
+import { countOverlapYears, getStageLabel } from "@/lib/player-relations/relation-helpers";
 import type {
   HeadToHeadComparisonStatus,
   HeadToHeadMatch,
@@ -86,6 +86,11 @@ function windowsOverlap(
 
 function buildSharedContext(left: SharedContextInput, right: SharedContextInput): PlayerRelationContext {
   const sharedTeamStages = new Set<RelationStageKey>();
+  const teamOverlapYears = {
+    juniorHighSchool: 0,
+    highSchool: 0,
+    university: 0,
+  };
 
   for (const leftMembership of left.memberships) {
     for (const rightMembership of right.memberships) {
@@ -101,14 +106,73 @@ function buildSharedContext(left: SharedContextInput, right: SharedContextInput)
       if (stage) {
         sharedTeamStages.add(stage);
       }
+
+      if (leftMembership.organization.type === "junior_high_school") {
+        teamOverlapYears.juniorHighSchool = Math.max(teamOverlapYears.juniorHighSchool, countOverlapYears({
+          organizationId: leftMembership.organizationId,
+          organizationType: leftMembership.organization.type,
+          startDate: leftMembership.startDate,
+          endDate: leftMembership.endDate,
+          startYear: leftMembership.startYear,
+          endYear: leftMembership.endYear,
+        }, {
+          organizationId: rightMembership.organizationId,
+          organizationType: rightMembership.organization.type,
+          startDate: rightMembership.startDate,
+          endDate: rightMembership.endDate,
+          startYear: rightMembership.startYear,
+          endYear: rightMembership.endYear,
+        }));
+      } else if (leftMembership.organization.type === "high_school") {
+        teamOverlapYears.highSchool = Math.max(teamOverlapYears.highSchool, countOverlapYears({
+          organizationId: leftMembership.organizationId,
+          organizationType: leftMembership.organization.type,
+          startDate: leftMembership.startDate,
+          endDate: leftMembership.endDate,
+          startYear: leftMembership.startYear,
+          endYear: leftMembership.endYear,
+        }, {
+          organizationId: rightMembership.organizationId,
+          organizationType: rightMembership.organization.type,
+          startDate: rightMembership.startDate,
+          endDate: rightMembership.endDate,
+          startYear: rightMembership.startYear,
+          endYear: rightMembership.endYear,
+        }));
+      } else if (leftMembership.organization.type === "university") {
+        teamOverlapYears.university = Math.max(teamOverlapYears.university, countOverlapYears({
+          organizationId: leftMembership.organizationId,
+          organizationType: leftMembership.organization.type,
+          startDate: leftMembership.startDate,
+          endDate: leftMembership.endDate,
+          startYear: leftMembership.startYear,
+          endYear: leftMembership.endYear,
+        }, {
+          organizationId: rightMembership.organizationId,
+          organizationType: rightMembership.organization.type,
+          startDate: rightMembership.startDate,
+          endDate: rightMembership.endDate,
+          startYear: rightMembership.startYear,
+          endYear: rightMembership.endYear,
+        }));
+      }
     }
   }
 
+  const leftJuniorHighIds = new Set(
+    left.memberships.filter((membership) => membership.organization.type === "junior_high_school").map((membership) => membership.organizationId),
+  );
   const leftHighSchoolIds = new Set(
     left.memberships.filter((membership) => membership.organization.type === "high_school").map((membership) => membership.organizationId),
   );
   const leftUniversityIds = new Set(
     left.memberships.filter((membership) => membership.organization.type === "university").map((membership) => membership.organizationId),
+  );
+  const leftCorporateTeamIds = new Set(
+    left.memberships.filter((membership) => membership.organization.type === "corporate_team").map((membership) => membership.organizationId),
+  );
+  const rightJuniorHighIds = new Set(
+    right.memberships.filter((membership) => membership.organization.type === "junior_high_school").map((membership) => membership.organizationId),
   );
   const rightHighSchoolIds = new Set(
     right.memberships.filter((membership) => membership.organization.type === "high_school").map((membership) => membership.organizationId),
@@ -116,12 +180,32 @@ function buildSharedContext(left: SharedContextInput, right: SharedContextInput)
   const rightUniversityIds = new Set(
     right.memberships.filter((membership) => membership.organization.type === "university").map((membership) => membership.organizationId),
   );
+  const rightCorporateTeamIds = new Set(
+    right.memberships.filter((membership) => membership.organization.type === "corporate_team").map((membership) => membership.organizationId),
+  );
+  const sameHometown = Boolean(left.hometown && right.hometown && left.hometown === right.hometown);
+  const sharedJuniorHighSchool = [...leftJuniorHighIds].some((id) => rightJuniorHighIds.has(id));
+  const sharedHighSchool = [...leftHighSchoolIds].some((id) => rightHighSchoolIds.has(id));
+  const sharedUniversity = [...leftUniversityIds].some((id) => rightUniversityIds.has(id));
+  const sharedCorporateTeam = [...leftCorporateTeamIds].some((id) => rightCorporateTeamIds.has(id));
 
   return {
+    sameHometown,
+    sharedOrigins: {
+      juniorHighSchool: sharedJuniorHighSchool,
+      highSchool: sharedHighSchool,
+      university: sharedUniversity,
+      corporateTeam: sharedCorporateTeam,
+    },
+    teamOverlapYears: {
+      juniorHighSchool: teamOverlapYears.juniorHighSchool || undefined,
+      highSchool: teamOverlapYears.highSchool || undefined,
+      university: teamOverlapYears.university || undefined,
+    },
     sharedTeamStages: [...sharedTeamStages],
-    sharedHometown: Boolean(left.hometown && right.hometown && left.hometown === right.hometown),
-    sharedHighSchool: [...leftHighSchoolIds].some((id) => rightHighSchoolIds.has(id)),
-    sharedUniversity: [...leftUniversityIds].some((id) => rightUniversityIds.has(id)),
+    sharedHometown: sameHometown,
+    sharedHighSchool,
+    sharedUniversity,
   };
 }
 
@@ -290,6 +374,7 @@ export async function buildPlayerHeadToHead(leftPersonId: string, rightPersonId:
     firstMatchAt: matches.at(-1)?.raceDate ?? null,
     latestMatchAt: matches[0]?.raceDate ?? null,
     stageCounts: {
+      juniorHigh: matches.filter((match) => match.stage === "junior_high_school").length,
       highSchool: matches.filter((match) => match.stage === "high_school").length,
       university: matches.filter((match) => match.stage === "university").length,
       corporateTeam: matches.filter((match) => match.stage === "corporate_team").length,

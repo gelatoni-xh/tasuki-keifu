@@ -1,17 +1,51 @@
 import type { CompetitionType, EventDiscipline, OrganizationType } from "@prisma/client";
 
-export type RelationStageKey = "high_school" | "university" | "corporate_team";
+export type RelationStageKey = "junior_high_school" | "high_school" | "university" | "corporate_team";
 
 export type PlayerRelationContext = {
+  sameHometown: boolean;
+  sharedOrigins: {
+    juniorHighSchool: boolean;
+    highSchool: boolean;
+    university: boolean;
+    corporateTeam: boolean;
+  };
+  teamOverlapYears: {
+    juniorHighSchool?: number;
+    highSchool?: number;
+    university?: number;
+  };
   sharedTeamStages: RelationStageKey[];
   sharedHometown: boolean;
   sharedHighSchool: boolean;
   sharedUniversity: boolean;
 };
 
+export type PlayerRelationSignals = {
+  matchupCount: number;
+  matchupYearCount: number;
+  stageCount: number;
+  ekidenCount: number;
+  latestMatchAt: string | null;
+};
+
+export type PlayerRelationLabelItem = {
+  label: string;
+  contribution: number;
+};
+
+export type PlayerRelationLabels = {
+  info: PlayerRelationLabelItem[];
+  matchup: PlayerRelationLabelItem[];
+};
+
 export type PlayerRelationEntry = {
   relatedPersonId: string;
   matchupCount: number;
+  matchupSignals: PlayerRelationSignals;
+  labels: PlayerRelationLabels;
+  rawScore: number;
+  displayScore: number;
   latestMatchAt: string | null;
   latestCompetitionEditionId: string | null;
   latestCompetitionName: string | null;
@@ -32,6 +66,7 @@ export type DirectMatchupSourceItem = {
   leg: number | null;
   startsAt: Date | null;
   competitionEditionId: string | null;
+  competitionEditionStartsOn: Date | null;
   competitionType: CompetitionType | null;
   competitionName: string;
   discipline: EventDiscipline;
@@ -47,6 +82,18 @@ export type DirectMatchupAggregate = {
 
 export type PlayerRelationContextAggregate = {
   relatedPersonId: string;
+  sameHometown: boolean;
+  sharedOrigins: {
+    juniorHighSchool: boolean;
+    highSchool: boolean;
+    university: boolean;
+    corporateTeam: boolean;
+  };
+  teamOverlapYears: {
+    juniorHighSchool?: number;
+    highSchool?: number;
+    university?: number;
+  };
   sharedTeamStages: Set<RelationStageKey>;
   sharedHometown: boolean;
   sharedHighSchool: boolean;
@@ -74,6 +121,7 @@ export type HeadToHeadSummary = {
   firstMatchAt: string | null;
   latestMatchAt: string | null;
   stageCounts: {
+    juniorHigh: number;
     highSchool: number;
     university: number;
     corporateTeam: number;

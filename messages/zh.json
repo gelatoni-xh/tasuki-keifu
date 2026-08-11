@@ -99,12 +99,17 @@
     "relatedPlayers": "与他关系最深的选手",
     "relatedPlayersSubtitle": "按对决次数排序",
     "relatedPlayersEmpty": "暂时还没有可展示的关系选手。",
+    "relationNetwork": "关系网络",
+    "relationNetworkSubtitle": "按关系分排序，展示当前选手的完整关系集合。",
+    "relationNetworkEmpty": "暂时还没有达到展示阈值的关系。",
+    "relationScore": "关系分",
     "matchupCount": "共 {count} 次对决",
     "viewHeadToHead": "查看对决",
     "sharedHometown": "同出身地",
     "sharedHighSchool": "同高中",
     "sharedUniversity": "同大学",
     "sharedTeamStages": {
+      "junior_high_school": "初中时期同队",
       "high_school": "高中时期同队",
       "university": "大学时期同队",
       "corporate_team": "实业团时期同队"
@@ -134,6 +139,7 @@
     "headToHeadLeftResult": "{name} 成绩",
     "headToHeadRightResult": "{name} 成绩",
     "headToHeadStageLabels": {
+      "junior_high_school": "初中",
       "high_school": "高中",
       "university": "大学",
       "corporate_team": "实业团"

@@ -99,12 +99,17 @@
     "relatedPlayers": "関係の深い選手",
     "relatedPlayersSubtitle": "対決回数順",
     "relatedPlayersEmpty": "関係の深い選手はまだ表示できません。",
+    "relationNetwork": "関係ネットワーク",
+    "relationNetworkSubtitle": "関係スコア順で、対象選手の関係全体を表示します。",
+    "relationNetworkEmpty": "まだ表示できる関係はありません。",
+    "relationScore": "関係スコア",
     "matchupCount": "{count} 回対決",
     "viewHeadToHead": "対決を見る",
     "sharedHometown": "同じ出身地",
     "sharedHighSchool": "同じ高校",
     "sharedUniversity": "同じ大学",
     "sharedTeamStages": {
+      "junior_high_school": "中学時代に同じチーム",
       "high_school": "高校時代に同じチーム",
       "university": "大学時代に同じチーム",
       "corporate_team": "実業団時代に同じチーム"
@@ -134,6 +139,7 @@
     "headToHeadLeftResult": "{name} の結果",
     "headToHeadRightResult": "{name} の結果",
     "headToHeadStageLabels": {
+      "junior_high_school": "中学",
       "high_school": "高校",
       "university": "大学",
       "corporate_team": "実業団"

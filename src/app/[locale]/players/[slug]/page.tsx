@@ -8,6 +8,7 @@ import { getScopeVersion } from "@/lib/cache-invalidation";
 import { createLogger } from "@/lib/logger";
 import { getCachedValue } from "@/lib/server-cache";
 import { prisma } from "@/lib/prisma";
+import { getRelationDisplayLabels } from "@/lib/player-relations/score-player-relations";
 import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import {
@@ -18,6 +19,7 @@ import {
   inferCurrentUniversityGrade,
   sortMembershipsByStartDate,
 } from "@/lib/membership";
+import { formatRelationLabel } from "@/lib/player-relations/format-relation-label";
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { getPlayerSeoTier, shouldIndexPlayerPage } from "@/lib/seo";
@@ -247,35 +249,6 @@ function getRelationStageLabel(dictionary: ReturnType<typeof getDictionary>, sta
   return dictionary.players.headToHeadStageLabels[stage];
 }
 
-function formatRelationContextTags(
-  dictionary: ReturnType<typeof getDictionary>,
-  entry: PlayerRelationEntry,
-) {
-  const tags: string[] = [];
-
-  for (const stage of entry.context.sharedTeamStages) {
-    tags.push(dictionary.players.sharedTeamStages[stage]);
-  }
-
-  if (entry.context.sharedHometown) {
-    tags.push(dictionary.players.sharedHometown);
-  }
-
-  if (entry.context.sharedHighSchool) {
-    tags.push(dictionary.players.sharedHighSchool);
-  }
-
-  if (entry.context.sharedUniversity) {
-    tags.push(dictionary.players.sharedUniversity);
-  }
-
-  if (entry.stageCount >= 2) {
-    tags.push(interpolate(dictionary.players.crossStageMatchup, { count: entry.stageCount }));
-  }
-
-  return tags;
-}
-
 export default async function PlayerDetailPage({ params }: PlayerDetailPageProps) {
   const { locale: localeParam, slug } = await params;
 
@@ -377,7 +350,8 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     ).values(),
   );
 
-  const relatedPlayerIds = relationPayload.topRelations.slice(0, 6).map((entry: PlayerRelationEntry) => entry.relatedPersonId);
+  const relationPreviewEntries = relationPayload.topRelations.slice(0, 6);
+  const relatedPlayerIds = relationPreviewEntries.map((entry: PlayerRelationEntry) => entry.relatedPersonId);
   const relatedPlayers = relatedPlayerIds.length > 0
     ? await getCachedValue(`player:detail:${player.id}:related:${relatedPlayerIds.join(",")}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
         prisma.person.findMany({
@@ -393,7 +367,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
       )
     : [];
   const relatedPlayersById = new Map(relatedPlayers.map((related) => [related.id, related]));
-  const relatedPlayersWithTags = relationPayload.topRelations.slice(0, 6).flatMap((entry: PlayerRelationEntry) => {
+  const relatedPlayersWithTags = relationPreviewEntries.flatMap((entry: PlayerRelationEntry) => {
     const related = relatedPlayersById.get(entry.relatedPersonId);
 
     if (!related) {
@@ -403,9 +377,10 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     return [{
         ...related,
         matchupCountLabel: interpolate(dictionary.players.matchupCount, { count: entry.matchupCount }),
-        relationshipTags: formatRelationContextTags(dictionary, entry),
+        relationshipTags: getRelationDisplayLabels(entry).slice(0, 3),
         canViewHeadToHead: entry.hasHeadToHeadDetail,
         latestCompetitionName: entry.latestCompetitionName,
+        relationScoreLabel: entry.displayScore.toFixed(1),
     }];
   });
   const hasPersonalBests = player.personalBests.length > 0;
@@ -850,12 +825,22 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
             </section>
           ) : null}
 
-          <section className="border border-[#ded8cc] bg-white p-5">
-            <h2 className="text-lg font-semibold">{dictionary.players.relatedPlayers}</h2>
-            <p className="mt-1 text-sm text-[#59615c]">{dictionary.players.relatedPlayersSubtitle}</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {relatedPlayersWithTags.length > 0 ? (
-                relatedPlayersWithTags.map((related) => (
+          {relatedPlayersWithTags.length > 0 ? (
+            <section className="border border-[#ded8cc] bg-white p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold">{dictionary.players.relationNetwork}</h2>
+                  <p className="mt-1 text-sm text-[#59615c]">{dictionary.players.relationNetworkSubtitle}</p>
+                </div>
+                <Link
+                  className="inline-flex items-center border border-[#8a1f2d] px-3 py-1 text-sm font-medium text-[#8a1f2d] transition hover:bg-[#8a1f2d] hover:text-white"
+                  href={`/${locale}/players/${player.slug}/relations`}
+                >
+                  {dictionary.players.relationNetwork}
+                </Link>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {relatedPlayersWithTags.map((related) => (
                   <div
                     className="border border-[#e7e1d8] p-3 transition hover:border-[#8a1f2d]"
                     key={related.id}
@@ -899,17 +884,15 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                     <div className="mt-3 flex flex-wrap gap-2">
                       {related.relationshipTags.map((tag: string) => (
                         <span className="border border-[#ded8cc] px-2 py-1 text-xs text-[#8a1f2d]" key={tag}>
-                          {tag}
+                          {formatRelationLabel(locale, dictionary, tag)}
                         </span>
                       ))}
                     </div>
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-[#59615c]">{dictionary.players.relatedPlayersEmpty}</p>
-              )}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section className="border border-[#ded8cc] bg-white p-5">
             <h2 className="text-lg font-semibold">{dictionary.players.dataSource}</h2>

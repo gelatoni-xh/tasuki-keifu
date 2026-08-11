@@ -99,12 +99,17 @@
     "relatedPlayers": "與他關係最深的選手",
     "relatedPlayersSubtitle": "按對決次數排序",
     "relatedPlayersEmpty": "暫時還沒有可展示的關係選手。",
+    "relationNetwork": "關係網絡",
+    "relationNetworkSubtitle": "按關係分排序，展示目前選手的完整關係集合。",
+    "relationNetworkEmpty": "暫時還沒有達到展示門檻的關係。",
+    "relationScore": "關係分",
     "matchupCount": "共 {count} 次對決",
     "viewHeadToHead": "查看對決",
     "sharedHometown": "同出身地",
     "sharedHighSchool": "同高中",
     "sharedUniversity": "同大學",
     "sharedTeamStages": {
+      "junior_high_school": "國中時期同隊",
       "high_school": "高中時期同隊",
       "university": "大學時期同隊",
       "corporate_team": "實業團時期同隊"
@@ -134,6 +139,7 @@
     "headToHeadLeftResult": "{name} 成績",
     "headToHeadRightResult": "{name} 成績",
     "headToHeadStageLabels": {
+      "junior_high_school": "國中",
       "high_school": "高中",
       "university": "大學",
       "corporate_team": "實業團"

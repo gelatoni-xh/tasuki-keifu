@@ -99,12 +99,17 @@
     "relatedPlayers": "Players Closely Connected to Him",
     "relatedPlayersSubtitle": "Sorted by matchup count",
     "relatedPlayersEmpty": "No relationship results are available yet.",
+    "relationNetwork": "Relationship Network",
+    "relationNetworkSubtitle": "Sorted by relationship score and showing the full set of relations for this player.",
+    "relationNetworkEmpty": "No relations have reached the display threshold yet.",
+    "relationScore": "Relationship score",
     "matchupCount": "{count} matchups",
     "viewHeadToHead": "View matchups",
     "sharedHometown": "Same hometown",
     "sharedHighSchool": "Same high school",
     "sharedUniversity": "Same university",
     "sharedTeamStages": {
+      "junior_high_school": "Teammates in junior high",
       "high_school": "Teammates in high school",
       "university": "Teammates in university",
       "corporate_team": "Teammates in corporate team"
@@ -134,6 +139,7 @@
     "headToHeadLeftResult": "{name} result",
     "headToHeadRightResult": "{name} result",
     "headToHeadStageLabels": {
+      "junior_high_school": "Junior high",
       "high_school": "High school",
       "university": "University",
       "corporate_team": "Corporate team"

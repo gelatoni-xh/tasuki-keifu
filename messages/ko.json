@@ -99,12 +99,17 @@
     "relatedPlayers": "가장 관계가 깊은 선수",
     "relatedPlayersSubtitle": "맞대결 횟수순",
     "relatedPlayersEmpty": "표시할 관계 선수는 아직 없습니다.",
+    "relationNetwork": "관계 네트워크",
+    "relationNetworkSubtitle": "관계 점수순으로 이 선수의 전체 관계를 보여줍니다.",
+    "relationNetworkEmpty": "아직 표시 기준을 넘은 관계가 없습니다.",
+    "relationScore": "관계 점수",
     "matchupCount": "총 {count}회 대결",
     "viewHeadToHead": "대결 보기",
     "sharedHometown": "같은 출신지",
     "sharedHighSchool": "같은 고교",
     "sharedUniversity": "같은 대학",
     "sharedTeamStages": {
+      "junior_high_school": "중학교 시절 같은 팀",
       "high_school": "고교 시절 같은 팀",
       "university": "대학 시절 같은 팀",
       "corporate_team": "실업팀 시절 같은 팀"
@@ -134,6 +139,7 @@
     "headToHeadLeftResult": "{name} 기록",
     "headToHeadRightResult": "{name} 기록",
     "headToHeadStageLabels": {
+      "junior_high_school": "중학교",
       "high_school": "고교",
       "university": "대학",
       "corporate_team": "실업팀"
