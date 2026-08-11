@@ -142,7 +142,7 @@ export function buildPlayerRelationScore(
     : 0;
 
   const rawScore = roundToOneDecimal(infoScore + matchupScore + recencyBonus);
-  const displayScore = roundToOneDecimal(Math.min(100, rawScore * 3));
+  const displayScore = rawScore;
 
   return {
     rawScore,
