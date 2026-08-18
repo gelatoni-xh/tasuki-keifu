@@ -20,7 +20,7 @@ type CompetitionsPageProps = {
   }>;
 };
 
-export async function generateMetadata({ params }: Pick<CompetitionsPageProps, "params">): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Pick<CompetitionsPageProps, "params" | "searchParams">): Promise<Metadata> {
   const { locale: localeParam } = await params;
 
   if (!isLocale(localeParam)) {
@@ -30,13 +30,27 @@ export async function generateMetadata({ params }: Pick<CompetitionsPageProps, "
   const title = "駅伝大会一覧 | 年度・結果・出場選手検索";
   const description = "大会名、年度、届次から駅伝大会を探せる一覧ページです。各大会の結果、出場選手、区間情報、開催日の確認入口として使えます。";
 
-  return buildPageMetadata({
+  const metadata = buildPageMetadata({
     title,
     description,
     path: "/competitions",
     locale: localeParam,
     keywords: ["駅伝大会一覧", "駅伝結果", "大会検索", "大会名検索", "年度別大会", "出場選手", "大会記録"],
   });
+
+  const queryParams = await searchParams;
+  if (queryParams.q || queryParams.competition || queryParams.page) {
+    metadata.robots = {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
+
+  return metadata;
 }
 
 const pageSize = 10;

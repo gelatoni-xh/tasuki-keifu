@@ -52,9 +52,23 @@ function getMostRecentUpdatedAt(items: Array<{ updatedAt: Date }>) {
   }, null);
 }
 
+async function getLatestIndexableUpdatedAt() {
+  const [players, competitions, organizations] = await Promise.all([
+    getIndexablePlayers(),
+    getIndexableCompetitions(),
+    getIndexableOrganizations(),
+  ]);
+
+  return getMostRecentUpdatedAt([
+    ...players,
+    ...competitions,
+    ...organizations,
+  ]);
+}
+
 export async function getSitemapLastModified(id: SitemapId) {
   if (id === "static") {
-    return new Date();
+    return (await getLatestIndexableUpdatedAt()) ?? new Date();
   }
 
   if (id === "players") {
@@ -88,7 +102,7 @@ export default async function sitemap({
 
   try {
     if (resolvedId === "static") {
-      const entries = buildStaticEntries(now);
+      const entries = buildStaticEntries(await getSitemapLastModified("static"));
       sitemapLogger.info("sitemap_generated", {
         sitemap_id: resolvedId,
         entry_count: entries.length,

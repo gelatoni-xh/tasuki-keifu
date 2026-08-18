@@ -141,7 +141,7 @@ function formatCompetitionEditionDisplayName(edition: {
   return edition.shortName ?? edition.officialName;
 }
 
-export async function generateMetadata({ params }: CompetitionEditionPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: CompetitionEditionPageProps): Promise<Metadata> {
   const { locale: localeParam, slug } = await params;
 
   if (!isLocale(localeParam)) {
@@ -204,6 +204,18 @@ export async function generateMetadata({ params }: CompetitionEditionPageProps):
       "出場選手",
     ],
   });
+
+  const queryParams = searchParams ? await searchParams : {};
+  if (queryParams.tab || queryParams.raceUnit) {
+    metadata.robots = {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
 
   if (!shouldIndexCompetitionPage({
     raceCount,
