@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
-import { formatDate } from "@/lib/format";
+import { formatCompetitionDate } from "@/lib/competition-display";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { publicCompetitionTypes } from "@/lib/public-competitions";
 import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
@@ -268,7 +268,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
                   </div>
                   <div className="text-sm text-[#59615c]">
                     <p className="text-xs font-medium text-[#8b938e]">{dictionary.competitions.date}</p>
-                    <p className="mt-1">{formatDate(edition.startsOn) || dictionary.common.emptyDash}</p>
+                    <p className="mt-1">{formatCompetitionDate(edition.startsOn) || dictionary.common.emptyDash}</p>
                   </div>
                   <div className="text-sm text-[#59615c]">
                     <p className="text-xs font-medium text-[#8b938e]">{dictionary.competitions.resultCountLabel}</p>

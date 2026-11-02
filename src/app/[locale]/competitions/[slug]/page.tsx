@@ -3,11 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { compareRaceUnits, formatCompetitionDate } from "@/lib/competition-display";
 import { getScopeVersion } from "@/lib/cache-invalidation";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { getCachedValue } from "@/lib/server-cache";
-import { formatCompetitionType, formatDate, formatDiscipline, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
+import { formatCompetitionType, formatDiscipline, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { getCompetitionSeoTier, shouldIndexCompetitionPage } from "@/lib/seo";
@@ -27,89 +28,6 @@ type CompetitionEditionPageProps = {
 const COMPETITION_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
 const COMPETITION_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
 const pageLogger = createLogger("competition-detail-page");
-const DISCIPLINE_DISTANCE_ORDER: Record<string, number> = {
-  m800: 800,
-  m1500: 1500,
-  m2000sc: 2000,
-  m3000: 3000,
-  m3000sc: 3000,
-  m5000: 5000,
-  m10000: 10000,
-  ten_mile: 16093,
-  half_marathon: 21098,
-  marathon: 42195,
-  ekiden_leg: Number.MAX_SAFE_INTEGER,
-};
-
-function parseHeatOrder(heat: string | null | undefined) {
-  if (!heat) {
-    return Number.MAX_SAFE_INTEGER;
-  }
-
-  const match = heat.match(/(\d+)/u);
-  return match ? Number.parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
-}
-
-function parseRoundOrder(round: string | null | undefined) {
-  switch (round) {
-    case "予選":
-      return 1;
-    case "準決勝":
-      return 2;
-    case "決勝":
-      return 3;
-    default:
-      return Number.MAX_SAFE_INTEGER;
-  }
-}
-
-function parseDivisionOrder(name: string) {
-  const match = name.match(/(\d+)部/u);
-  return match ? Number.parseInt(match[1]!, 10) : 0;
-}
-
-function compareRaceUnits(
-  left: { discipline: string; distanceMeters?: number | null; round?: string | null; heat?: string | null; name: string; startsAt?: Date | null },
-  right: { discipline: string; distanceMeters?: number | null; round?: string | null; heat?: string | null; name: string; startsAt?: Date | null },
-) {
-  const leftDistance = left.distanceMeters ?? DISCIPLINE_DISTANCE_ORDER[left.discipline] ?? Number.MAX_SAFE_INTEGER;
-  const rightDistance = right.distanceMeters ?? DISCIPLINE_DISTANCE_ORDER[right.discipline] ?? Number.MAX_SAFE_INTEGER;
-  if (leftDistance !== rightDistance) {
-    return leftDistance - rightDistance;
-  }
-
-  const leftIsSc = left.discipline.endsWith("sc");
-  const rightIsSc = right.discipline.endsWith("sc");
-  if (leftIsSc !== rightIsSc) {
-    return leftIsSc ? 1 : -1;
-  }
-
-  const leftDivision = parseDivisionOrder(left.name);
-  const rightDivision = parseDivisionOrder(right.name);
-  if (leftDivision !== rightDivision) {
-    return leftDivision - rightDivision;
-  }
-
-  const leftRound = parseRoundOrder(left.round);
-  const rightRound = parseRoundOrder(right.round);
-  if (leftRound !== rightRound) {
-    return leftRound - rightRound;
-  }
-
-  const leftHeat = parseHeatOrder(left.heat);
-  const rightHeat = parseHeatOrder(right.heat);
-  if (leftHeat !== rightHeat) {
-    return leftHeat - rightHeat;
-  }
-
-  const leftStart = left.startsAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
-  const rightStart = right.startsAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
-  if (leftStart !== rightStart) {
-    return leftStart - rightStart;
-  }
-
-  return left.name.localeCompare(right.name, "ja");
-}
 
 function buildCompetitionKeywordVariants(edition: {
   competition: { nameJa: string };
@@ -186,7 +104,7 @@ export async function generateMetadata({ params, searchParams }: CompetitionEdit
   const description = [
     `${edition.year}年開催の${displayName}の結果ページです。`,
     `${edition.competition.nameJa}の出場選手、順位、記録をまとめて確認できます。`,
-    `開催日は${formatDate(edition.startsOn) || "未確認"}。`,
+    `開催日は${formatCompetitionDate(edition.startsOn) || "未確認"}。`,
     `${raceCount}件の競技単位、${resultCount}件の個人成績、${teamResultCount}件のチーム成績を収録しています。`,
   ].join(" ");
 
@@ -440,7 +358,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
   const competitionSummary = [
     `${edition.shortName ?? edition.officialName}は、${edition.competition.nameJa}の届次データページです。`,
     `${sortedRaces.length}件の競技単位と${resultCount}件の結果を収録しています。`,
-    hasEkidenTeamResults ? `${teamResults.length}チームの成績を掲載しています。` : null,
+    hasEkidenTeamResults ? `${teamResultCount}チームの成績を掲載しています。` : null,
     leadingOrganizations.length > 0 ? `上位・主要チームとして${leadingOrganizations.join("、")}などを確認できます。` : null,
   ]
     .filter(Boolean)
@@ -602,8 +520,8 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
               <div>
                 <h1 className="text-4xl font-semibold">{displayName}</h1>
                 <p className="mt-3 text-sm text-[#59615c]">
-                  {formatDate(edition.startsOn) || dictionary.common.emptyDash}
-                  {edition.endsOn ? ` - ${formatDate(edition.endsOn)}` : ""}
+                  {formatCompetitionDate(edition.startsOn) || dictionary.common.emptyDash}
+                  {edition.endsOn ? ` - ${formatCompetitionDate(edition.endsOn)}` : ""}
                 </p>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#59615c]">
                   {competitionSummary}
@@ -618,17 +536,6 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                       key={result.id}
                     >
                       {result.organization.nameJa}
-                    </Link>
-                  ))}
-                  {sortedRaces.slice(0, 3).map((race) => (
-                    <Link
-                      className="border border-[#ded8cc] px-3 py-1 text-[#8a1f2d] underline-offset-4 hover:underline"
-                      data-analytics-event="competition_tab_navigation"
-                      data-analytics-link-type="competition_header_race_unit"
-                      href={buildCompetitionEditionHref("race-units", race.slug)}
-                      key={race.id}
-                    >
-                      {race.name}
                     </Link>
                   ))}
                 </div>
@@ -846,7 +753,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                             <h3 className="text-lg font-semibold">{selectedRaceUnit.name}</h3>
                             <p className="mt-1 text-sm text-[#59615c]">
                               {formatDiscipline(selectedRaceUnit.discipline, locale)}
-                              {selectedRaceUnit.startsAt ? ` / ${formatDate(selectedRaceUnit.startsAt)}` : ""}
+                              {selectedRaceUnit.startsAt ? ` / ${formatCompetitionDate(selectedRaceUnit.startsAt)}` : ""}
                             </p>
                           </div>
                           {selectedRaceUnitDetails?.source?.url ? (
