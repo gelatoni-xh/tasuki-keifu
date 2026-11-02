@@ -39,6 +39,15 @@
     "furusatoSystemDescription": "按出身学校所在地都道府县代表出场"
   },
   "home": {
+    "featuredTeamsTitle": "近期注目队伍",
+    "featuredTeamsDescription": "按驿传类型分别汇总最近五场：各场前五名计5至1分，再按新到旧乘5至1。同分优先比较最近赛事名次，为本站推荐。",
+    "points": "{points}分",
+    "basedOn": "参考赛事",
+    "latestEkidenAwardsTitle": "最新驿传区间赏与区间新纪录",
+    "sectionWinner": "区间赏",
+    "sectionRecord": "区间新纪录",
+    "sectionRecordTie": "平区间纪录",
+    "recentCompetitionsTitle": "近期赛事结果",
     "browseTitle": "从一览进入",
     "openDirectory": "查看一览",
     "quickLinks": {

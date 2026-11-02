@@ -39,6 +39,15 @@
     "furusatoSystemDescription": "Represents the prefecture of the athlete's school of origin"
   },
   "home": {
+    "featuredTeamsTitle": "Teams to follow",
+    "featuredTeamsDescription": "Computed separately by ekiden type from the latest five meets. Top-five finishes earn 5–1 points, multiplied by 5–1 from newest to oldest. Recent finishes break ties. These are site recommendations.",
+    "points": "{points} pts",
+    "basedOn": "Based on these meets",
+    "latestEkidenAwardsTitle": "Latest ekiden: stage winners and records",
+    "sectionWinner": "Stage winner",
+    "sectionRecord": "Stage record",
+    "sectionRecordTie": "Tied stage record",
+    "recentCompetitionsTitle": "Recent competition results",
     "browseTitle": "Browse directories",
     "openDirectory": "Open list",
     "quickLinks": {

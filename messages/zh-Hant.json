@@ -39,6 +39,15 @@
     "furusatoSystemDescription": "按出身學校所在地都道府縣代表出場"
   },
   "home": {
+    "featuredTeamsTitle": "近期注目隊伍",
+    "featuredTeamsDescription": "按驛傳類型分別彙總最近五場：各場前五名計5至1分，再按新到舊乘5至1。同分優先比較最近賽事名次，為本站推薦。",
+    "points": "{points}分",
+    "basedOn": "參考賽事",
+    "latestEkidenAwardsTitle": "最新驛傳區間賞與區間新紀錄",
+    "sectionWinner": "區間賞",
+    "sectionRecord": "區間新紀錄",
+    "sectionRecordTie": "平區間紀錄",
+    "recentCompetitionsTitle": "近期賽事結果",
     "browseTitle": "從一覽進入",
     "openDirectory": "查看一覽",
     "quickLinks": {

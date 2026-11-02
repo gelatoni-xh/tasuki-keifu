@@ -39,6 +39,15 @@
     "furusatoSystemDescription": "출신 학교 소재지 도도부현 대표로 출전"
   },
   "home": {
+    "featuredTeamsTitle": "최근 주목할 팀",
+    "featuredTeamsDescription": "역전 유형별 최근 5개 대회의 1~5위에 5~1점을 부여하고 최신순으로 5~1배 가중합니다. 동점이면 최근 성적을 우선합니다. 사이트 추천입니다.",
+    "points": "{points}점",
+    "basedOn": "대상 대회",
+    "latestEkidenAwardsTitle": "최신 역전 구간상 및 구간 신기록",
+    "sectionWinner": "구간상",
+    "sectionRecord": "구간 신기록",
+    "sectionRecordTie": "구간 타이기록",
+    "recentCompetitionsTitle": "최근 대회 결과",
     "browseTitle": "목록에서 찾기",
     "openDirectory": "목록 보기",
     "quickLinks": {

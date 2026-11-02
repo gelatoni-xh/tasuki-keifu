@@ -39,6 +39,15 @@
     "furusatoSystemDescription": "出身校所在地の都道府県代表"
   },
   "home": {
+    "featuredTeamsTitle": "最近の注目チーム",
+    "featuredTeamsDescription": "種別ごとに直近5大会を集計。各大会の1〜5位に5〜1点を付け、新しい順に5〜1倍。同点時は直近の順位を優先します。公式ランキングではありません。",
+    "points": "{points}点",
+    "basedOn": "対象大会",
+    "latestEkidenAwardsTitle": "最新駅伝の区間賞・区間新記録",
+    "sectionWinner": "区間賞",
+    "sectionRecord": "区間新記録",
+    "sectionRecordTie": "区間タイ記録",
+    "recentCompetitionsTitle": "最近の大会結果",
     "browseTitle": "一覧から探す",
     "openDirectory": "一覧を見る",
     "quickLinks": {

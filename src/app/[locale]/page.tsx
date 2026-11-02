@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
+import { HomeHighlights } from "@/components/home-highlights";
 import { SiteHeader } from "@/components/site-header";
+import { getHomeDiscovery } from "@/lib/home-discovery";
+import { formatCompetitionType } from "@/lib/format";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { buildOrganizationJsonLd, buildPageMetadata, buildWebsiteJsonLd } from "@/lib/site";
 
@@ -38,6 +42,9 @@ export default async function HomePage({ params }: HomePageProps) {
     notFound();
   }
 
+  await connection();
+  const discovery = await getHomeDiscovery();
+  const { recentCompetitions } = discovery;
   const locale = localeParam;
   const dictionary = getDictionary(locale);
   const websiteJsonLd = locale === "ja" ? buildWebsiteJsonLd() : null;
@@ -108,6 +115,37 @@ export default async function HomePage({ params }: HomePageProps) {
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
           </form>
+
+          {recentCompetitions.length > 0 ? (
+            <section className="space-y-4" aria-labelledby="recent-competitions-heading">
+              <h2 className="text-lg font-semibold" id="recent-competitions-heading">{dictionary.home.recentCompetitionsTitle}</h2>
+              <ul className="divide-y divide-[#ded8cc] border border-[#ded8cc] bg-white">
+                {recentCompetitions.map((edition) => (
+                  <li key={edition.slug}>
+                    <Link
+                      className="group flex items-center justify-between gap-4 p-5 transition hover:bg-[#fffdf9]"
+                      href={`/${locale}/competitions/${edition.slug}`}
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm text-[#59615c]">
+                          {edition.startsOn ? (
+                            <time dateTime={edition.startsOn}>
+                              {new Intl.DateTimeFormat(locale, { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(edition.startsOn))}
+                            </time>
+                          ) : null}
+                          {edition.competition.type ? <span className="ml-3">{formatCompetitionType(edition.competition.type, locale)}</span> : null}
+                        </p>
+                        <h3 className="mt-2 font-semibold text-[#1f3b33] group-hover:underline">{edition.officialName}</h3>
+                      </div>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-[#1f3b33]" aria-hidden="true" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <HomeHighlights locale={locale} discovery={discovery} />
 
           <section className="space-y-4">
             <h2 className="text-lg font-semibold">{dictionary.home.browseTitle}</h2>
