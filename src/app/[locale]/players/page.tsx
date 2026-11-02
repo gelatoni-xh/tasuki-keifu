@@ -61,7 +61,6 @@ export async function generateMetadata({ params, searchParams }: Pick<PlayersPag
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const pageSize = 10;
-const maxPage = 100;
 const allowedOrganizationTypes: OrganizationType[] = [
   "junior_high_school",
   "high_school",
@@ -143,7 +142,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     ? (queryParams.status as DataStatus)
     : "";
   const hometown = isJapanPrefecture(queryParams.hometown) ? queryParams.hometown : "";
-  const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
+  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
   const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status || hometown);
   const pagePathWithQuery = `/players${hasActiveFilters ? `?${new URLSearchParams(
     Object.entries({

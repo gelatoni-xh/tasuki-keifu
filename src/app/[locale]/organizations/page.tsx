@@ -67,7 +67,6 @@ const allowedOrganizationTypes: OrganizationType[] = [
 ];
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const pageSize = 10;
-const maxPage = 100;
 
 function normalizeSearchText(value: string | null | undefined) {
   return (value ?? "").replace(/\s+/g, "").toLocaleLowerCase();
@@ -146,7 +145,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
     ? (queryParams.status as DataStatus)
     : "";
   const prefecture = isJapanPrefecture(queryParams.prefecture) ? queryParams.prefecture : "";
-  const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
+  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
   const organizations = await prisma.organization.findMany({
     where: {
       ...(organizationType ? { type: organizationType } : {}),

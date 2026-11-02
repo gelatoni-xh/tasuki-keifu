@@ -54,7 +54,6 @@ export async function generateMetadata({ params, searchParams }: Pick<Competitio
 }
 
 const pageSize = 10;
-const maxPage = 100;
 
 function formatCompetitionEditionDisplayName(edition: {
   competition: { nameJa: string };
@@ -126,7 +125,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
   const query = queryParams.q?.trim() ?? "";
   const competitionSlug = queryParams.competition?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
-  const requestedPage = Math.min(Number.parseInt(queryParams.page ?? "1", 10), maxPage);
+  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
   const editions = await prisma.competitionEdition.findMany({
     where: {
       competition: {
