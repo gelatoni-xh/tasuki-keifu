@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { getHomeDiscovery } from "@/lib/home-discovery";
 import { formatCompetitionType } from "@/lib/format";
-import { getDictionary, interpolate, type Locale } from "@/lib/i18n";
+import { getDictionary, type Locale } from "@/lib/i18n";
 
 type Props = { locale: Locale; discovery: Awaited<ReturnType<typeof getHomeDiscovery>> };
 
@@ -12,8 +12,7 @@ export function HomeHighlights({ locale, discovery }: Props) {
     {teamGroups.length > 0 ? (
       <section className="space-y-4" aria-labelledby="featured-teams-heading">
         <h2 className="text-lg font-semibold" id="featured-teams-heading">{home.featuredTeamsTitle}</h2>
-        <p className="max-w-3xl text-sm leading-6 text-[#59615c]">{home.featuredTeamsDescription}</p>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-4">
           {teamGroups.map((group) => (
             <div className="border border-[#ded8cc] bg-white p-5" key={group.type}>
               <h3 className="font-semibold">{formatCompetitionType(group.type, locale)}</h3>
@@ -23,16 +22,9 @@ export function HomeHighlights({ locale, discovery }: Props) {
                     <Link className="min-w-0 text-[#1f3b33] hover:underline" href={`/${locale}/organizations/${team.slug}`}>
                       <span className="mr-3 text-[#59615c]">{index + 1}.</span>{team.nameJa}
                     </Link>
-                    <span className="shrink-0 text-[#59615c]">{interpolate(home.points, { points: team.points })}</span>
                   </li>
                 ))}
               </ol>
-              <details className="mt-3 text-sm text-[#59615c]">
-                <summary className="cursor-pointer">{home.basedOn} ({group.editions.length})</summary>
-                <ul className="mt-3 space-y-2">
-                  {group.editions.map((edition) => <li key={edition.slug}><Link className="hover:underline" href={`/${locale}/competitions/${edition.slug}`}>{edition.officialName}</Link></li>)}
-                </ul>
-              </details>
             </div>
           ))}
         </div>

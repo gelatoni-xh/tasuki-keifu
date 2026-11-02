@@ -46,7 +46,7 @@ export const getHomeDiscovery = unstable_cache(async () => {
         },
       },
     }),
-    Promise.all(ekidenTypes.map(async (type) => {
+    Promise.all((["university_ekiden"] as const).map(async (type) => {
       const editions = await prisma.competitionEdition.findMany({
         where: {
           competition: { type }, startsOn: { lte: now },
@@ -78,4 +78,4 @@ export const getHomeDiscovery = unstable_cache(async () => {
       })).filter((leg) => leg.results.length > 0),
     } : null,
   };
-}, ["home-discovery-v1"], { revalidate: 3600, tags: ["home-discovery"] });
+}, ["home-discovery-v2"], { revalidate: 3600, tags: ["home-discovery"] });
