@@ -92,23 +92,23 @@ pnpm maint:recompute-player-relations
 
 ## 仓库结构
 
-- [`src/app`](/Users/xuhuan/workspace_new/project/tasuki-keifu/src/app)：App Router 页面、metadata、sitemap、robots
-- [`src/components`](/Users/xuhuan/workspace_new/project/tasuki-keifu/src/components)：共享 UI 组件
-- [`src/lib`](/Users/xuhuan/workspace_new/project/tasuki-keifu/src/lib)：站点配置、i18n、数据处理工具、关系构建逻辑
-- [`prisma`](/Users/xuhuan/workspace_new/project/tasuki-keifu/prisma)：schema、migrations、seed 数据
-- [`scripts/imports`](/Users/xuhuan/workspace_new/project/tasuki-keifu/scripts/imports)：导入入口与 payload 生成脚本
-- [`scripts/maintenance`](/Users/xuhuan/workspace_new/project/tasuki-keifu/scripts/maintenance)：审计、修复、回填、清理脚本
-- [`deploy`](/Users/xuhuan/workspace_new/project/tasuki-keifu/deploy)：生产部署说明和服务器配置示例
+- [`src/app`](./src/app)：App Router 页面、metadata、sitemap、robots
+- [`src/components`](./src/components)：共享 UI 组件
+- [`src/lib`](./src/lib)：站点配置、i18n、数据处理工具、关系构建逻辑
+- [`prisma`](./prisma)：schema、migrations、seed 数据
+- [`scripts/imports`](./scripts/imports)：导入入口与 payload 生成脚本
+- [`scripts/maintenance`](./scripts/maintenance)：审计、修复、回填、清理脚本
+- [`deploy`](./deploy)：生产部署说明和服务器配置示例
 
 ## 部署
 
-生产环境通过 Docker Compose 运行，补充的服务器说明见 [`deploy/README.md`](/Users/xuhuan/workspace_new/project/tasuki-keifu/deploy/README.md)。
+生产环境通过 Docker Compose 运行，补充的服务器说明见 [`deploy/README.md`](./deploy/README.md)。
 
 相关文件：
 
-- [`Dockerfile`](/Users/xuhuan/workspace_new/project/tasuki-keifu/Dockerfile)
-- [`docker-compose.prod.yml`](/Users/xuhuan/workspace_new/project/tasuki-keifu/docker-compose.prod.yml)
-- [`deploy/nginx-tasuki-keifu.conf`](/Users/xuhuan/workspace_new/project/tasuki-keifu/deploy/nginx-tasuki-keifu.conf)
+- [`Dockerfile`](./Dockerfile)
+- [`docker-compose.prod.yml`](./docker-compose.prod.yml)
+- [`deploy/nginx-tasuki-keifu.conf`](./deploy/nginx-tasuki-keifu.conf)
 
 ## 环境变量
 
