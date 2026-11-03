@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 
 import { type RaceImportPayload } from "./import-types";
 import { bumpCacheInvalidationScope } from "./cache-invalidation";
+import { assertCompetitionImportInScope } from "./import-scope";
 import {
   createOrStartImportBatch,
   finalizeImportBatch,
@@ -11,6 +12,7 @@ import {
 } from "./import-utils";
 
 export async function importRacePayload(prisma: PrismaClient, payload: RaceImportPayload) {
+  assertCompetitionImportInScope({ raceSlugs: [payload.raceSlug], sourceId: payload.sourceId });
   const source = await prisma.source.findUnique({
     where: { id: payload.sourceId },
   });

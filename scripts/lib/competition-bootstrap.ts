@@ -1,5 +1,6 @@
 import { DataStatus, EventDiscipline, SourceType, type CompetitionType, type PrismaClient } from "@prisma/client";
 import { normalizeCompetitionEditionNames } from "./competition-edition-normalization";
+import { assertCompetitionImportInScope } from "./import-scope";
 
 export type CompetitionBootstrapSource = {
   id: string;
@@ -52,6 +53,11 @@ export type CompetitionBootstrapConfig = {
 };
 
 export async function bootstrapCompetition(prisma: PrismaClient, config: CompetitionBootstrapConfig) {
+  assertCompetitionImportInScope({
+    competitionSlug: config.competition.slug,
+    editionSlugs: config.editions.map(edition => edition.slug),
+    raceSlugs: config.races.map(race => race.slug),
+  });
   const competition = await prisma.competition.upsert({
     where: { slug: config.competition.slug },
     update: config.competition,
