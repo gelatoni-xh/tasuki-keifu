@@ -31,7 +31,7 @@ export function HomeHighlights({ locale, discovery }: Props) {
       key: "competitions",
       ...home.quickLinks.competitions,
       label: home.recentCompetitionsTitle,
-      links: recentCompetitions.map((edition) => ({
+      links: recentCompetitions.slice(0, 3).map((edition) => ({
         href: `/${locale}/competitions/${edition.slug}`,
         name: edition.officialName,
         context: edition.officialName,
@@ -61,7 +61,7 @@ export function HomeHighlights({ locale, discovery }: Props) {
               <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm leading-6">
                 {card.links.map((link) => (
                   <li className={card.key === "competitions" ? "w-full min-w-0" : undefined} key={link.href}>
-                    <Link className={`${card.key === "competitions" ? "block truncate " : ""}text-[#1f3b33] underline decoration-[#ded8cc] underline-offset-4 hover:decoration-[#1f3b33]`} href={link.href} title={link.context}>
+                    <Link className={`${card.key === "competitions" ? "block break-words " : ""}text-[#1f3b33] underline decoration-[#ded8cc] underline-offset-4 hover:decoration-[#1f3b33]`} href={link.href} title={link.context}>
                       {link.name}
                     </Link>
                   </li>
