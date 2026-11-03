@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { DataStatus, OrganizationType, Prisma } from "@prisma/client";
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
@@ -9,7 +9,8 @@ import { prisma } from "@/lib/prisma";
 import { formatDiscipline, formatOrganizationType, formatPersonType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
-import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl } from "@/lib/site";
+import { buildDirectoryMetadata, getDirectoryPage } from "@/lib/directory-metadata";
 import { getCurrentMembership, getHighSchoolMembership, getUniversityMembership } from "@/lib/membership";
 
 type PlayersPageProps = {
@@ -36,27 +37,16 @@ export async function generateMetadata({ params, searchParams }: Pick<PlayersPag
   const title = "駅伝選手・人物一覧 | 所属・大学・高校・PB検索";
   const description = "人物名から駅伝選手・関係人物を探せる一覧ページです。現在の所属、大学、高校、出身地、PB、大会成績の確認入口として使えます。";
 
-  const metadata = buildPageMetadata({
+  const queryParams = await searchParams;
+  return buildDirectoryMetadata({
     title,
     description,
     path: "/players",
     locale: localeParam,
     keywords: ["駅伝人物一覧", "駅伝選手一覧", "人物名検索", "駅伝人物検索", "所属検索", "大学検索", "高校検索", "PB検索"],
+    page: queryParams.page,
+    hasFilters: Boolean(queryParams.q || queryParams.organizationType || queryParams.organization || queryParams.status || queryParams.hometown),
   });
-
-  const queryParams = await searchParams;
-  if (queryParams.q || queryParams.organizationType || queryParams.organization || queryParams.status || queryParams.hometown || queryParams.page) {
-    metadata.robots = {
-      index: false,
-      follow: true,
-      googleBot: {
-        index: false,
-        follow: true,
-      },
-    };
-  }
-
-  return metadata;
 }
 
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
@@ -142,7 +132,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     ? (queryParams.status as DataStatus)
     : "";
   const hometown = isJapanPrefecture(queryParams.hometown) ? queryParams.hometown : "";
-  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
+  const requestedPage = getDirectoryPage(queryParams.page);
   const hasActiveFilters = Boolean(query || organizationType || organizationSlug || status || hometown);
   const pagePathWithQuery = `/players${hasActiveFilters ? `?${new URLSearchParams(
     Object.entries({
@@ -200,6 +190,9 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   });
   const totalPages = Math.max(1, Math.ceil(totalPlayers / pageSize));
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+  if (queryParams.page !== undefined && (queryParams.page !== String(currentPage) || currentPage === 1)) {
+    redirect(buildPlayersPath(locale, { q: queryParams.q, organizationType: queryParams.organizationType, organization: queryParams.organization, status: queryParams.status, hometown: queryParams.hometown, page: currentPage > 1 ? currentPage : undefined }));
+  }
   const paginatedPlayers = await prisma.person.findMany({
     where: playerWhere,
     orderBy: [

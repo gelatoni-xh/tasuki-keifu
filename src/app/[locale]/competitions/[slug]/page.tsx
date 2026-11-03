@@ -3,12 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
+import { RaceResultsTable } from "@/components/race-results-table";
+import { buildCompetitionRacePath } from "@/lib/competition-races";
 import { compareRaceUnits, formatCompetitionDate } from "@/lib/competition-display";
 import { getScopeVersion } from "@/lib/cache-invalidation";
 import { createLogger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { getCachedValue } from "@/lib/server-cache";
-import { formatCompetitionType, formatDiscipline, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
+import { formatCompetitionType, formatDiscipline, formatRaceMark, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { getCompetitionSeoTier, shouldIndexCompetitionPage } from "@/lib/seo";
@@ -321,6 +323,29 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
         )
       : null;
 
+  const isCanonicalView = !queryParams.tab && !queryParams.raceUnit;
+  const raceSummaries = isCanonicalView
+    ? await getCachedValue(`competition:detail:${edition.id}:race-summaries:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
+        prisma.race.findMany({
+          where: { competitionEditionId: edition.id, raceResults: { some: {} } },
+          select: {
+            id: true, slug: true, name: true, leg: true, discipline: true, heat: true, round: true, distanceMeters: true, startsAt: true,
+            _count: { select: { raceResults: true } },
+            raceResults: {
+              where: { rank: { gt: 0 }, mark: { not: null } },
+              take: 3,
+              orderBy: [{ rank: "asc" }, { markMillis: "asc" }, { id: "asc" }],
+              select: {
+                id: true, rank: true, mark: true, notes: true,
+                person: { select: { slug: true, displayNameJa: true } },
+                organization: { select: { slug: true, nameJa: true } },
+              },
+            },
+          },
+        }),
+      )
+    : [];
+
   pageLogger.info("page_rendered", {
     path: `/${locale}/competitions/${slug}`,
     locale,
@@ -604,7 +629,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                   <div className="mt-6 border border-[#e7e1d8] p-4">
                     <h3 className="text-base font-semibold">{dictionary.competitions.teamResults}</h3>
                     <div className="mt-4 space-y-3">
-                      {teamResults.slice(0, 5).map((result) => (
+                      {teamResults.map((result) => (
                         <div className="flex items-center justify-between border-b border-[#efe7db] pb-3 last:border-b-0 last:pb-0" key={result.id}>
                           <Link
                             className="font-medium text-[#8a1f2d] underline-offset-4 hover:underline"
@@ -751,6 +776,9 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                         <div className="flex flex-col justify-between gap-3 border-b border-[#e7e1d8] pb-4 sm:flex-row sm:items-start">
                           <div>
                             <h3 className="text-lg font-semibold">{selectedRaceUnit.name}</h3>
+                            <Link className="mt-2 inline-block text-sm text-[#8a1f2d] hover:underline" href={`/${locale}${buildCompetitionRacePath(slug, selectedRaceUnit.slug)}`}>
+                              {dictionary.competitions.resultCountLabel}: {selectedRaceUnit._count.raceResults} →
+                            </Link>
                             <p className="mt-1 text-sm text-[#59615c]">
                               {formatDiscipline(selectedRaceUnit.discipline, locale)}
                               {selectedRaceUnit.startsAt ? ` / ${formatCompetitionDate(selectedRaceUnit.startsAt)}` : ""}
@@ -772,53 +800,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
                         </div>
 
                         {selectedRaceUnitDetails && selectedRaceUnitDetails.raceResults.length > 0 ? (
-                          <div className="mt-4 overflow-x-auto">
-                            <div className="min-w-[780px]">
-                              <div className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] bg-[#f2eee7] px-3 py-2 text-xs font-semibold text-[#59615c]">
-                                <span>{dictionary.competitions.rank}</span>
-                                <span>{dictionary.competitions.athlete}</span>
-                                <span>{dictionary.competitions.organization}</span>
-                                <span>{dictionary.competitions.mark}</span>
-                                <span>{dictionary.competitions.notes}</span>
-                              </div>
-                              <div className="divide-y divide-[#e7e1d8]">
-                                {selectedRaceUnitDetails.raceResults.map((result) => (
-                                  <div
-                                    className="grid grid-cols-[80px_1.2fr_1fr_120px_1fr] px-3 py-3 text-sm"
-                                    key={result.id}
-                                  >
-                                    <span className="text-[#59615c]">
-                                      {formatRankWithNotes(result.rank, result.notes, locale) || dictionary.common.emptyDash}
-                                    </span>
-                                    <Link
-                                      className="font-semibold text-[#8a1f2d] underline-offset-4 hover:underline"
-                                      data-analytics-event="player_profile_view"
-                                      data-analytics-link-type="competition_result_player"
-                                      href={`/${locale}/players/${result.person.slug}`}
-                                    >
-                                      {result.person.displayNameJa}
-                                    </Link>
-                                    {result.organization ? (
-                                      <Link
-                                        className="text-[#59615c] underline-offset-4 hover:text-[#8a1f2d] hover:underline"
-                                        data-analytics-event="player_to_organization_click"
-                                        data-analytics-link-type="competition_result_organization"
-                                        href={`/${locale}/organizations/${result.organization.slug}`}
-                                      >
-                                        {result.organization.nameJa}
-                                      </Link>
-                                    ) : (
-                                      <span className="text-[#59615c]">{dictionary.common.emptyDash}</span>
-                                    )}
-                                    <span>{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</span>
-                                    <span className="text-[#59615c]">
-                                      {formatRaceResultNotes(result.notes, locale, { suppressRepresentativeNotes: true }) || dictionary.common.emptyDash}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
+                          <RaceResultsTable locale={locale} results={selectedRaceUnitDetails.raceResults} />
                         ) : (
                           <p className="mt-4 text-sm text-[#59615c]">{dictionary.competitions.emptyResults}</p>
                         )}
@@ -829,6 +811,22 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
               </section>
             ) : null}
           </section>
+
+          {raceSummaries.length > 0 ? (
+            <section className="space-y-5" aria-label={dictionary.competitions.raceUnits}>
+              <h2 className="text-xl font-semibold">{dictionary.competitions.raceUnits}・{dictionary.competitions.resultCountLabel}</h2>
+              {edition.source?.url ? <a className="inline-block text-sm text-[#8a1f2d] hover:underline" href={edition.source.url} target="_blank" rel="noreferrer">{dictionary.competitions.source}: {edition.source.name}</a> : null}
+              {[...raceSummaries].sort(compareRaceUnits).map((race) => (
+                <article className="border border-[#ded8cc] bg-white p-5" key={race.id}>
+                  <h3 className="text-lg font-semibold">
+                    <Link className="text-[#8a1f2d] hover:underline" href={`/${locale}${buildCompetitionRacePath(slug, race.slug)}`}>{race.name} →</Link>
+                  </h3>
+                  <p className="mt-2 text-sm text-[#59615c]">{formatDiscipline(race.discipline, locale)} / {dictionary.competitions.resultCountLabel}: {race._count.raceResults}</p>
+                  {race.raceResults.length > 0 ? <RaceResultsTable locale={locale} results={race.raceResults} /> : null}
+                </article>
+              ))}
+            </section>
+          ) : null}
         </div>
       </main>
     </div>

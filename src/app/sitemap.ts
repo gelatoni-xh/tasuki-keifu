@@ -2,10 +2,12 @@ import type { MetadataRoute } from "next";
 import { createLogger } from "@/lib/logger";
 import {
   getIndexableCompetitions,
+  getIndexableCompetitionRaces,
   getIndexableOrganizations,
   getIndexablePlayers,
 } from "@/lib/search-discovery";
 import { buildLocalizedUrl } from "@/lib/site";
+import { buildCompetitionRacePath } from "@/lib/competition-races";
 
 export const dynamic = "force-dynamic";
 
@@ -77,8 +79,8 @@ export async function getSitemapLastModified(id: SitemapId) {
   }
 
   if (id === "competitions") {
-    const competitions = await getIndexableCompetitions();
-    return getMostRecentUpdatedAt(competitions) ?? new Date();
+    const [competitions, races] = await Promise.all([getIndexableCompetitions(), getIndexableCompetitionRaces()]);
+    return getMostRecentUpdatedAt([...competitions, ...races]) ?? new Date();
   }
 
   const organizations = await getIndexableOrganizations();
@@ -127,14 +129,19 @@ export default async function sitemap({
     }
 
     if (resolvedId === "competitions") {
-      const competitions = await getIndexableCompetitions();
+      const [competitions, races] = await Promise.all([getIndexableCompetitions(), getIndexableCompetitionRaces()]);
 
-      const entries = competitions.map((competition) => ({
+      const entries = [...competitions.map((competition) => ({
         url: buildLocalizedUrl("ja", `/competitions/${competition.slug}`),
         lastModified: competition.updatedAt,
         changeFrequency: "weekly" as const,
         priority: 0.7,
-      }));
+      })), ...races.map((race) => ({
+        url: buildLocalizedUrl("ja", buildCompetitionRacePath(race.editionSlug, race.slug)),
+        lastModified: race.updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      }))];
       sitemapLogger.info("sitemap_generated", {
         sitemap_id: resolvedId,
         entry_count: entries.length,

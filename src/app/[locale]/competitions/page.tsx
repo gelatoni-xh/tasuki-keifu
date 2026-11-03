@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowRight, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { prisma } from "@/lib/prisma";
 import { formatCompetitionDate } from "@/lib/competition-display";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { publicCompetitionTypes } from "@/lib/public-competitions";
-import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl } from "@/lib/site";
+import { buildDirectoryMetadata, getDirectoryPage } from "@/lib/directory-metadata";
 
 type CompetitionsPageProps = {
   params: Promise<{
@@ -30,27 +31,16 @@ export async function generateMetadata({ params, searchParams }: Pick<Competitio
   const title = "駅伝大会一覧 | 年度・結果・出場選手検索";
   const description = "大会名、年度、届次から駅伝大会を探せる一覧ページです。各大会の結果、出場選手、区間情報、開催日の確認入口として使えます。";
 
-  const metadata = buildPageMetadata({
+  const queryParams = await searchParams;
+  return buildDirectoryMetadata({
     title,
     description,
     path: "/competitions",
     locale: localeParam,
     keywords: ["駅伝大会一覧", "駅伝結果", "大会検索", "大会名検索", "年度別大会", "出場選手", "大会記録"],
+    page: queryParams.page,
+    hasFilters: Boolean(queryParams.q || queryParams.competition),
   });
-
-  const queryParams = await searchParams;
-  if (queryParams.q || queryParams.competition || queryParams.page) {
-    metadata.robots = {
-      index: false,
-      follow: true,
-      googleBot: {
-        index: false,
-        follow: true,
-      },
-    };
-  }
-
-  return metadata;
 }
 
 const pageSize = 10;
@@ -125,7 +115,7 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
   const query = queryParams.q?.trim() ?? "";
   const competitionSlug = queryParams.competition?.trim() ?? "";
   const normalizedQuery = normalizeSearchText(query);
-  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
+  const requestedPage = getDirectoryPage(queryParams.page);
   const editions = await prisma.competitionEdition.findMany({
     where: {
       competition: {
@@ -168,6 +158,9 @@ export default async function CompetitionsPage({ params, searchParams }: Competi
   });
   const totalPages = Math.max(1, Math.ceil(filteredEditions.length / pageSize));
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+  if (queryParams.page !== undefined && (queryParams.page !== String(currentPage) || currentPage === 1)) {
+    redirect(buildCompetitionsPath(locale, { q: queryParams.q, competition: queryParams.competition, page: currentPage > 1 ? currentPage : undefined }));
+  }
   const paginatedEditions = filteredEditions.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginationItems = getPaginationItems(currentPage, totalPages);
   const competitionsListJsonLd = {

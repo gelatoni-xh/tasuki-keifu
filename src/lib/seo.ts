@@ -1,5 +1,7 @@
 export type SeoTier = "primary" | "secondary" | "thin";
 
+export const MIN_INDEXABLE_RACE_FINISHERS = 3;
+
 const organizationFallbackSlugPattern = /^(hs|jhs|club|univ)-/;
 
 export function isOpaquePlayerSlug(slug: string) {

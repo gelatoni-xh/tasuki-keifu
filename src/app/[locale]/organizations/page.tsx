@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { DataStatus, OrganizationType } from "@prisma/client";
 import { ArrowRight, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
@@ -8,7 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { formatOrganizationType } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
-import { buildLocalizedUrl, buildPageMetadata } from "@/lib/site";
+import { buildLocalizedUrl } from "@/lib/site";
+import { buildDirectoryMetadata, getDirectoryPage } from "@/lib/directory-metadata";
 
 type OrganizationsPageProps = {
   params: Promise<{
@@ -33,27 +34,16 @@ export async function generateMetadata({ params, searchParams }: Pick<Organizati
   const title = "学校・大学・実業団一覧 | 所属選手・駅伝成績検索";
   const description = "学校、大学、実業団、クラブ、連盟などの組織を探せる一覧ページです。所属選手、関連人物、駅伝成績、地域情報の確認入口として使えます。";
 
-  const metadata = buildPageMetadata({
+  const queryParams = await searchParams;
+  return buildDirectoryMetadata({
     title,
     description,
     path: "/organizations",
     locale: localeParam,
     keywords: ["大学駅伝学校一覧", "実業団一覧", "連盟一覧", "組織名検索", "所属選手", "陸上部", "駅伝成績"],
+    page: queryParams.page,
+    hasFilters: Boolean(queryParams.q || queryParams.type || queryParams.status || queryParams.prefecture),
   });
-
-  const queryParams = await searchParams;
-  if (queryParams.q || queryParams.type || queryParams.status || queryParams.prefecture || queryParams.page) {
-    metadata.robots = {
-      index: false,
-      follow: true,
-      googleBot: {
-        index: false,
-        follow: true,
-      },
-    };
-  }
-
-  return metadata;
 }
 
 const allowedOrganizationTypes: OrganizationType[] = [
@@ -145,7 +135,7 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
     ? (queryParams.status as DataStatus)
     : "";
   const prefecture = isJapanPrefecture(queryParams.prefecture) ? queryParams.prefecture : "";
-  const requestedPage = Number.parseInt(queryParams.page ?? "1", 10);
+  const requestedPage = getDirectoryPage(queryParams.page);
   const organizations = await prisma.organization.findMany({
     where: {
       ...(organizationType ? { type: organizationType } : {}),
@@ -200,6 +190,9 @@ export default async function OrganizationsPage({ params, searchParams }: Organi
   });
   const totalPages = Math.max(1, Math.ceil(filteredOrganizations.length / pageSize));
   const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+  if (queryParams.page !== undefined && (queryParams.page !== String(currentPage) || currentPage === 1)) {
+    redirect(buildOrganizationsPath(locale, { q: queryParams.q, type: queryParams.type, status: queryParams.status, prefecture: queryParams.prefecture, page: currentPage > 1 ? currentPage : undefined }));
+  }
   const paginatedOrganizations = filteredOrganizations.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginationItems = getPaginationItems(currentPage, totalPages);
   const organizationsListJsonLd = {
