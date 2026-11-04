@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: tasuki-keifu-app
+    command: ["node", "node_modules/next/dist/bin/next", "start"]
     restart: unless-stopped
     env_file:
       - .env.production
