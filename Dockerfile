@@ -26,5 +26,10 @@ COPY --from=builder /app/messages ./messages
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/src/lib/prisma.ts /app/src/lib/logger.ts ./src/lib/
+COPY --from=builder /app/src/lib/feedback/mail.ts /app/src/lib/feedback/translations.ts ./src/lib/feedback/
+COPY --from=builder /app/deploy/retry-feedback.ts ./deploy/retry-feedback.ts
+
 EXPOSE 3000
 CMD ["node", "node_modules/next/dist/bin/next", "start"]

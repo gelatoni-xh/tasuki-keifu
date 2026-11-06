@@ -45,19 +45,20 @@ export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 prisma.$on("error", (event) => {
   prismaLogger.error("prisma_error", {
     target: event.target,
-    message: event.message,
+    message: /userfeedback/i.test(`${event.target} ${event.message}`) ? "Feedback database operation failed" : event.message,
   });
 });
 
 prisma.$on("warn", (event) => {
   prismaLogger.warn("prisma_warn", {
     target: event.target,
-    message: event.message,
+    message: /userfeedback/i.test(`${event.target} ${event.message}`) ? "Feedback database operation failed" : event.message,
   });
 });
 
 if (process.env.NODE_ENV === "development") {
   prisma.$on("query", (event) => {
+    if (event.query.includes('"UserFeedback"')) return;
     prismaLogger.debug("prisma_query", {
       target: event.target,
       duration_ms: event.duration,

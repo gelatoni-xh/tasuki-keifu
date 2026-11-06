@@ -1,3 +1,4 @@
+import { FeedbackWidget } from "@/components/feedback-widget";
 import type { Metadata } from "next";
 import { isLocale } from "@/lib/i18n";
 
@@ -28,6 +29,8 @@ export async function generateMetadata({ params }: Omit<LocaleLayoutProps, "chil
   };
 }
 
-export default async function LocaleLayout({ children }: LocaleLayoutProps) {
-  return children;
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  const resolved = await params as { locale?: string };
+  const locale = resolved.locale;
+  return <>{children}{locale && isLocale(locale) && <FeedbackWidget locale={locale} />}</>;
 }

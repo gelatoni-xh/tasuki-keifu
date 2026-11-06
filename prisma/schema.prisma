@@ -683,3 +683,20 @@ model ImportBatch {
   @@index([status])
   @@index([createdAt])
 }
+
+/// 原始用户反馈；通知状态仅用于邮件送达与重试。
+model UserFeedback {
+  id                    String   @id @default(cuid())
+  submissionKey         String   @unique
+  payload               Json
+  clientKey             String
+  createdAt             DateTime @default(now())
+  notificationStatus    String   @default("pending")
+  notificationAttempts  Int      @default(0)
+  notificationSentAt    DateTime?
+  notificationLastError String?
+
+  @@index([clientKey, createdAt])
+  @@index([createdAt])
+  @@index([notificationStatus, createdAt])
+}
