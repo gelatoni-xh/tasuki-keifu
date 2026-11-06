@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { RaceResultsTable } from "@/components/race-results-table";
+import { buildCompetitionSeoTitle } from "@/lib/competition-seo";
 import { buildCompetitionRacePath } from "@/lib/competition-races";
 import { compareRaceUnits, formatCompetitionDate } from "@/lib/competition-display";
 import { getScopeVersion } from "@/lib/cache-invalidation";
@@ -102,7 +103,15 @@ export async function generateMetadata({ params, searchParams }: CompetitionEdit
   const teamResultCount = edition.teamCompetitionResults?.length ?? 0;
   const keywordVariants = buildCompetitionKeywordVariants(edition);
   const displayName = formatCompetitionEditionDisplayName(edition);
-  const title = `${displayName} | 結果・出場選手・大会記録`;
+  const { title, conflictingYears } = buildCompetitionSeoTitle(displayName, edition.year);
+  if (conflictingYears.length > 0) {
+    pageLogger.warn("competition_title_year_mismatch", {
+      slug,
+      year: edition.year,
+      displayName,
+      conflictingYears,
+    });
+  }
   const description = [
     `${edition.year}年開催の${displayName}の結果ページです。`,
     `${edition.competition.nameJa}の出場選手、順位、記録をまとめて確認できます。`,
