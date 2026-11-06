@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Tasuki Keifu data updates every 15 minutes
+
+[Timer]
+OnCalendar=*:0/15
+RandomizedDelaySec=60
+Persistent=true
+Unit=tasuki-keifu-indexnow.service
+
+[Install]
+WantedBy=timers.target
