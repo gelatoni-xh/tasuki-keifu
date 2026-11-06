@@ -46,15 +46,9 @@ next-env.d.ts
 # local import scratch files
 tmp/
 local/
-scripts/local/
-data/imports/*.draft.json
+/scripts/local/
 
-# local / generated import artifacts
-scripts/imports/
-scripts/maintenance/
-data/config/
-data/imports/
-data/bootstrap/
-data/imports/**/*.html
-data/imports/**/*.pdf
-data/imports/**/summary.json
+# local data collection, import, and maintenance artifacts
+/scripts/imports/
+/scripts/maintenance/
+/data/
