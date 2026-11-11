@@ -256,6 +256,7 @@
     "ekiden_leg": "駅伝区間"
   },
   "organizationType": {
+    "unknown": "不明",
     "junior_high_school": "中学校",
     "high_school": "高校",
     "university": "大学",

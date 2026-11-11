@@ -118,3 +118,7 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=""
 ```
 
 部署时如需让 canonical URL 和 sitemap 指向正式域名，请额外设置 `NEXT_PUBLIC_SITE_URL`。
+
+## 新版赛事数据治理
+
+新版独立实现与启动步骤见 [`docs/governance-v2.md`](docs/governance-v2.md)。该流程的 migration 由主站管理；旧版 Agent 表和运行记录不自动迁移。

@@ -256,6 +256,7 @@
     "ekiden_leg": "Ekiden leg"
   },
   "organizationType": {
+    "unknown": "Unknown",
     "junior_high_school": "Junior high school",
     "high_school": "High school",
     "university": "University",

@@ -256,6 +256,7 @@
     "ekiden_leg": "驿传区间"
   },
   "organizationType": {
+    "unknown": "未知",
     "junior_high_school": "初中",
     "high_school": "高中",
     "university": "大学",
