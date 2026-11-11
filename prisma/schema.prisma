@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas = ["public", "governance"]
 }
 
 /// 数据确认状态
@@ -12,6 +13,8 @@ enum DataStatus {
   pending
   conflicting
   missing
+
+  @@schema("public")
 }
 
 /// 人物类型
@@ -19,6 +22,8 @@ enum PersonType {
   athlete
   coach
   staff
+
+  @@schema("public")
 }
 
 /// 组织关系中的人物角色
@@ -26,10 +31,13 @@ enum MembershipRole {
   athlete
   coach
   staff
+
+  @@schema("public")
 }
 
 /// 组织类型：高中、大学、实业团等统一在 Organization 表
 enum OrganizationType {
+  unknown
   junior_high_school
   high_school
   university
@@ -39,6 +47,8 @@ enum OrganizationType {
   company
   club
   organizer
+
+  @@schema("public")
 }
 
 /// 人物与组织之间的所属关系类型
@@ -48,6 +58,8 @@ enum MembershipType {
   affiliated
   graduated
   staff
+
+  @@schema("public")
 }
 
 /// 名称变体类型
@@ -60,6 +72,8 @@ enum NameVariantType {
   english
   former
   media
+
+  @@schema("public")
 }
 
 /// 数据来源类型
@@ -73,6 +87,8 @@ enum SourceType {
   fan_site
   pdf
   manual
+
+  @@schema("public")
 }
 
 /// 比赛项目类型
@@ -88,6 +104,8 @@ enum EventDiscipline {
   half_marathon
   marathon
   ekiden_leg
+
+  @@schema("public")
 }
 
 /// 赛事系列类型
@@ -99,6 +117,8 @@ enum CompetitionType {
   track_meet
   road_race
   marathon
+
+  @@schema("public")
 }
 
 /// 审计动作类型
@@ -109,6 +129,8 @@ enum AuditAction {
   verify
   merge
   split
+
+  @@schema("public")
 }
 
 /// 审计变更原因类型
@@ -125,6 +147,8 @@ enum AuditReasonType {
   entity_split
   import
   system
+
+  @@schema("public")
 }
 
 /// 审计操作者类型
@@ -132,6 +156,8 @@ enum AuditActorType {
   admin
   import_script
   system
+
+  @@schema("public")
 }
 
 /// 导入批次状态
@@ -140,6 +166,8 @@ enum ImportBatchStatus {
   running
   completed
   failed
+
+  @@schema("public")
 }
 
 /// 人物/选手表：记录人本身的稳定信息
@@ -197,6 +225,8 @@ model Person {
   @@index([status, updatedAt])
   @@index([type, status])
   @@index([hometown])
+
+  @@schema("public")
 }
 
 /// 组织表：统一记录高中、大学、实业团、俱乐部等
@@ -245,6 +275,8 @@ model Organization {
   nameVariants NameVariant[]
   /// 外部来源映射
   sourceReferences SourceReference[]
+
+  @@schema("public")
 }
 
 /// 所属履历表：记录人物在某时间段与某组织的关系
@@ -257,9 +289,17 @@ model Membership {
   organizationId String
   /// 所属关系类型
   type           MembershipType
-  /// 开始日期；不确定具体日期时按约定使用 04-01 等学年边界
+  /// 日期依据：unknown / source / inferred；不从空日期推定当前所属
+  startDateBasis String @default("unknown")
+  endDateBasis   String @default("unknown")
+  /// 结束状态：unknown / ongoing / ended
+  endState       String @default("unknown")
+  dateEvidence   Json?
+  /// 只有明确互斥的职业关系才设置 employment / team_registration
+  exclusivityGroup String?
+  /// 开始日期；推算边界由 startDateBasis 标注
   startDate      DateTime?
-  /// 结束日期；当前所属为空
+  /// 结束日期；空值的语义由 endState 表达
   endDate        DateTime?
   /// 开始年份，便于查询
   startYear      Int?
@@ -300,6 +340,8 @@ model Membership {
   @@index([organizationId, personId])
   @@index([organizationId, startYear, endYear])
   @@index([personId, startDate, endDate])
+
+  @@schema("public")
 }
 
 /// 当前 PB 快照表：V0.1 只保存各项目当前最好成绩
@@ -327,6 +369,8 @@ model PersonalBest {
 
   @@index([personId])
   @@index([discipline])
+
+  @@schema("public")
 }
 
 /// 赛事系列表，例如箱根駅伝、出雲駅伝、大阪マラソン
@@ -349,6 +393,8 @@ model Competition {
   editions     CompetitionEdition[]
   nameVariants NameVariant[]
   sourceReferences SourceReference[]
+
+  @@schema("public")
 }
 
 /// 赛事届次表，例如第102回箱根駅伝、大阪マラソン2025
@@ -375,6 +421,8 @@ model CompetitionEdition {
 
   @@index([competitionId])
   @@index([year])
+
+  @@schema("public")
 }
 
 /// 队伍在某届赛事中的最终结果
@@ -399,6 +447,8 @@ model TeamCompetitionResult {
   @@unique([competitionEditionId, organizationId])
   @@index([competitionEditionId, finalRank])
   @@index([organizationId, competitionEditionId])
+
+  @@schema("public")
 }
 
 /// 队伍在第 N 区结束后的累计状态
@@ -422,6 +472,8 @@ model TeamCompetitionLegSnapshot {
 
   @@unique([teamCompetitionResultId, leg])
   @@index([leg, cumulativeRank])
+
+  @@schema("public")
 }
 
 /// 比赛单元表：某届赛事下的具体区间、项目、组别
@@ -471,6 +523,8 @@ model Race {
   @@index([leg])
   @@index([competitionEditionId, leg, startsAt])
   @@index([competitionEditionId, startsAt])
+
+  @@schema("public")
 }
 
 /// 比赛结果表：某个选手在某个 Race 中的成绩
@@ -527,6 +581,8 @@ model RaceResult {
   @@index([organizationId, personId])
   @@index([raceId, rank])
   @@index([raceId, markMillis])
+
+  @@schema("public")
 }
 
 /// 选手关系缓存表：存储派生关系结果
@@ -542,6 +598,8 @@ model PlayerRelationCache {
   person      Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
 
   @@index([generatedAt])
+
+  @@schema("public")
 }
 
 /// 缓存失效版本表：用于跨进程通知读缓存刷新
@@ -551,6 +609,8 @@ model CacheInvalidation {
   version   DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@schema("public")
 }
 
 /// 数据来源表
@@ -577,6 +637,8 @@ model Source {
   auditLogs     AuditLog[]
   sourceReferences SourceReference[]
   importBatches ImportBatch[]
+
+  @@schema("public")
 }
 
 /// 名称变体表：正式名、简称、罗马字、翻译名等
@@ -602,6 +664,8 @@ model NameVariant {
   @@index([personId])
   @@index([organizationId])
   @@index([competitionId])
+
+  @@schema("public")
 }
 
 /// 审计日志表：记录数据维护行为，不记录现实世界事件
@@ -629,6 +693,8 @@ model AuditLog {
   @@index([reasonType])
   @@index([batchId])
   @@index([createdAt])
+
+  @@schema("public")
 }
 
 /// 外部来源与内部实体之间的稳定映射
@@ -660,6 +726,8 @@ model SourceReference {
   @@index([competitionId])
   @@index([competitionEditionId])
   @@index([raceId])
+
+  @@schema("public")
 }
 
 /// 导入批次表：记录一次正式导入执行
@@ -682,6 +750,8 @@ model ImportBatch {
   @@index([type])
   @@index([status])
   @@index([createdAt])
+
+  @@schema("public")
 }
 
 /// 原始用户反馈；通知状态仅用于邮件送达与重试。
@@ -699,4 +769,168 @@ model UserFeedback {
   @@index([clientKey, createdAt])
   @@index([createdAt])
   @@index([notificationStatus, createdAt])
+
+  @@schema("public")
+}
+
+/// 新版数据治理；迁移归主站，运行逻辑归 Agent
+model EventImportTask {
+  batches       GovernanceBatch[]
+  notifications NotificationDelivery[]
+  id            String                 @id @default(uuid()) @db.Uuid
+  requestKey    String                 @unique
+  manifestHash  String
+  mode          String
+  status        String                 @default("queued")
+  inputManifest Json
+  summary       Json?
+  leaseToken    String?
+  leaseUntil    DateTime?              @db.Timestamptz(3)
+  heartbeatAt   DateTime?              @db.Timestamptz(3)
+  nextRunAt     DateTime               @default(now()) @db.Timestamptz(3)
+  errorMessage  String?
+  createdAt     DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime               @default(now()) @db.Timestamptz(3)
+  completedAt   DateTime?              @db.Timestamptz(3)
+
+  @@index([status, nextRunAt, leaseUntil])
+  @@schema("governance")
+}
+
+/// 新版数据治理；迁移归主站，运行逻辑归 Agent
+model GovernanceBatch {
+  eventTask     EventImportTask        @relation(fields: [eventTaskId], references: [id], onDelete: Restrict)
+  attempts      BatchAttempt[]
+  findings      GovernanceFinding[]
+  changes       GovernanceChange[]
+  notifications NotificationDelivery[]
+  id            String                 @id @default(uuid()) @db.Uuid
+  eventTaskId   String                 @db.Uuid
+  unitType      String
+  unitKey       String
+  sequence      Int
+  rawPayloadRef String
+  payloadHash   String
+  payloadBytes  Int
+  recordCount   Int
+  status        String                 @default("queued")
+  summary       Json?
+  createdAt     DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime               @default(now()) @db.Timestamptz(3)
+  completedAt   DateTime?              @db.Timestamptz(3)
+
+  @@unique([eventTaskId, unitType, unitKey])
+  @@unique([eventTaskId, sequence])
+  @@index([eventTaskId, status])
+  @@schema("governance")
+}
+
+/// 新版数据治理；迁移归主站，运行逻辑归 Agent
+model BatchAttempt {
+  batch            GovernanceBatch  @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  executions       AgentExecution[]
+  id               String           @id @default(uuid()) @db.Uuid
+  batchId          String           @db.Uuid
+  attemptNo        Int
+  graphThreadId    String           @unique
+  status           String           @default("running")
+  inputFingerprint String
+  metrics          Json?
+  errorMessage     String?
+  startedAt        DateTime         @default(now()) @db.Timestamptz(3)
+  endedAt          DateTime?        @db.Timestamptz(3)
+
+  @@unique([batchId, attemptNo])
+  @@schema("governance")
+}
+
+/// 新版数据治理；迁移归主站，运行逻辑归 Agent
+model AgentExecution {
+  attempt        BatchAttempt        @relation(fields: [batchAttemptId], references: [id], onDelete: Restrict)
+  findings       GovernanceFinding[]
+  changes        GovernanceChange[]
+  id             String              @id @default(uuid()) @db.Uuid
+  batchAttemptId String              @db.Uuid
+  agentKey       String
+  executionNo    Int                 @default(1)
+  agentVersion   String
+  status         String              @default("running")
+  currentNode    String?
+  resultSummary  Json?
+  evidenceRefs   Json?
+  metrics        Json?
+  startedAt      DateTime            @default(now()) @db.Timestamptz(3)
+  endedAt        DateTime?           @db.Timestamptz(3)
+
+  @@unique([batchAttemptId, agentKey, executionNo])
+  @@schema("governance")
+}
+
+/// 新版数据治理；迁移归主站，运行逻辑归 Agent
+model GovernanceFinding {
+  batch              GovernanceBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  execution          AgentExecution? @relation(fields: [agentExecutionId], references: [id], onDelete: Restrict)
+  id                 String          @id @default(uuid()) @db.Uuid
+  batchId            String          @db.Uuid
+  agentExecutionId   String?         @db.Uuid
+  findingKey         String
+  findingCode        String
+  subjectRef         String
+  severity           String
+  resolutionStatus   String
+  confidence         Float?
+  reason             String
+  detailsAndEvidence Json
+  createdAt          DateTime        @default(now()) @db.Timestamptz(3)
+
+  @@unique([batchId, findingKey])
+  @@index([severity, resolutionStatus])
+  @@schema("governance")
+}
+
+/// 新版数据治理；迁移归主站，运行逻辑归 Agent
+model GovernanceChange {
+  batch                 GovernanceBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  execution             AgentExecution? @relation(fields: [proposedByExecutionId], references: [id], onDelete: Restrict)
+  id                    String          @id @default(uuid()) @db.Uuid
+  batchId               String          @db.Uuid
+  proposedByExecutionId String?         @db.Uuid
+  changeKey             String
+  revision              Int             @default(1)
+  idempotencyKey        String          @unique
+  operation             String
+  entityRef             String
+  status                String          @default("planned")
+  patchAndEvidence      Json
+  businessAuditRef      String?
+  errorMessage          String?
+  createdAt             DateTime        @default(now()) @db.Timestamptz(3)
+  appliedAt             DateTime?       @db.Timestamptz(3)
+
+  @@unique([batchId, changeKey, revision])
+  @@index([batchId, entityRef, status])
+  @@schema("governance")
+}
+
+/// 新版数据治理；迁移归主站，运行逻辑归 Agent
+model NotificationDelivery {
+  task          EventImportTask? @relation(fields: [eventTaskId], references: [id], onDelete: Restrict)
+  batch         GovernanceBatch? @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  id            String           @id @default(uuid()) @db.Uuid
+  eventTaskId   String?          @db.Uuid
+  batchId       String?          @db.Uuid
+  kind          String
+  dedupeKey     String           @unique
+  status        String           @default("pending")
+  payload       Json
+  attemptCount  Int              @default(0)
+  nextAttemptAt DateTime         @default(now()) @db.Timestamptz(3)
+  leaseToken    String?
+  leaseUntil    DateTime?        @db.Timestamptz(3)
+  sentAt        DateTime?        @db.Timestamptz(3)
+  errorMessage  String?
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+
+  @@index([status, nextAttemptAt])
+  @@schema("governance")
 }
