@@ -21,6 +21,9 @@ export function buildAllJapanUniversityEkidenPdfPath(edition: number) {
 }
 
 export function buildAllJapanUniversityEkidenSourceUrl(edition: number) {
+  if (edition === 58) {
+    return "https://daigaku-ekiden.com/files/2026_result.pdf";
+  }
   if (edition === 52) {
     return "https://daigaku-ekiden.com/datafile/files/2020result.pdf";
   }

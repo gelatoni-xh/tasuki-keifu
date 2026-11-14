@@ -28,6 +28,11 @@ export async function importRacePayload(prisma: PrismaClient, payload: RaceImpor
   if (!race) {
     throw new Error(`Missing race: ${payload.raceSlug}`);
   }
+  assertCompetitionImportInScope({
+    raceSlugs: [payload.raceSlug],
+    raceNames: [race.name],
+    sourceId: payload.sourceId,
+  });
 
   const batch = await createOrStartImportBatch(prisma, payload);
   const protectedProfileSlugs = new Set(["asahi-kuroda", "kudo-shinsaku", "kiyoto-hirabayashi"]);

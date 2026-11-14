@@ -256,6 +256,7 @@
     "ekiden_leg": "에키덴 구간"
   },
   "organizationType": {
+    "unknown": "알 수 없음",
     "junior_high_school": "중학교",
     "high_school": "고등학교",
     "university": "대학",

@@ -29,9 +29,11 @@ function reverseRomanOrder(value: string) {
 }
 
 const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
+  ["kobayashi-ryota", "kobayashi-ryota-kanagawa"],
   [
     "nakagawa-takumi-masuda-seifu",
     "person-e4b8ade5b79d20e68b93e6b5",
+    "nakagawa-takumi-toyokawa-high-school",
   ],
   [
     "maeda-hinata-kagoshima-josei",
@@ -101,7 +103,36 @@ const KNOWN_TRUE_SAME_NAME_SLUG_GROUPS = [
     "person-kao-6f17f4eb",
     "person-nittaidai328-ac0a0777128b13477117",
   ],
+  [
+    "kojima-daiki-mikata",
+    "person-e5b08fe5b3b620e5a4a7e8bc",
+    "person-nittaidai329-eff162a260601d7821f4",
+    "person-nittaidai324-1611f58a45b3bd8b24f5",
+  ],
+  [
+    "nakagawa-takumi-masuda-seifu",
+    "person-e4b8ade5b79d20e68b93e6b5",
+    "person-nittaidai324-5e12a45e5b3a94345664",
+  ],
+  [
+    "person-japan-running-news-2021-e6bb8be9878e20e88196e4b99f",
+    "person-press-kogyo-554e2fa4",
+    "person-nittaidai324-d4927297857f70bd61a6",
+  ],
+  [
+    "person-subaru-27f8f9db",
+    "person-hokuren2026chitose-e6a3aee794b0e4bdb3e7a590",
+    "person-nittaidai324-6f68ac3cf5686d3f744d",
+  ],
 ] as const;
+
+const KNOWN_PERSON_SLUG_ALIASES = new Map([
+  ["person-march2025-7f4aa1e92a2703c0a2f7", "person-e6a499e5b1b120e4b880e9a2"],
+]);
+
+function resolveKnownPersonSlug(slug: string) {
+  return KNOWN_PERSON_SLUG_ALIASES.get(slug) ?? slug;
+}
 
 const KNOWN_TRUE_SAME_NAME_SLUG_PAIRS = new Set(
   KNOWN_TRUE_SAME_NAME_SLUG_GROUPS.flatMap((group) =>
@@ -186,6 +217,15 @@ function inferHighSchoolWindowFromUniversityStart(universityStartDate: Date) {
   return {
     highSchoolStart: new Date(Date.UTC(universityStartYear - 3, 3, 1)),
     highSchoolEnd: new Date(Date.UTC(universityStartYear, 2, 31)),
+  };
+}
+
+function inferUniversityWindowFromHighSchoolEnd(highSchoolEndYear: number) {
+  const universityStartYear = highSchoolEndYear;
+
+  return {
+    universityStart: new Date(Date.UTC(universityStartYear, 3, 1)),
+    universityEnd: new Date(Date.UTC(universityStartYear + 4, 2, 31)),
   };
 }
 
@@ -562,28 +602,7 @@ export async function ensureMembership(prisma: PrismaClient, input: {
     patch.sourceId = input.sourceId;
   }
 
-  const sameTimeline =
-    (existing.startDate?.toISOString() ?? null) === (input.startDate?.toISOString() ?? null) &&
-    (existing.endDate?.toISOString() ?? null) === (input.endDate?.toISOString() ?? null) &&
-    (existing.startYear ?? null) === input.startYear &&
-    (existing.endYear ?? null) === input.endYear;
-
-  if (!sameTimeline) {
-    if (input.startDate) {
-      patch.startDate = input.startDate;
-    }
-    if (input.endDate) {
-      patch.endDate = input.endDate;
-    }
-    if (input.startYear) {
-      patch.startYear = input.startYear;
-    }
-    if (input.endYear) {
-      patch.endYear = input.endYear;
-    }
-    patch.sourceId = input.sourceId;
-  }
-
+  // Race grades and inferred career windows may fill gaps, but cannot replace established dates.
   if (Object.keys(patch).length > 0) {
     await prisma.membership.update({
       where: { id: existing.id },
@@ -655,7 +674,6 @@ export async function upsertPersonalBestSnapshot(prisma: PrismaClient, input: {
     existingRecency && incomingRecency
       ? incomingRecency.getTime() - existingRecency.getTime()
       : 0;
-  const isIncomingNewer = recencyDelta > 0;
   const isIncomingOlder = recencyDelta < 0;
   const isIncomingFaster =
     incomingMarkMillis !== null &&
@@ -671,7 +689,7 @@ export async function upsertPersonalBestSnapshot(prisma: PrismaClient, input: {
 
   if (!shouldReplace) {
     if (
-      (isIncomingSlower && (reliabilityDelta > 0 || (reliabilityDelta === 0 && isIncomingNewer))) ||
+      (isIncomingSlower && reliabilityDelta > 0) ||
       (isIncomingFaster && (reliabilityDelta < 0 || (reliabilityDelta === 0 && isIncomingOlder)))
     ) {
       await prisma.personalBest.update({
@@ -1326,6 +1344,8 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     throw new Error(`Missing race for raceId=${input.raceId}`);
   }
 
+  const personSlug = resolveKnownPersonSlug(input.entry.slug);
+
   const raceOrganization = await ensureOrganization(prisma, {
     slug: input.entry.raceOrganizationSlug,
     nameJa: input.entry.raceOrganizationNameJa,
@@ -1364,15 +1384,19 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
   const normalizedDisplayNameJa = normalizePersonDisplayNameJa(input.entry.displayNameJa);
 
   const person = await prisma.person.upsert({
-    where: { slug: input.entry.slug },
+    where: { slug: personSlug },
     update: {
-      displayNameJa: normalizedDisplayNameJa,
-      displayNameJaSearch: normalizeJaName(normalizedDisplayNameJa),
+      ...(personSlug === input.entry.slug
+        ? {
+            displayNameJa: normalizedDisplayNameJa,
+            displayNameJaSearch: normalizeJaName(normalizedDisplayNameJa),
+          }
+        : {}),
       ...(input.entry.displayNameKana ? { displayNameKana: input.entry.displayNameKana } : {}),
       ...(input.entry.displayNameRoman ? { displayNameRoman: input.entry.displayNameRoman } : {}),
     },
     create: {
-      slug: input.entry.slug,
+      slug: personSlug,
       displayNameJa: normalizedDisplayNameJa,
       displayNameJaSearch: normalizeJaName(normalizedDisplayNameJa),
       displayNameKana: input.entry.displayNameKana ?? null,
@@ -1382,7 +1406,25 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     },
   });
 
-  const existingMemberships = !input.protectedProfileSlugs.has(input.entry.slug)
+  if (personSlug !== input.entry.slug) {
+    const existingNameVariant = await prisma.nameVariant.findFirst({
+      where: { personId: person.id, value: normalizedDisplayNameJa },
+      select: { id: true },
+    });
+    if (!existingNameVariant) {
+      await prisma.nameVariant.create({
+        data: {
+          personId: person.id,
+          value: normalizedDisplayNameJa,
+          type: "media",
+          isPrimary: false,
+          sourceId: input.sourceId,
+        },
+      });
+    }
+  }
+
+  const existingMemberships = !input.protectedProfileSlugs.has(personSlug)
     ? await prisma.membership.findMany({
         where: { personId: person.id },
         include: {
@@ -1410,7 +1452,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
 
   if (
     dates &&
-    !input.protectedProfileSlugs.has(input.entry.slug) &&
+    !input.protectedProfileSlugs.has(personSlug) &&
     !isCompetitionOnlyTeam &&
     university &&
     dates.universityStart &&
@@ -1429,8 +1471,48 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
   }
 
   if (
+    !dates &&
+    !input.protectedProfileSlugs.has(personSlug) &&
+    !isCompetitionOnlyTeam &&
+    raceOrganization.type === OrganizationType.university &&
+    university
+  ) {
+    const universityMemberships = existingMemberships.filter(
+      (membership) => membership.organization.type === OrganizationType.university && membership.type === MembershipType.enrolled,
+    );
+    const conflictingUniversityMembership = universityMemberships.some(
+      (membership) => membership.organizationId !== university.id,
+    );
+    const datedHighSchoolMemberships = existingMemberships.filter(
+      (membership) =>
+        membership.organization.type === OrganizationType.high_school &&
+        membership.type === MembershipType.enrolled &&
+        (membership.endYear !== null || membership.endDate !== null),
+    );
+
+    if (!conflictingUniversityMembership && datedHighSchoolMemberships.length === 1) {
+      const highSchoolMembership = datedHighSchoolMemberships[0];
+      const highSchoolEndYear = highSchoolMembership.endYear ?? highSchoolMembership.endDate?.getUTCFullYear();
+
+      if (highSchoolEndYear) {
+        const inferredWindow = inferUniversityWindowFromHighSchoolEnd(highSchoolEndYear);
+        await ensureMembership(prisma, {
+          personId: person.id,
+          organizationId: university.id,
+          type: MembershipType.enrolled,
+          startDate: inferredWindow.universityStart,
+          endDate: inferredWindow.universityEnd,
+          startYear: inferredWindow.universityStart.getUTCFullYear(),
+          endYear: inferredWindow.universityEnd.getUTCFullYear(),
+          sourceId: input.sourceId,
+        });
+      }
+    }
+  }
+
+  if (
     dates &&
-    !input.protectedProfileSlugs.has(input.entry.slug) &&
+    !input.protectedProfileSlugs.has(personSlug) &&
     !isCompetitionOnlyTeam &&
     highSchool &&
     dates.highSchoolStart &&
@@ -1470,7 +1552,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     }
   }
 
-  if (dates && !input.protectedProfileSlugs.has(input.entry.slug) && affiliationOrganization) {
+  if (dates && !input.protectedProfileSlugs.has(personSlug) && affiliationOrganization) {
     if (
       affiliationOrganization.type === OrganizationType.university &&
       dates.universityStart &&
@@ -1524,7 +1606,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
   }
 
   if (
-    !input.protectedProfileSlugs.has(input.entry.slug) &&
+    !input.protectedProfileSlugs.has(personSlug) &&
     (raceOrganization.type === OrganizationType.corporate_team ||
       affiliationOrganization?.type === OrganizationType.corporate_team ||
       affiliationOrganization?.type === OrganizationType.company ||
@@ -1613,7 +1695,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     });
   }
 
-  if (!input.protectedProfileSlugs.has(input.entry.slug)) {
+  if (!input.protectedProfileSlugs.has(personSlug)) {
     const matchingUniversityMembership = existingMemberships.find(
       (membership) => membership.organization.type === OrganizationType.university,
     );
@@ -1658,7 +1740,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     }
   }
 
-  if (!input.protectedProfileSlugs.has(input.entry.slug)) {
+  if (!input.protectedProfileSlugs.has(personSlug)) {
     for (const pb of input.entry.pbs) {
       await upsertPersonalBestSnapshot(prisma, {
         personId: person.id,
@@ -1690,7 +1772,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
       organizationId: raceOrganization.id,
       raceId: input.raceId,
       isEntry: true,
-      isStarter: true,
+      isStarter: canonicalMark.trim().toUpperCase() !== "DNS",
       mark: canonicalMark,
       markMillis: markToMilliseconds(canonicalMark),
       rank: input.entry.rank,
