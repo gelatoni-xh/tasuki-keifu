@@ -57,6 +57,7 @@ export async function bootstrapCompetition(prisma: PrismaClient, config: Competi
     competitionSlug: config.competition.slug,
     editionSlugs: config.editions.map(edition => edition.slug),
     raceSlugs: config.races.map(race => race.slug),
+    raceNames: config.races.map(race => race.name),
   });
   const competition = await prisma.competition.upsert({
     where: { slug: config.competition.slug },
