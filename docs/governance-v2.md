@@ -5,7 +5,7 @@
 ## 部署顺序
 
 1. 审阅 `prisma/migrations/202611110001_event_governance/migration.sql`，执行 `prisma migrate deploy`。迁移只新增 `OrganizationType.unknown`、Membership 日期依据/状态/证据/互斥组和 governance 七表，不迁移旧 Agent 运行数据。
-2. 使用有 schema 建立权限的管理连接，通过 Agent `setup-checkpoints` 建立 checkpoint schema/table。
+2. 管理员创建 checkpoint schema 并把 schema owner 交给 runtime role：`CREATE SCHEMA governance_checkpoint AUTHORIZATION governance_runtime;`。随后用 Agent runtime 连接运行 `setup-checkpoints` 建表。若 schema 已存在，核对 owner/CREATE 权限，不把 runtime role 提升为数据库 superuser。
 3. 由 DB 管理员执行 `prisma/grants/governance-v2.sql` 并提供 `runtime_role`、`business_reader`、`site_reader` 变量。三种角色单独配置登录和凭据；脚本不管理密码。runtime 读写所需业务实体、审计和治理/checkpoint 表；business_reader 只读 writer 所需上下文；site_reader 仅读显式投影表。没有一类角色获 UserFeedback 权限。
 4. 在 Agent 设置 `GOVERNANCE_DATABASE_URL` 指向 runtime 连接、`GOVERNANCE_READ_DATABASE_URL` 指向同库业务只读连接。apply 必须双 URL 分离；dry_run 可在本地受控测试用同连接。
 5. Personal site 单独设置 `TASUKI_GOVERNANCE_READ_DATABASE_URL` 指向 site_reader。详见个人站手册。禁止将 runtime 凭据放入个人站。

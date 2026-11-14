@@ -115,19 +115,9 @@ pnpm maint:recompute-player-relations
 ```env
 DATABASE_URL="postgresql://tasuki_keifu:tasuki_keifu@localhost:5432/tasuki_keifu?schema=public"
 NEXT_PUBLIC_GA_MEASUREMENT_ID=""
-TASUKI_GOVERNANCE_READ_DATABASE_URL=""
-TASUKI_ADMIN_USERNAME=""
-TASUKI_ADMIN_PASSWORD=""
-TASUKI_ADMIN_SESSION_SECRET=""
 ```
 
-数据治理观测位于 `/zh/observability` 和 `/en/observability`，需要使用 `TASUKI_ADMIN_USERNAME`、`TASUKI_ADMIN_PASSWORD` 登录。页面由数据站服务端通过 `TASUKI_GOVERNANCE_READ_DATABASE_URL` 只读查询治理记录。
-
 部署时如需让 canonical URL 和 sitemap 指向正式域名，请额外设置 `NEXT_PUBLIC_SITE_URL`。
-
-## 新版赛事数据治理
-
-新版独立实现与启动步骤见 [`docs/governance-v2.md`](docs/governance-v2.md)。该流程的 migration 由主站管理；旧版 Agent 表和运行记录不自动迁移。
 
 ## 新版赛事数据治理
 
