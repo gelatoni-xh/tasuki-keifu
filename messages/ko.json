@@ -18,7 +18,9 @@
   "nav": {
     "players": "선수",
     "competitions": "대회",
-    "organizations": "조직"
+    "organizations": "조직",
+    "observability": "관측",
+    "login": "로그인"
   },
   "common": {
     "search": "검색",

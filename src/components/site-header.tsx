@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import type { Locale } from "@/lib/i18n";
 import { getDictionary, locales } from "@/lib/i18n";
 import { getStaticPageCopy } from "@/lib/static-pages";
+import { OBSERVABILITY_COOKIE, verifySessionToken } from "@/lib/observability-auth";
 
 type SiteHeaderProps = {
   locale: Locale;
@@ -27,8 +29,10 @@ function isActivePath(path: string, href: string) {
   return path === href || path.startsWith(`${href}/`) || path.startsWith(`${href}?`);
 }
 
-export function SiteHeader({ locale, path }: SiteHeaderProps) {
+export async function SiteHeader({ locale, path }: SiteHeaderProps) {
   const dictionary = getDictionary(locale);
+  const cookieStore = await cookies();
+  const isSignedIn = verifySessionToken(cookieStore.get(OBSERVABILITY_COOKIE)?.value);
   const staticPageCopy = getStaticPageCopy(locale);
   const normalizedPath = normalizeLanguageSwitchPath(path);
   const localeOptions = locales.map((targetLocale) => ({
@@ -55,6 +59,9 @@ export function SiteHeader({ locale, path }: SiteHeaderProps) {
       href: "/support",
       label: staticPageCopy.labels.support,
     },
+    isSignedIn
+      ? { href: "/observability", label: dictionary.nav.observability }
+      : { href: "/login", label: dictionary.nav.login },
   ];
 
   return (

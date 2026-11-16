@@ -18,7 +18,9 @@
   "nav": {
     "players": "选手",
     "competitions": "赛事",
-    "organizations": "组织"
+    "organizations": "组织",
+    "observability": "观测",
+    "login": "登录"
   },
   "common": {
     "search": "搜索",
