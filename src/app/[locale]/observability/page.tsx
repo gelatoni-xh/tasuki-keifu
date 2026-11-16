@@ -51,6 +51,22 @@ export default async function ObservabilityPage({
     update: t("更新", "Update"),
     delete: t("删除", "Delete"),
   }[value] ?? value);
+  const resolutionLabel = (value: string) => ({
+    unresolved: t("未解决", "Unresolved"),
+    resolved: t("已解决", "Resolved"),
+    skipped: t("已跳过", "Skipped"),
+  }[value] ?? value);
+  const severityLabel = (value: string) => ({
+    serious: t("严重", "Serious"),
+    warning: t("警告", "Warning"),
+    info: t("提示", "Info"),
+  }[value] ?? value);
+  const findingCodeLabel = (value: string) => ({
+    mapping_conflict: t("关联冲突", "Mapping conflict"),
+    insufficient_evidence: t("证据不足", "Insufficient evidence"),
+    identity_unresolved: t("身份未确定", "Identity unresolved"),
+    research_budget_exhausted: t("研究预算耗尽", "Research budget exhausted"),
+  }[value] ?? value);
   const data = await getObservabilityOverview((await searchParams).task);
   const current = data.tasks.find((task) => task.id === data.selectedTaskId);
   const metrics = current?.summary?.observability as
@@ -269,9 +285,9 @@ export default async function ObservabilityPage({
         {data.findings.map((f) => (
           <article className="panel space-y-3" key={f.id}>
             <div className="flex flex-wrap gap-2">
-              <Badge>{f.resolutionStatus}</Badge>
-              <Badge>{f.severity}</Badge>
-              <code className="text-xs">{f.findingCode}</code>
+              <Badge>{resolutionLabel(f.resolutionStatus)}</Badge>
+              <Badge>{severityLabel(f.severity)}</Badge>
+              <code className="text-xs">{findingCodeLabel(f.findingCode)}</code>
             </div>
             <p>{f.reason}</p>
             <p className="break-all text-xs text-stone-500">{f.subjectRef}</p>

@@ -55,6 +55,14 @@ body {
   overflow-x: hidden;
 }
 
+body:has(.auth-page) {
+  padding-left: 0;
+}
+
+body:has(.auth-page) .auth-page > section {
+  max-width: 28rem;
+}
+
 @media (min-width: 1024px) {
   body {
     padding-left: 18rem;

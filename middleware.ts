@@ -16,6 +16,12 @@ async function verifySessionToken(token: string | undefined) {
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  const localizedObservability = path.match(/^\/([a-z-]+)\/observability(?:\/|$)/i);
+  if (localizedObservability && !["en", "zh"].includes(localizedObservability[1])) {
+    const fallback = new URL("/zh/observability", request.url);
+    fallback.search = request.nextUrl.search;
+    return NextResponse.redirect(fallback);
+  }
   if (/^\/(?:[a-z]{2}\/)?observability(?:\/|$)/.test(path) || path.startsWith("/api/observability/")) {
     if (!(await verifySessionToken(request.cookies.get(COOKIE)?.value))) {
       const publicOrigin = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") || request.nextUrl.origin;
