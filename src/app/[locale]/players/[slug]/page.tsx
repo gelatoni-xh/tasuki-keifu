@@ -743,7 +743,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                           {result.organization ? (
                             <OrganizationInlineLink locale={locale} muted organization={result.organization} />
                           ) : (
-                            dictionary.common.emptyDash
+                            result.organizationNameSnapshot ?? dictionary.common.emptyDash
                           )}
                         </span>
                         <span className="text-[#59615c]">
@@ -795,7 +795,7 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                           {result.organization ? (
                             <OrganizationInlineLink locale={locale} muted organization={result.organization} />
                           ) : (
-                            dictionary.common.emptyDash
+                            result.organizationNameSnapshot ?? dictionary.common.emptyDash
                           )}
                         </dd>
                       </div>

@@ -1197,6 +1197,12 @@ function mapRaceOrganizationType(
   return OrganizationType.university;
 }
 
+function isUnconfirmedOrganizationType(type: OrganizationType) {
+  return type === OrganizationType.unknown ||
+    type === OrganizationType.company ||
+    type === OrganizationType.club;
+}
+
 export async function upsertTeamCompetitionResult(prisma: PrismaClient, input: {
   batchId: string;
   sourceId: string;
@@ -1346,18 +1352,24 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
 
   const personSlug = resolveKnownPersonSlug(input.entry.slug);
 
-  const raceOrganization = await ensureOrganization(prisma, {
-    slug: input.entry.raceOrganizationSlug,
-    nameJa: input.entry.raceOrganizationNameJa,
-    type: mapRaceOrganizationType(input.entry.raceOrganizationType),
-    prefecture: input.entry.raceOrganizationPrefecture,
-    sourceId: input.sourceId,
-  });
-  const affiliationOrganization = input.entry.affiliationOrganizationNameJa && input.entry.affiliationOrganizationType
+  const raceOrganizationType = mapRaceOrganizationType(input.entry.raceOrganizationType);
+  const raceOrganization = isUnconfirmedOrganizationType(raceOrganizationType)
+    ? null
+    : await ensureOrganization(prisma, {
+        slug: input.entry.raceOrganizationSlug,
+        nameJa: input.entry.raceOrganizationNameJa,
+        type: raceOrganizationType,
+        prefecture: input.entry.raceOrganizationPrefecture,
+        sourceId: input.sourceId,
+      });
+  const affiliationOrganizationType = input.entry.affiliationOrganizationType
+    ? mapRaceOrganizationType(input.entry.affiliationOrganizationType)
+    : null;
+  const affiliationOrganization = input.entry.affiliationOrganizationNameJa && affiliationOrganizationType && !isUnconfirmedOrganizationType(affiliationOrganizationType)
     ? await ensureOrganization(prisma, {
         slug: input.entry.affiliationOrganizationSlug,
         nameJa: input.entry.affiliationOrganizationNameJa,
-        type: mapRaceOrganizationType(input.entry.affiliationOrganizationType),
+        type: affiliationOrganizationType,
         prefecture: input.entry.affiliationOrganizationPrefecture,
         sourceId: input.sourceId,
       })
@@ -1376,7 +1388,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     sourceId: input.sourceId,
   });
 
-  if (!raceOrganization) {
+  if (!raceOrganization && !isUnconfirmedOrganizationType(raceOrganizationType)) {
     throw new Error(`Missing organization for ${input.entry.displayNameJa}`);
   }
 
@@ -1474,7 +1486,7 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     !dates &&
     !input.protectedProfileSlugs.has(personSlug) &&
     !isCompetitionOnlyTeam &&
-    raceOrganization.type === OrganizationType.university &&
+    raceOrganization?.type === OrganizationType.university &&
     university
   ) {
     const universityMemberships = existingMemberships.filter(
@@ -1605,14 +1617,17 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
     }
   }
 
+  const affiliatedOrganization =
+    affiliationOrganization?.type === OrganizationType.corporate_team
+      ? affiliationOrganization
+      : raceOrganization?.type === OrganizationType.corporate_team
+        ? raceOrganization
+        : null;
   if (
     !input.protectedProfileSlugs.has(personSlug) &&
-    (raceOrganization.type === OrganizationType.corporate_team ||
-      affiliationOrganization?.type === OrganizationType.corporate_team ||
-      affiliationOrganization?.type === OrganizationType.company ||
-      affiliationOrganization?.type === OrganizationType.club)
+    affiliatedOrganization &&
+    affiliatedOrganization.type === OrganizationType.corporate_team
   ) {
-    const affiliatedOrganization = affiliationOrganization ?? raceOrganization;
     const latestUniversityMembership = existingMemberships
       .filter((membership) => membership.organization.type === OrganizationType.university)
       .sort((left, right) => {
@@ -1769,7 +1784,8 @@ export async function upsertRaceEntry(prisma: PrismaClient, input: {
   const raceResult = await prisma.raceResult.create({
     data: {
       personId: person.id,
-      organizationId: raceOrganization.id,
+      organizationId: raceOrganization?.id ?? null,
+      organizationNameSnapshot: input.entry.raceOrganizationNameJa,
       raceId: input.raceId,
       isEntry: true,
       isStarter: canonicalMark.trim().toUpperCase() !== "DNS",
