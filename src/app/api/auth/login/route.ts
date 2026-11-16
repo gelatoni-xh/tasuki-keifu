@@ -10,7 +10,10 @@ export async function POST(request: Request) {
   if (!checkCredentials(username, password)) {
     return NextResponse.redirect(new URL(`/login?error=1&next=${encodeURIComponent(next)}`, request.url), 303);
   }
-  const response = NextResponse.redirect(new URL(next, request.url), 303);
+  // Build the redirect from the public site origin. Behind Nginx, request.url
+  // can contain the internal localhost origin used by the container.
+  const publicOrigin = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") || new URL(request.url).origin;
+  const response = NextResponse.redirect(new URL(next, publicOrigin), 303);
   response.cookies.set(OBSERVABILITY_COOKIE, createSessionToken(username), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
