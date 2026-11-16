@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SiteHeader } from "@/components/site-header";
 import { getObservabilityOverview } from "@/lib/observability";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +46,11 @@ export default async function ObservabilityPage({
       )
     : [];
   return (
-    <section className="space-y-8">
+    <div className="min-h-screen bg-[#fbfaf7] text-[#1f2421]">
+      <SiteHeader locale={locale} path="/observability" />
+      <main className="px-5 py-10">
+        <div className="mx-auto max-w-6xl space-y-8">
+          <section className="space-y-8">
       <header className="border-b border-line pb-6">
         <p className="page-kicker">TASUKI KEIFU</p>
         <h1 className="page-title">{t("数据治理观测", "Data governance")}</h1>
@@ -324,6 +329,9 @@ export default async function ObservabilityPage({
           "Latest 20 tasks; up to 300 batches and 100 executions / findings / changes for the selected task.",
         )}
       </p>
-    </section>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }
