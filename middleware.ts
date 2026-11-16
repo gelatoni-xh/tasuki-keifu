@@ -18,7 +18,8 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (/^\/(?:[a-z]{2}\/)?observability(?:\/|$)/.test(path) || path.startsWith("/api/observability/")) {
     if (!(await verifySessionToken(request.cookies.get(COOKIE)?.value))) {
-      const login = new URL("/login", request.url);
+      const publicOrigin = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") || request.nextUrl.origin;
+      const login = new URL("/login", publicOrigin);
       login.searchParams.set("next", `${path}${request.nextUrl.search}`);
       return NextResponse.redirect(login);
     }
