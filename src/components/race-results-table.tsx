@@ -6,6 +6,7 @@ export type RaceResultRow = {
   id: string;
   rank: number | null;
   notes: string | null;
+  organizationNameSnapshot: string | null;
   mark: string | null;
   person: { slug: string; displayNameJa: string };
   organization: { slug: string; nameJa: string } | null;
@@ -33,7 +34,7 @@ export function RaceResultsTable({ results, locale }: { results: RaceResultRow[]
                 </Link>
               </td>
               <td className="px-3 py-3 text-[#59615c]">
-                {result.organization ? <Link className="hover:underline" data-analytics-event="player_to_organization_click" data-analytics-link-type="competition_result_organization" href={`/${locale}/organizations/${result.organization.slug}`}>{result.organization.nameJa}</Link> : dictionary.common.emptyDash}
+                {result.organization ? <Link className="hover:underline" data-analytics-event="player_to_organization_click" data-analytics-link-type="competition_result_organization" href={`/${locale}/organizations/${result.organization.slug}`}>{result.organization.nameJa}</Link> : result.organizationNameSnapshot ?? dictionary.common.emptyDash}
               </td>
               <td className="px-3 py-3 whitespace-nowrap">{result.mark ? formatRaceMark(result.mark, locale) : dictionary.common.notEntered}</td>
               <td className="px-3 py-3 text-[#59615c]">{formatRaceResultNotes(result.notes, locale, { suppressRepresentativeNotes: true }) || dictionary.common.emptyDash}</td>

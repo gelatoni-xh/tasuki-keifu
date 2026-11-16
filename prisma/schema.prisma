@@ -537,6 +537,8 @@ model RaceResult {
   raceId          String
   /// 比赛时所属组织 ID
   organizationId  String?
+  /// 来源提供的比赛参赛名称；未确认组织不建立组织外键
+  organizationNameSnapshot String?
   /// 是否报名
   isEntry         Boolean       @default(false)
   /// 是否实际出场

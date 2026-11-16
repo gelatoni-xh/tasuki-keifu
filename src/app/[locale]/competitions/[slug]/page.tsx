@@ -345,7 +345,7 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
               take: 3,
               orderBy: [{ rank: "asc" }, { markMillis: "asc" }, { id: "asc" }],
               select: {
-                id: true, rank: true, mark: true, notes: true,
+                id: true, rank: true, mark: true, notes: true, organizationNameSnapshot: true,
                 person: { select: { slug: true, displayNameJa: true } },
                 organization: { select: { slug: true, nameJa: true } },
               },

@@ -18,6 +18,7 @@ export async function getCompetitionRace(editionSlug: string, raceSlug: string) 
         raceResults: {
           select: {
             id: true, rank: true, mark: true, markMillis: true, notes: true, updatedAt: true,
+            organizationNameSnapshot: true,
             person: { select: { slug: true, displayNameJa: true } },
             organization: { select: { slug: true, nameJa: true } },
           },
