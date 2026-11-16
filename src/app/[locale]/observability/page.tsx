@@ -34,6 +34,23 @@ export default async function ObservabilityPage({
   const { locale } = await params;
   if (locale !== "en" && locale !== "zh") notFound();
   const t = (zh: string, en: string) => (locale === "zh" ? zh : en);
+  const statusLabel = (value: string) => ({
+    queued: t("排队中", "Queued"),
+    running: t("运行中", "Running"),
+    completed: t("已完成", "Completed"),
+    completed_with_unresolved: t("已完成（有未解决）", "Completed with unresolved"),
+    failed: t("失败", "Failed"),
+    partial: t("部分完成", "Partial"),
+  }[value] ?? value);
+  const modeLabel = (value: string) => ({
+    dry_run: t("试运行", "Dry run"),
+    apply: t("执行修复", "Apply changes"),
+  }[value] ?? value);
+  const operationLabel = (value: string) => ({
+    create: t("新增", "Create"),
+    update: t("更新", "Update"),
+    delete: t("删除", "Delete"),
+  }[value] ?? value);
   const data = await getObservabilityOverview((await searchParams).task);
   const current = data.tasks.find((task) => task.id === data.selectedTaskId);
   const metrics = current?.summary?.observability as
@@ -60,12 +77,15 @@ export default async function ObservabilityPage({
             "Follow event imports, batch corrections and unresolved issues.",
           )}
         </p>
-        <Link href={`/${locale}`} className="text-sm underline">
-          {t("返回首页", "Home")}
-        </Link>
-        <form action="/api/auth/logout" method="post" className="mt-3">
-          <button className="text-sm underline" type="submit">{t("退出登录", "Sign out")}</button>
-        </form>
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <Link href={`/${locale}`} className="text-[#59615c] transition hover:text-[#8a1f2d]">
+            {t("返回首页", "Home")}
+          </Link>
+          <span className="text-[#cfc7b8]" aria-hidden="true">/</span>
+          <form action="/api/auth/logout" method="post">
+            <button className="text-[#59615c] transition hover:text-[#8a1f2d]" type="submit">{t("退出登录", "Sign out")}</button>
+          </form>
+        </div>
       </header>
       {data.source !== "configured" && (
         <p className="panel">
@@ -91,15 +111,15 @@ export default async function ObservabilityPage({
             className={`border px-3 py-2 text-xs ${task.id === data.selectedTaskId ? "border-ink bg-stone-100" : "border-line"}`}
           >
             <span className="font-mono">{task.id.slice(0, 8)}</span> ·{" "}
-            {task.status} · {task.mode}
+            {statusLabel(task.status)} · {modeLabel(task.mode)}
           </Link>
         ))}
       </nav>
       {current && (
         <div className="panel space-y-3">
           <div className="flex flex-wrap gap-2">
-            <Badge>{current.status}</Badge>
-            <Badge>{current.mode}</Badge>
+            <Badge>{statusLabel(current.status)}</Badge>
+            <Badge>{modeLabel(current.mode)}</Badge>
           </div>
           <p className="break-all font-mono text-xs">{current.id}</p>
           <p>
@@ -166,7 +186,7 @@ export default async function ObservabilityPage({
               <Badge>
                 {batch.unitType} {batch.unitKey}
               </Badge>
-              <Badge>{batch.status}</Badge>
+              <Badge>{statusLabel(batch.status)}</Badge>
             </div>
             <p className="text-sm">
               {t("当前节点", "Current node")}:{" "}
@@ -283,8 +303,8 @@ export default async function ObservabilityPage({
         {data.changes.map((c) => (
           <article className="panel space-y-2" key={c.id}>
             <div className="flex flex-wrap gap-2">
-              <Badge>{c.status}</Badge>
-              <code className="text-xs">{c.operation}</code>
+              <Badge>{statusLabel(c.status)}</Badge>
+              <code className="text-xs">{operationLabel(c.operation)}</code>
             </div>
             <p className="text-sm">{c.reason}</p>
             {c.diff && (
@@ -314,7 +334,7 @@ export default async function ObservabilityPage({
         </h2>
         {data.notifications.map((n) => (
           <article key={n.id} className="panel space-y-2 text-sm">
-            <Badge>{n.status}</Badge> <code>{n.kind}</code>
+            <Badge>{statusLabel(n.status)}</Badge> <code>{n.kind}</code>
             <p>
               {t("尝试次数", "Attempts")}: {n.attemptCount}
               {n.sentAt ? ` · ${n.sentAt}` : ""}

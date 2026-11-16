@@ -18,7 +18,9 @@
   "nav": {
     "players": "選手",
     "competitions": "大会",
-    "organizations": "組織"
+    "organizations": "組織",
+    "observability": "観測",
+    "login": "ログイン"
   },
   "common": {
     "search": "検索",

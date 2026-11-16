@@ -18,7 +18,9 @@
   "nav": {
     "players": "Athletes",
     "competitions": "Competitions",
-    "organizations": "Organizations"
+    "organizations": "Organizations",
+    "observability": "Observability",
+    "login": "Sign in"
   },
   "common": {
     "search": "Search",
