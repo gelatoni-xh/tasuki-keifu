@@ -58,7 +58,6 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "prefecture_representative",
   "student_union_select",
   "corporate_team",
-  "club",
 ];
 
 function normalizeJaSearchQuery(value: string) {

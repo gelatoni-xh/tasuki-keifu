@@ -32,7 +32,7 @@ export async function generateMetadata({ params, searchParams }: Pick<Organizati
   }
 
   const title = "学校・大学・実業団一覧 | 所属選手・駅伝成績検索";
-  const description = "学校、大学、実業団、クラブ、連盟などの組織を探せる一覧ページです。所属選手、関連人物、駅伝成績、地域情報の確認入口として使えます。";
+  const description = "学校、大学、実業団、代表・選抜などの確認済み組織を探せる一覧ページです。所属選手、関連人物、駅伝成績、地域情報の確認入口として使えます。";
 
   const queryParams = await searchParams;
   return buildDirectoryMetadata({
@@ -53,7 +53,6 @@ const allowedOrganizationTypes: OrganizationType[] = [
   "prefecture_representative",
   "student_union_select",
   "corporate_team",
-  "club",
 ];
 const allowedStatuses: DataStatus[] = ["verified", "pending", "conflicting", "missing"];
 const pageSize = 10;
