@@ -16,6 +16,13 @@ async function verifySessionToken(token: string | undefined) {
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  const localizedLogin = path.match(/^\/([a-z-]+)\/login$/i);
+  if (localizedLogin) {
+    const locale = ["en", "zh"].includes(localizedLogin[1]) ? localizedLogin[1] : "zh";
+    const login = new URL("/login", request.url);
+    login.searchParams.set("next", `/${locale}/observability`);
+    return NextResponse.redirect(login);
+  }
   const localizedObservability = path.match(/^\/([a-z-]+)\/observability(?:\/|$)/i);
   if (localizedObservability && !["en", "zh"].includes(localizedObservability[1])) {
     const fallback = new URL("/zh/observability", request.url);
