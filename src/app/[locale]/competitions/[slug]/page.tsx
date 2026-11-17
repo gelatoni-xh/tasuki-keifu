@@ -332,7 +332,9 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
         )
       : null;
 
-  const isCanonicalView = !queryParams.tab && !queryParams.raceUnit;
+  // The race-unit view can be selected by default when no query string exists.
+  // Do not render the canonical all-race summary alongside that focused view.
+  const isCanonicalView = activeTab !== "race-units" && !queryParams.raceUnit;
   const raceSummaries = isCanonicalView
     ? await getCachedValue(`competition:detail:${edition.id}:race-summaries:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
         prisma.race.findMany({
