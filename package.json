@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test:name-contract": "node --import tsx --test scripts/lib/name-normalization.test.ts",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
     "bootstrap:competition": "tsx scripts/imports/bootstrap-competition.ts",
