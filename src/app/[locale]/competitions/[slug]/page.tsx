@@ -332,31 +332,6 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
         )
       : null;
 
-  // The race-unit view can be selected by default when no query string exists.
-  // Do not render the canonical all-race summary alongside that focused view.
-  const isCanonicalView = activeTab !== "race-units" && !queryParams.raceUnit;
-  const raceSummaries = isCanonicalView
-    ? await getCachedValue(`competition:detail:${edition.id}:race-summaries:${competitionScopeVersion}`, COMPETITION_DETAIL_CACHE_TTL_MS, async () =>
-        prisma.race.findMany({
-          where: { competitionEditionId: edition.id, raceResults: { some: {} } },
-          select: {
-            id: true, slug: true, name: true, leg: true, discipline: true, heat: true, round: true, distanceMeters: true, startsAt: true,
-            _count: { select: { raceResults: true } },
-            raceResults: {
-              where: { rank: { gt: 0 }, mark: { not: null } },
-              take: 3,
-              orderBy: [{ rank: "asc" }, { markMillis: "asc" }, { id: "asc" }],
-              select: {
-                id: true, rank: true, mark: true, notes: true, organizationNameSnapshot: true,
-                person: { select: { slug: true, displayNameJa: true } },
-                organization: { select: { slug: true, nameJa: true } },
-              },
-            },
-          },
-        }),
-      )
-    : [];
-
   pageLogger.info("page_rendered", {
     path: `/${locale}/competitions/${slug}`,
     locale,
@@ -822,22 +797,6 @@ export default async function CompetitionEditionPage({ params, searchParams }: C
               </section>
             ) : null}
           </section>
-
-          {raceSummaries.length > 0 ? (
-            <section className="space-y-5" aria-label={dictionary.competitions.raceUnits}>
-              <h2 className="text-xl font-semibold">{dictionary.competitions.raceUnits}・{dictionary.competitions.resultCountLabel}</h2>
-              {edition.source?.url ? <a className="inline-block text-sm text-[#8a1f2d] hover:underline" href={edition.source.url} target="_blank" rel="noreferrer">{dictionary.competitions.source}: {edition.source.name}</a> : null}
-              {[...raceSummaries].sort(compareRaceUnits).map((race) => (
-                <article className="border border-[#ded8cc] bg-white p-5" key={race.id}>
-                  <h3 className="text-lg font-semibold">
-                    <Link className="text-[#8a1f2d] hover:underline" href={`/${locale}${buildCompetitionRacePath(slug, race.slug)}`}>{race.name} →</Link>
-                  </h3>
-                  <p className="mt-2 text-sm text-[#59615c]">{formatDiscipline(race.discipline, locale)} / {dictionary.competitions.resultCountLabel}: {race._count.raceResults}</p>
-                  {race.raceResults.length > 0 ? <RaceResultsTable locale={locale} results={race.raceResults} /> : null}
-                </article>
-              ))}
-            </section>
-          ) : null}
         </div>
       </main>
     </div>
