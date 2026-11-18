@@ -63,6 +63,7 @@ export type GovernanceOverview = {
 let db: ReturnType<typeof postgres> | null = null;
 export async function getObservabilityOverview(
   taskId?: string,
+  includeFindings = false,
 ): Promise<GovernanceOverview> {
   const empty: GovernanceOverview = {
     source: "missing",
@@ -100,9 +101,9 @@ export async function getObservabilityOverview(
         db<
           GovernanceOverview["agents"]
         >`SELECT a.id,t."batchId",a."agentKey",a."agentVersion",a.status,a.metrics FROM governance."AgentExecution" a JOIN governance."BatchAttempt" t ON t.id=a."batchAttemptId" JOIN governance."GovernanceBatch" b ON b.id=t."batchId" WHERE b."eventTaskId"=${selected} ORDER BY a."startedAt" DESC LIMIT 100`,
-        db<
+        includeFindings ? db<
           GovernanceOverview["findings"]
-        >`SELECT f.id,f."batchId",f."findingCode",f."subjectRef",f.severity,f."resolutionStatus",f.reason,COALESCE(f."detailsAndEvidence"->'evidence','[]'::jsonb) AS evidence FROM governance."GovernanceFinding" f JOIN governance."GovernanceBatch" b ON b.id=f."batchId" WHERE b."eventTaskId"=${selected} ORDER BY (f."resolutionStatus"='unresolved') DESC,f."createdAt" DESC LIMIT 100`,
+        >`SELECT f.id,f."batchId",f."findingCode",f."subjectRef",f.severity,f."resolutionStatus",f.reason,COALESCE(f."detailsAndEvidence"->'evidence','[]'::jsonb) AS evidence FROM governance."GovernanceFinding" f JOIN governance."GovernanceBatch" b ON b.id=f."batchId" WHERE b."eventTaskId"=${selected} ORDER BY (f."resolutionStatus"='unresolved') DESC,f."createdAt" DESC LIMIT 100` : Promise.resolve([]),
         db<
           GovernanceOverview["changes"]
         >`SELECT c.id,c."batchId",c.operation,c."entityRef",c.status,c."businessAuditRef",c."patchAndEvidence"->>'reason' AS reason,c."patchAndEvidence"->'appliedDiff' AS diff FROM governance."GovernanceChange" c JOIN governance."GovernanceBatch" b ON b.id=c."batchId" WHERE b."eventTaskId"=${selected} ORDER BY c."createdAt" DESC LIMIT 100`,

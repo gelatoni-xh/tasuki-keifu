@@ -28,7 +28,7 @@ export function createSessionToken(username: string) {
 }
 
 export function verifySessionToken(token: string | undefined) {
-  if (!token) return false;
+  if (!token || !loginConfigured() || !secret()) return false;
   const parts = token.split(".");
   if (parts.length !== 3) return false;
   const [username, expiresAt, signature] = parts;
@@ -36,7 +36,7 @@ export function verifySessionToken(token: string | undefined) {
   const actualBytes = Buffer.from(signature);
   const expectedBytes = Buffer.from(expected);
   if (actualBytes.length !== expectedBytes.length || !timingSafeEqual(actualBytes, expectedBytes)) return false;
-  return Boolean(username && Number(expiresAt) > Math.floor(Date.now() / 1000));
+  return Boolean(username === credentials().username && Number(expiresAt) > Math.floor(Date.now() / 1000));
 }
 
 export function loginConfigured() {
