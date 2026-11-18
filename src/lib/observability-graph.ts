@@ -1,25 +1,28 @@
+// 公开图例是 Agent 待发布流程的三语快照；修改 Agent 编排或规则后需主动提醒用户评估同步。
+// 阶段性、未部署的改动可暂缓，更新前应核对 Agent 实际 diff 与发布状态。
 export type GraphLanguage = "zh" | "en" | "ja";
 type Text = readonly [string, string, string];
-type Kind = "graph" | "rule" | "child" | "internal" | "llm" | "web" | "result";
+type Kind = "graph" | "child" | "internal" | "llm" | "web" | "result";
 type Node = { id: string; label: Text; kind: Kind; checks?: readonly Text[]; trigger?: Text; outcomes?: readonly Text[] };
 
 const nodes: Node[] = [
   { id: "load_batch_context", label: ["加载批次上下文", "Load batch context", "バッチの文脈を読み込む"], kind: "graph" },
-  { id: "organization_rules", label: ["组织规则投影", "Organization rules", "組織ルールの適用"], kind: "rule", checks: [
+  { id: "organization_rules", label: ["组织规则投影", "Organization rules", "組織ルールの適用"], kind: "graph", checks: [
     ["先复用来源映射与同批映射。", "Reuse source and same-batch mappings first.", "まず出典と同一バッチの対応付けを再利用する。"],
     ["名称规范化、类型兼容且只有一个候选时直接匹配。", "Match a sole candidate with normalized name and compatible type.", "正規化した名称と種別が一致する候補が一つなら対応付ける。"],
     ["无确定归属时保留独立来源组织。", "Keep a separate source organization when identity is uncertain.", "同一性が不明なら出典側の組織を独立して保持する。"],
+    ["别名也参与候选召回；多个存量候选只提示独立维护，不在主图自动合并。", "Aliases also recall candidates; multiple stored candidates are flagged for separate maintenance, not merged here.", "別名も候補検索に使う。既存候補が複数あれば別途保守の対象とし、この Graph では自動統合しない。"],
   ] },
   { id: "organization_light_batch", label: ["组织轻量研究", "Organization triage", "組織の一次調査"], kind: "graph" },
-  { id: "person_rules", label: ["人物身份规则投影", "Person identity rules", "人物同定ルールの適用"], kind: "rule", checks: [
+  { id: "person_rules", label: ["人物身份规则投影", "Person identity rules", "人物同定ルールの適用"], kind: "graph", checks: [
     ["检查来源映射、历史成绩、所属与生日。", "Check source mappings, historical results, affiliations and birth dates.", "出典の対応付け、過去の記録、所属、生年月日を確認する。"],
     ["明确的生日或所属时间冲突阻止直接匹配。", "Explicit birth-date or affiliation-time conflicts block a direct match.", "生年月日や所属期間の明確な矛盾があれば直接照合しない。"],
     ["同名或同所属不足以确认同一人物；DNS 不是出场证明。", "Same name or affiliation alone is insufficient; DNS is not proof of participation.", "同名・同所属だけでは同一人物とせず、DNS は出場の証明としない。"],
   ] },
   { id: "person_light_batch", label: ["人物轻量研究", "Person triage", "人物の一次調査"], kind: "graph" },
-  { id: "prepare_cross_check", label: ["准备交叉核查", "Prepare cross-check", "横断検証の準備"], kind: "rule" },
+  { id: "prepare_cross_check", label: ["准备交叉核查", "Prepare cross-check", "横断検証の準備"], kind: "graph" },
   { id: "normalization_cross_check", label: ["跨实体交叉核查", "Cross-entity check", "エンティティ横断検証"], kind: "graph" },
-  { id: "validate_cross_check", label: ["校验核查结果", "Validate check results", "検証結果の確認"], kind: "rule", checks: [
+  { id: "validate_cross_check", label: ["校验核查结果", "Validate check results", "検証結果の確認"], kind: "graph", checks: [
     ["问题不得重复，人物行必须属于该来源组织。", "Issue keys must be unique and person rows must belong to the source organization.", "問題キーは重複不可。人物行は対象の出典組織に属する必要がある。"],
     ["证据引用必须在允许范围内，且与该问题相关。", "Evidence references must be allowed and relevant to the issue.", "証拠参照は許可された範囲内で、当該問題と関連している必要がある。"],
     ["相关证据不足则标记未解决，并撤销受影响人物的暂定判断。", "Insufficient relevant evidence leaves the issue unresolved and invalidates affected provisional decisions.", "関連証拠が不足すれば未解決とし、影響を受ける人物の暫定判断を取り消す。"],
@@ -28,21 +31,47 @@ const nodes: Node[] = [
   { id: "organization_network_research", label: ["组织网络研究", "Organization web research", "組織のウェブ調査"], kind: "graph" },
   { id: "affected_person_reassessment", label: ["受影响人物重评", "Reassess affected people", "影響を受けた人物の再評価"], kind: "graph" },
   { id: "normalization_deep_research", label: ["人物深度研究", "Deep person research", "人物の詳細調査"], kind: "graph" },
-  { id: "finalize_normalization", label: ["完成实体归一化", "Finalize normalization", "同定処理の確定"], kind: "rule" },
-  { id: "govern_membership", label: ["履历规则与冲突处理", "Affiliation rules and conflicts", "所属履歴のルールと矛盾処理"], kind: "child" },
+  { id: "finalize_normalization", label: ["完成实体归一化", "Finalize normalization", "同定処理の確定"], kind: "graph" },
+  { id: "govern_membership", label: ["履历治理子 Graph", "Affiliation governance child Graph", "所属履歴管理のサブ Graph"], kind: "child" },
+  { id: "prepare_membership_context", label: ["准备履历上下文", "Prepare affiliation context", "所属履歴の文脈を準備"], kind: "graph", checks: [
+    ["把既有履历中的人物、组织 ID 投影到规范 ID；人物拆分也同步处理。", "Project stored person and organization IDs to canonical IDs, including person splits.", "既存履歴の人物・組織 ID を正規 ID に写像し、人物の分割も反映する。"],
+    ["只将身份已确定的来源人物列为受影响对象；阶段状态可用于恢复。", "Include only resolved source identities as affected people; stage state can be resumed.", "人物同定が確定した出典行だけを対象とし、段階状態は再開に利用できる。"],
+  ] },
+  { id: "membership_rules", label: ["履历规则处理", "Apply affiliation rules", "所属履歴ルールの適用"], kind: "graph" },
+  { id: "collect_membership_conflicts", label: ["按人汇总履历冲突", "Group affiliation conflicts by person", "人物ごとに所属履歴の矛盾を集約"], kind: "graph", checks: [
+    ["只收集实质 membership_conflict，按规范人物 ID 合并同人的所有问题。", "Collect substantive membership_conflict findings and group all issues by canonical person ID.", "実質的な membership_conflict だけを集め、同一人物の全問題を正規人物 ID ごとにまとめる。"],
+    ["没有冲突组时跳过 LLM 与校验阶段，直接结束履历治理。", "With no conflict groups, skip LLM and validation and finalize directly.", "矛盾グループがなければ LLM と検証を飛ばし、所属履歴処理を確定する。"],
+  ] },
+  { id: "membership_deep_research", label: ["按人深度研究", "Research conflicts by person", "人物ごとの詳細調査"], kind: "graph" },
+  { id: "validate_membership_decisions", label: ["校验履历裁决", "Validate affiliation decisions", "所属履歴の裁定を検証"], kind: "graph", checks: [
+    ["维持原状或修正都要有经核验的 URL、引文和理由；不得越出允许的履历 ID。", "Both keep and correct require verified URL, quote and reason; record IDs must stay in scope.", "現状維持も修正も確認済みの URL・引用・理由が必要で、許可された履歴 ID の範囲を超えてはならない。"],
+    ["年份与具体日期分别校验；清除错误日期必须显式标记，空值本身不表示清除。", "Validate years separately from exact dates; clearing a wrong date requires an explicit flag, not a null value.", "年と具体的な日付を別々に検証する。誤った日付の削除には明示フラグが必要で、null だけでは削除しない。"],
+    ["整组修正必须原子通过，时间有效且不能留下明确互斥重叠。", "Accept the whole correction atomically only with valid windows and no remaining definite exclusive overlap.", "修正全体を原子的に受理し、期間が有効で明確な排他的重複が残らないことを確認する。"],
+  ] },
+  { id: "finalize_membership", label: ["完成履历治理", "Finalize affiliation governance", "所属履歴処理の確定"], kind: "graph", checks: [
+    ["输出拟议新增、更新和严格重复履历删除，保留来源与审计依据。", "Produce proposed creates, updates and strictly duplicate deletions while retaining sources and audit evidence.", "新規・更新・厳密な重複削除の案を作り、出典と監査証拠を保持する。"],
+    ["不直接写业务数据库；未通过校验的问题仍保持未解决。", "Do not write business data directly; failed decisions remain unresolved.", "業務データベースに直接書き込まず、検証を通らない問題は未解決のままにする。"],
+  ] },
+  { id: "member_dedup", label: ["规则 · 严格重复履历去重", "Rule · strict duplicate cleanup", "ルール · 厳密な重複履歴の整理"], kind: "internal", checks: [
+    ["检查受影响人物的全部规范 ID 履历，而不只看本批次代表队。", "Check every canonical affiliation of affected people, not only this batch's team.", "対象人物の正規 ID に紐づく全履歴を確認し、このバッチの代表チームだけに限定しない。"],
+    ["组织、关系、角色、学部、学科、届别、时间、依据、结束状态和互斥组都一致才删重。", "Deduplicate only when organization, relation, role, faculty, department, cohort, time, basis, end state and exclusivity group all agree.", "組織・関係・役割・学部・学科・期・期間・根拠・終了状態・排他グループがすべて一致する場合だけ重複を削除する。"],
+    ["保留记录吸收重复记录的来源；不同履历段不折叠。", "Keep the duplicate's evidence on the retained record; do not collapse distinct periods.", "削除対象の出典を保持する記録に集約し、異なる履歴期間は統合しない。"],
+  ] },
   { id: "member_source", label: ["规则 · 来源履历 / 隐含所属", "Rule · source / implicit affiliation", "ルール · 出典履歴／暗黙の所属"], kind: "internal", checks: [
     ["整合来源明确的履历和参赛行的组织线索。", "Combine explicit history with organization hints from source rows.", "出典に明記された履歴と参加行の組織情報を統合する。"],
     ["只有中学、高中、大学和企业队可由参赛组织推导所属。", "Only junior high, high school, university and corporate teams can imply affiliation.", "出場組織から所属を推定できるのは中学・高校・大学・実業団のみ。"],
-    ["身份未解决的来源行不生成履历变更。", "Unresolved identities produce no affiliation change.", "人物同定が未解決の行から所属変更は作らない。"],
+    ["赛事日只证明当时代表关系，含 DNS/DNF；不能当入离队日或持续所属证明。", "Race date is an affiliation observation, including DNS/DNF; it is not a joining, leaving or ongoing-affiliation date.", "大会日は DNS/DNF を含む当時の代表関係の観測にすぎず、加入日・離脱日・継続所属の証拠にはしない。"],
+    ["身份或组织未确定时不写入履历。", "Do not create affiliation changes with unresolved person or organization identity.", "人物または組織の同定が未確定なら所属履歴を作らない。"],
   ] },
   { id: "member_window", label: ["规则 · 学制与相邻阶段补空", "Rule · academic and adjacent windows", "ルール · 学年と隣接期から期間補完"], kind: "internal", checks: [
     ["按组织类型、学年、赛事日期推算时间窗口。", "Infer a window from organization type, grade and race date.", "組織種別・学年・大会日から期間を推定する。"],
     ["可用相邻学校阶段补空；推算值不覆盖来源日期。", "Adjacent school stages may fill gaps; inferred dates never overwrite sourced dates.", "隣接する学校段階で空欄を補うが、推定日付は出典の日付を上書きしない。"],
+    ["只知道年份就保留年份和空具体日期，不造 1 月或 4 月的入离队日。", "Year-only evidence keeps the year with no exact date; it does not invent a January or April joining date.", "年だけ分かる場合は年のみ記録し、1 月や 4 月の加入・離脱日を作らない。"],
   ] },
-  { id: "member_conflict", label: ["规则 · 日期 / 重复 / 互斥冲突", "Rule · dates / duplicates / exclusions", "ルール · 日付／重複／排他の矛盾"], kind: "internal", checks: [
-    ["同一组织的多段履历不直接折叠。", "Do not collapse multiple records for one organization.", "同一組織の複数履歴を安易に統合しない。"],
-    ["新旧明确日期不一致或起始晚于结束时标记冲突。", "Flag conflicting sourced dates or a start after the end.", "出典の日付が矛盾するか開始が終了より遅ければ問題とする。"],
-    ["同一学段不同学校的明确时间重叠也标记冲突。", "Flag definite overlap between different schools in the same stage.", "同じ学段の異なる学校で確定期間が重なる場合も問題とする。"],
+  { id: "member_conflict", label: ["规则 · 日期 / 年份 / 互斥冲突", "Rule · dates / years / exclusions", "ルール · 日付／年／排他の矛盾"], kind: "internal", checks: [
+    ["同一组织的不同履历段不自动折叠；新旧来源日期或年份不一致时标记冲突。", "Keep distinct periods for one organization; flag conflicting sourced dates or years.", "同一組織の異なる履歴期間は統合せず、出典の日付や年が矛盾すれば問題とする。"],
+    ["起止顺序无效，或同学段不同学校及明确互斥关系出现确定时间重叠时标记冲突。", "Flag invalid start/end order or definite overlap between different schools in one stage or explicitly exclusive affiliations.", "開始・終了の順序が無効、または同じ学段の異なる学校や明示的に排他的な所属で確定期間が重なる場合は問題とする。"],
+    ["大学到实业团并非天然互斥；同队更名也不自动等于转会。", "University-to-corporate transition is not inherently exclusive; a team rename is not automatically a transfer.", "大学から実業団への移行は本来排他的ではなく、チームの改称を自動的に移籍とみなさない。"],
   ] },
   { id: "member_result", label: ["拟议履历变更 / 未解决事项", "Proposed affiliation changes / unresolved", "所属変更案／未解決事項"], kind: "result" },
   { id: "verify_person_facts", label: ["个人事实核查", "Person fact check", "人物情報の確認"], kind: "child" },
@@ -73,6 +102,8 @@ const nodes: Node[] = [
   ], outcomes: [["匹配、可区分或未解决。", "Match, distinct or unresolved.", "一致・別組織・未解決。"]] },
   { id: "llm_org_net", label: ["LLM · 单组织研究", "LLM · single-organization research", "LLM · 個別組織の調査"], kind: "llm", trigger: ["组织仍待确认；允许 Web Search。", "Organization remains uncertain; web search is available.", "組織が未確定の場合。ウェブ検索を利用可能。"], checks: [
     ["优先官网与赛事名录，引用实际 URL 和支持结论的原文。", "Prefer official sites and race rosters; cite actual URLs and supporting text.", "公式サイトや大会名簿を優先し、実際の URL と根拠の原文を引用する。"],
+    ["充分利用既有别名；旧称、更名或新体制须查官方沿革和继承关系。", "Use existing aliases; verify former names, renames and successor teams against official history.", "既存の別名を活用し、旧称・改称・新体制は公式の沿革と継承関係で確認する。"],
+    ["仅同集团、名称近似或共同选手不足以认定同队；不在主图合并存量组织。", "Shared group, similar name or common athletes do not establish team identity; stored organizations are not merged here.", "同じ企業グループ・似た名称・共通選手だけでは同一チームとせず、既存組織もこの Graph では統合しない。"],
     ["不凭人物暂定结论证明组织，也不推断 Membership。", "Do not use provisional person matches or infer membership.", "暫定的な人物同定を組織の証拠にせず、所属履歴も推定しない。"],
   ], outcomes: [["匹配既有候选、可区分或未解决。", "Match an existing candidate, distinct or unresolved.", "既存候補と一致・別組織・未解決。"]] },
   { id: "web_org", label: ["Web Search", "Web Search", "Web Search"], kind: "web" },
@@ -84,10 +115,11 @@ const nodes: Node[] = [
     ["轻量判断只是待验证假设，不是独立证据。", "Triage is a hypothesis, not independent evidence.", "一次判断は仮説であり、独立した証拠ではない。"],
   ], outcomes: [["匹配、可区分或未解决。", "Match, distinct or unresolved.", "一致・別人・未解決。"]] },
   { id: "web_person", label: ["Web Search", "Web Search", "Web Search"], kind: "web" },
-  { id: "llm_membership", label: ["LLM · 履历冲突研究", "LLM · affiliation conflict research", "LLM · 所属履歴の矛盾調査"], kind: "llm", trigger: ["存在实质履历冲突；允许 Web Search。", "Substantive affiliation conflict exists; web search is available.", "実質的な所属履歴の矛盾がある場合。ウェブ検索を利用可能。"], checks: [
-    ["更正只能涉及允许的履历 ID，且起止日期有效。", "Corrections must target allowed record IDs and valid dates.", "修正対象は許可された履歴 ID に限り、開始・終了日が有効でなければならない。"],
-    ["更正后不得留下互斥冲突。", "Corrections must leave no exclusion conflict.", "修正後に排他的な矛盾を残してはならない。"],
-  ], outcomes: [["有效更正可解决问题；否则保持未解决。", "A valid correction resolves the issue; otherwise it remains unresolved.", "有効な修正なら解決し、それ以外は未解決のままにする。"]] },
+  { id: "llm_membership", label: ["LLM · 按人履历冲突研究", "LLM · per-person affiliation research", "LLM · 人物単位の所属履歴調査"], kind: "llm", trigger: ["同一人物存在一个或多个实质履历冲突；每人一次研究，可使用 Web Search。", "A person has one or more substantive affiliation conflicts; one research request per person, with Web Search available.", "一人に一つ以上の実質的な所属履歴の矛盾がある場合、人物単位で一回調査し、Web Search を利用できる。"], checks: [
+    ["完整审视该人的履历、冲突和历史证据；赛事日不是入离队日或持续所属证明。", "Review the person's full history, conflicts and historical evidence; race date is not a joining, leaving or ongoing-affiliation date.", "人物の全履歴・矛盾・過去の証拠を確認し、大会日を加入日・離脱日・継続所属の証拠にしない。"],
+    ["可有证据地维持原状结案；仅有年份则保留空具体日期，不拿公告日补入离队日。", "With evidence, keeping current records may resolve the issue; year-only evidence keeps exact dates blank, and announcement dates are not substituted.", "証拠があれば現状維持で解決できる。年のみ分かる場合は具体日を空にし、発表日を加入・離脱日へ転用しない。"],
+    ["更正只修改有证据的字段；删除错误具体日期要显式 clear 标记。", "Correct only evidenced fields; clearing an incorrect exact date requires an explicit clear flag.", "証拠のある項目だけを修正し、誤った具体日を消すには明示的な clear フラグを要する。"],
+  ], outcomes: [["keep_membership、correct_membership 或 unresolved；结果还要经过独立校验。", "keep_membership, correct_membership or unresolved; a separate validation stage follows.", "keep_membership・correct_membership・unresolved のいずれかを返し、別段階で検証する。"]] },
   { id: "web_membership", label: ["Web Search", "Web Search", "Web Search"], kind: "web" },
 ];
 
@@ -103,8 +135,10 @@ const summaries: Record<string, Text> = {
   affected_person_reassessment: ["组织判断变化后，只重评受影响人物。", "Reassess only people affected by a changed organization decision.", "組織の判断が変わった場合、影響を受けた人物のみ再評価する。"],
   normalization_deep_research: ["仅对符合身份疑难门槛的人物深研；可选 Web Search。", "Deep research only for eligible identity disputes; Web Search is available.", "条件を満たす人物同定の難件のみ詳細調査する。Web Search を利用できる。"],
   finalize_normalization: ["汇总实体映射，并根据输入决定后续治理路径。", "Finalize entity mappings and route to downstream governance as needed.", "エンティティの対応付けを確定し、入力に応じて後続の処理を選ぶ。"],
-  govern_membership: ["编译子 Graph 的单一节点；图中展开其内部规则和请求。", "A compiled child Graph with one node; internal rules and calls are expanded here.", "単一ノードのコンパイル済みサブ Graph。内部ルールと呼び出しを展開している。"],
-  member_result: ["生成拟议履历变更和未解决事项，不直接写入业务数据库。", "Produce proposed affiliation changes and unresolved issues without writing business data.", "所属履歴の変更案と未解決事項を作成し、業務データベースへ直接書き込まない。"],
+  govern_membership: ["编译子 Graph 包含六个真实节点；图中展开规则、条件分支和按人研究。", "This compiled child Graph has six real nodes, with rules, conditional routing and per-person research expanded here.", "このコンパイル済みサブ Graph は六つの実ノードで構成され、ルール・条件分岐・人物単位の調査を展開している。"],
+  membership_rules: ["严格去重后整合来源履历、确认组织的参赛观察、学校时间窗口与冲突规则。", "After strict deduplication, combine source history, confirmed team observations, school windows and conflict rules.", "厳密に重複整理した後、出典履歴・確認済み組織の大会観測・学校期間・矛盾ルールを統合する。"],
+  membership_deep_research: ["每个冲突人物发起一次完整履历研究，模型可按需联网。", "Make one full-history research request for each person with conflicts; the model may search as needed.", "矛盾のある人物ごとに全履歴を一回調査し、必要に応じてウェブ検索できる。"],
+  member_result: ["生成拟议履历新增、更新、严格重复删除和未解决事项，不直接写入业务数据库。", "Produce proposed affiliation creates, updates, strict duplicate deletions and unresolved issues without writing business data.", "所属履歴の新規・更新・厳密な重複削除案と未解決事項を作り、業務データベースへ直接書き込まない。"],
   verify_person_facts: ["编译子 Graph 的单一节点；内部只运行规则。", "A compiled child Graph with one rule-only node.", "ルールのみを実行する単一ノードのコンパイル済みサブ Graph。"],
   fact_result: ["生成拟议个人事实变更，没有 LLM 或 Web Search。", "Produce proposed person-fact changes without LLM or Web Search.", "LLM や Web Search を使わず、人物情報の変更案を作成する。"],
   aggregate_governance_result: ["合并各阶段结果，生成本批次治理计划。", "Combine stage results into the batch governance plan.", "各段階の結果を統合し、バッチのガバナンス計画を作成する。"],
@@ -123,7 +157,7 @@ const auxiliary: Array<[string, string, Text]> = [
   ["affected_person_reassessment", "llm_reassess", ["受影响人物", "Affected people", "影響を受けた人物"]],
   ["normalization_deep_research", "llm_deep", ["身份疑难符合门槛", "Deep-research gate", "詳細調査の条件"]],
   ["llm_deep", "web_person", ["模型按需", "If needed", "必要に応じて"]],
-  ["member_conflict", "llm_membership", ["实质冲突", "Substantive conflict", "実質的な矛盾"]],
+  ["membership_deep_research", "llm_membership", ["按人研究", "Per-person research", "人物単位の調査"]],
   ["llm_membership", "web_membership", ["模型按需", "If needed", "必要に応じて"]],
 ];
 const index = { zh: 0, en: 1, ja: 2 } as const;
@@ -140,8 +174,14 @@ export function buildGraphSource(language: GraphLanguage) {
   for (let i = 1; i < order.length; i++) lines.push(edge(order[i - 1], declaration(order[i], language)));
   for (const [from, to, text] of auxiliary.slice(0, 9)) lines.push(`${from} -. "${label(text, language)}" .-> ${declaration(to, language)}`);
   lines.push("end", `subgraph MEMBERSHIP["${label(["02 · 履历治理", "02 · Affiliation governance", "02 · 所属履歴の管理"], language)}"]`, "direction TB", declaration("govern_membership", language));
-  for (const id of ["member_source", "member_window", "member_conflict", "member_result"]) lines.push(declaration(id, language));
-  lines.push("govern_membership -.-> member_source", "member_source -.-> member_window", "member_window -.-> member_conflict", "member_conflict -.-> member_result", "llm_membership -.-> member_result");
+  const membershipOrder = ["prepare_membership_context", "membership_rules", "collect_membership_conflicts", "membership_deep_research", "validate_membership_decisions", "finalize_membership"];
+  for (const id of membershipOrder) lines.push(declaration(id, language));
+  for (const id of ["member_dedup", "member_source", "member_window", "member_conflict", "member_result"]) lines.push(declaration(id, language));
+  lines.push("govern_membership --> prepare_membership_context", "prepare_membership_context --> membership_rules", "membership_rules --> collect_membership_conflicts",
+    `collect_membership_conflicts -. "${label(["有实质冲突", "Conflicts found", "実質的な矛盾あり"], language)}" .-> membership_deep_research`,
+    `collect_membership_conflicts -. "${label(["无冲突", "No conflicts", "矛盾なし"], language)}" .-> finalize_membership`,
+    "membership_deep_research --> validate_membership_decisions", "validate_membership_decisions --> finalize_membership",
+    "membership_rules -.-> member_dedup", "member_dedup -.-> member_source", "member_source -.-> member_window", "member_window -.-> member_conflict", "finalize_membership -.-> member_result");
   for (const [from, to, text] of auxiliary.slice(9)) lines.push(`${from} -. "${label(text, language)}" .-> ${declaration(to, language)}`);
   lines.push("end", `subgraph FACTS["${label(["03 · 个人事实治理", "03 · Person fact governance", "03 · 人物情報の管理"], language)}"]`, "direction TB", declaration("verify_person_facts", language));
   for (const id of ["fact_hometown", "fact_pb", "fact_result"]) lines.push(declaration(id, language));
@@ -149,10 +189,10 @@ export function buildGraphSource(language: GraphLanguage) {
   lines.push(`finalize_normalization -. "${label(["有履历或关联组织", "Affiliation input", "所属情報あり"], language)}" .-> govern_membership`,
     `finalize_normalization -. "${label(["仅有籍贯或 PB", "Facts only", "人物情報のみ"], language)}" .-> verify_person_facts`,
     `finalize_normalization -. "${label(["无需下游治理", "No downstream work", "後続処理なし"], language)}" .-> ${declaration("aggregate_governance_result", language)}`,
-    `govern_membership -. "${label(["还有籍贯或 PB", "Facts remain", "人物情報もあり"], language)}" .-> verify_person_facts`,
-    "govern_membership -.-> aggregate_governance_result", "verify_person_facts --> aggregate_governance_result",
+    `finalize_membership -. "${label(["还有籍贯或 PB", "Facts remain", "人物情報もあり"], language)}" .-> verify_person_facts`,
+    `finalize_membership -. "${label(["无需个人事实核查", "No fact check", "人物情報の確認なし"], language)}" .-> aggregate_governance_result`, "verify_person_facts --> aggregate_governance_result",
     `aggregate_governance_result --> END(("${label(["结束", "End", "終了"], language)}"))`);
-  const classes: Record<Kind, string> = { graph: "fill:#e5f1f5,stroke:#5790a5,color:#244f60", rule: "fill:#f7ecda,stroke:#bb8b46,color:#644920", child: "fill:#eee5ee,stroke:#967096,color:#63485f", internal: "fill:#fff8ed,stroke:#bd914b,color:#6d512b,stroke-dasharray:4 3", llm: "fill:#e5eef8,stroke:#427eae,color:#214b70,stroke-dasharray:4 3", web: "fill:#fff0e6,stroke:#cf8152,color:#7d472d,stroke-dasharray:4 3", result: "fill:#e7f0e3,stroke:#5b835e,color:#36523a" };
+  const classes: Record<Kind, string> = { graph: "fill:#e5f1f5,stroke:#5790a5,color:#244f60", child: "fill:#eee5ee,stroke:#967096,color:#63485f", internal: "fill:#fff8ed,stroke:#bd914b,color:#6d512b,stroke-dasharray:4 3", llm: "fill:#e5eef8,stroke:#427eae,color:#214b70,stroke-dasharray:4 3", web: "fill:#fff0e6,stroke:#cf8152,color:#7d472d,stroke-dasharray:4 3", result: "fill:#e7f0e3,stroke:#5b835e,color:#36523a" };
   for (const [kind, style] of Object.entries(classes)) lines.push(`classDef ${kind === "graph" ? "graphNode" : kind} ${style},stroke-width:1.5px;`);
   for (const node of nodes) lines.push(`class ${node.id} ${node.kind === "graph" ? "graphNode" : node.kind};`);
   lines.push("style NORMALIZATION fill:#f8faf9,stroke:#d4e1dc,color:#3f6055", "style MEMBERSHIP fill:#fbf8fb,stroke:#e2d5e1,color:#6f5670", "style FACTS fill:#fafaf6,stroke:#e0dfcf,color:#6c6b42");

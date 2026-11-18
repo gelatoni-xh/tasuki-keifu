@@ -5,9 +5,9 @@ import { Scan, ZoomIn, ZoomOut } from "lucide-react";
 import { buildGraphSource, graphNode, graphSummary, graphText, type GraphLanguage } from "@/lib/observability-graph";
 
 const copy = {
-  zh: { graph: "真实 Graph 节点", rule: "内部规则", llm: "LLM 请求", web: "Web Search 工具", flow: "编排顺序", conditional: "条件 / 内部调用", membership: "履历治理", facts: "个人事实", zoomIn: "放大", zoomOut: "缩小", reset: "重置缩放", selected: "节点详情", choose: "悬浮或点击节点查看详情", trigger: "触发条件", checks: "规则与核查项", outcomes: "可能结果", note: "三个治理阶段按顺序相连。虚线展示条件或节点内部逻辑；LLM 与 Web Search 是节点内部调用，不是额外的 LangGraph 节点。", error: "图暂时无法显示。" },
-  en: { graph: "Graph node", rule: "Internal rule", llm: "LLM request", web: "Web Search tool", flow: "Execution order", conditional: "Condition / internal call", membership: "Affiliations", facts: "Person facts", zoomIn: "Zoom in", zoomOut: "Zoom out", reset: "Reset zoom", selected: "Node details", choose: "Hover over or select a node", trigger: "When it runs", checks: "Rules and checks", outcomes: "Possible outcomes", note: "The three governance stages follow their execution order. Dashed lines show conditions or internal logic. LLM and Web Search calls occur inside nodes; they are not additional LangGraph nodes.", error: "The graph is temporarily unavailable." },
-  ja: { graph: "Graph ノード", rule: "内部ルール", llm: "LLM リクエスト", web: "Web Search ツール", flow: "実行順序", conditional: "条件／内部呼び出し", membership: "所属履歴", facts: "人物情報", zoomIn: "拡大", zoomOut: "縮小", reset: "倍率を戻す", selected: "ノードの詳細", choose: "ノードにカーソルを合わせるか選択してください", trigger: "実行条件", checks: "ルールと確認項目", outcomes: "考えられる結果", note: "三つの管理段階を実行順に表示しています。破線は条件または内部処理を示します。LLM と Web Search はノード内部の呼び出しであり、独立した LangGraph ノードではありません。", error: "現在グラフを表示できません。" },
+  zh: { graph: "真实 Graph 节点", child: "编译子 Graph", rule: "内部规则", result: "拟议结果", llm: "LLM 请求", web: "Web Search 工具", flow: "编排顺序", conditional: "条件 / 内部调用", membership: "履历治理", facts: "个人事实", zoomIn: "放大", zoomOut: "缩小", reset: "重置缩放", selected: "节点详情", choose: "悬浮或点击节点查看详情", trigger: "触发条件", checks: "规则与核查项", outcomes: "可能结果", note: "三个治理阶段按顺序相连；履历子 Graph 的六个真实节点已展开。虚线展示条件或节点内部逻辑；LLM 与 Web Search 是节点内部调用，不是额外的 LangGraph 节点。", error: "图暂时无法显示。" },
+  en: { graph: "Graph node", child: "Compiled child Graph", rule: "Internal rule", result: "Proposed result", llm: "LLM request", web: "Web Search tool", flow: "Execution order", conditional: "Condition / internal call", membership: "Affiliations", facts: "Person facts", zoomIn: "Zoom in", zoomOut: "Zoom out", reset: "Reset zoom", selected: "Node details", choose: "Hover over or select a node", trigger: "When it runs", checks: "Rules and checks", outcomes: "Possible outcomes", note: "The three governance stages follow execution order; the six real nodes in the affiliation child Graph are expanded. Dashed lines show conditions or internal logic. LLM and Web Search calls occur inside nodes; they are not additional LangGraph nodes.", error: "The graph is temporarily unavailable." },
+  ja: { graph: "Graph ノード", child: "コンパイル済みサブ Graph", rule: "内部ルール", result: "変更案", llm: "LLM リクエスト", web: "Web Search ツール", flow: "実行順序", conditional: "条件／内部呼び出し", membership: "所属履歴", facts: "人物情報", zoomIn: "拡大", zoomOut: "縮小", reset: "倍率を戻す", selected: "ノードの詳細", choose: "ノードにカーソルを合わせるか選択してください", trigger: "実行条件", checks: "ルールと確認項目", outcomes: "考えられる結果", note: "三つの管理段階を実行順に表示し、所属履歴のサブ Graph にある六つの実ノードを展開しています。破線は条件または内部処理を示します。LLM と Web Search はノード内部の呼び出しであり、独立した LangGraph ノードではありません。", error: "現在グラフを表示できません。" },
 } as const;
 
 let renderNumber = 0;
@@ -51,7 +51,12 @@ export function ObservabilityGraph({ language }: { language: GraphLanguage }) {
       node.setAttribute("tabindex", "0");
       node.setAttribute("role", "button");
     });
-    canvas.current.scrollLeft = (canvas.current.scrollWidth - canvas.current.clientWidth) / 2;
+    const firstNode = diagram.current?.querySelector('g.node[id*="-flowchart-load_batch_context-"]');
+    if (firstNode) {
+      const nodeBox = firstNode.getBoundingClientRect();
+      const canvasBox = canvas.current.getBoundingClientRect();
+      canvas.current.scrollLeft += nodeBox.left + nodeBox.width / 2 - canvasBox.left - canvasBox.width / 2;
+    }
   }, [svg]);
 
   const jump = (id: string) => {
@@ -82,7 +87,9 @@ export function ObservabilityGraph({ language }: { language: GraphLanguage }) {
   return <section className="space-y-3" aria-label={text.graph}>
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#52635b]">
       <span><i className="mr-1 inline-block size-3 border border-[#5790a5] bg-[#e5f1f5]" />{text.graph}</span>
+      <span><i className="mr-1 inline-block size-3 border border-[#967096] bg-[#eee5ee]" />{text.child}</span>
       <span><i className="mr-1 inline-block size-3 border border-dashed border-[#bd914b] bg-[#fff8ed]" />{text.rule}</span>
+      <span><i className="mr-1 inline-block size-3 border border-[#5b835e] bg-[#e7f0e3]" />{text.result}</span>
       <span><i className="mr-1 inline-block size-3 border border-dashed border-[#427eae] bg-[#e5eef8]" />{text.llm}</span>
       <span><i className="mr-1 inline-block size-3 border border-dashed border-[#cf8152] bg-[#fff0e6]" />{text.web}</span>
       <span><i className="mr-1 inline-block w-5 border-t-2 border-[#84958e] align-middle" />{text.flow}</span>
