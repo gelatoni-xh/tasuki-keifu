@@ -4,6 +4,11 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 export const OBSERVABILITY_COOKIE = "tasuki_observability_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
 
+export function publicSiteOrigin(request: Request) {
+  return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
+    (process.env.NODE_ENV === "production" ? "https://tasukikeifu.com" : new URL(request.url).origin);
+}
+
 function credentials() {
   return {
     username: process.env.TASUKI_ADMIN_USERNAME?.trim() || process.env.OBSERVABILITY_USERNAME?.trim() || "",
