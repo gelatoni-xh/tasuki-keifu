@@ -1,17 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { SiteHeader } from "@/components/site-header";
+import { ObservabilityGraph } from "@/components/observability-graph";
 import { getObservabilityOverview } from "@/lib/observability";
+import { OBSERVABILITY_COOKIE, verifySessionToken } from "@/lib/observability-auth";
+import { observabilityText } from "@/lib/observability-copy";
+import type { GraphLanguage } from "@/lib/observability-graph";
 
 export const dynamic = "force-dynamic";
 interface Props {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ task?: string }>;
+  searchParams: Promise<{ task?: string; view?: string }>;
 }
 export async function generateMetadata({ params }: Props) {
   const { locale } = await params;
   return {
-    title: locale === "zh" ? "数据治理观测" : "Data governance",
+    title: observabilityText(locale === "ja" || locale === "zh" ? locale : "en", "数据治理观测", "Data governance"),
     robots: { index: false, follow: false },
   };
 }
@@ -32,8 +37,12 @@ export default async function ObservabilityPage({
   searchParams,
 }: Props) {
   const { locale } = await params;
-  if (locale !== "en" && locale !== "zh") notFound();
-  const t = (zh: string, en: string) => (locale === "zh" ? zh : en);
+  if (locale !== "en" && locale !== "zh" && locale !== "ja") notFound();
+  const language = locale as GraphLanguage;
+  const t = (zh: string, en: string) => observabilityText(language, zh, en);
+  const query = await searchParams;
+  const detailView = query.view === "details";
+  const signedIn = verifySessionToken((await cookies()).get(OBSERVABILITY_COOKIE)?.value);
   const statusLabel = (value: string) => ({
     queued: t("排队中", "Queued"),
     running: t("运行中", "Running"),
@@ -67,8 +76,8 @@ export default async function ObservabilityPage({
     identity_unresolved: t("身份未确定", "Identity unresolved"),
     research_budget_exhausted: t("研究预算耗尽", "Research budget exhausted"),
   }[value] ?? value);
-  const data = await getObservabilityOverview((await searchParams).task);
-  const current = data.tasks.find((task) => task.id === data.selectedTaskId);
+  const data = detailView ? await getObservabilityOverview(query.task, signedIn) : null;
+  const current = data?.tasks.find((task) => task.id === data.selectedTaskId);
   const metrics = current?.summary?.observability as
     | Record<string, unknown>
     | undefined;
@@ -98,11 +107,16 @@ export default async function ObservabilityPage({
             {t("返回首页", "Home")}
           </Link>
           <span className="text-[#cfc7b8]" aria-hidden="true">/</span>
-          <form action="/api/auth/logout" method="post">
+          {signedIn ? <form action="/api/auth/logout" method="post">
             <button className="text-[#59615c] transition hover:text-[#8a1f2d]" type="submit">{t("退出登录", "Sign out")}</button>
-          </form>
+          </form> : <Link href={`/login?next=${encodeURIComponent(`/${locale}/observability?view=details`)}`} className="text-[#59615c] transition hover:text-[#8a1f2d]">{t("登录查看治理问题与依据", "Sign in for findings and evidence")}</Link>}
         </div>
       </header>
+      <nav className="flex gap-6 border-b border-line text-sm" aria-label={t("数据治理观测", "Data governance")}>
+        <Link href={`/${locale}/observability`} aria-current={!detailView ? "page" : undefined} className={`border-b-2 pb-3 font-medium ${!detailView ? "border-[#8a1f2d] text-[#8a1f2d]" : "border-transparent text-[#59615c] hover:text-[#8a1f2d]"}`}>{language === "zh" ? "治理流程图" : language === "ja" ? "ガバナンスのフロー図" : "Governance graph"}</Link>
+        <Link href={`/${locale}/observability?view=details${query.task ? `&task=${encodeURIComponent(query.task)}` : ""}`} aria-current={detailView ? "page" : undefined} className={`border-b-2 pb-3 font-medium ${detailView ? "border-[#8a1f2d] text-[#8a1f2d]" : "border-transparent text-[#59615c] hover:text-[#8a1f2d]"}`}>{language === "zh" ? "治理详情" : language === "ja" ? "ガバナンスの詳細" : "Governance details"}</Link>
+      </nav>
+      {!detailView ? <ObservabilityGraph language={language} /> : data && <>
       {data.source !== "configured" && (
         <p className="panel">
           {data.source === "missing"
@@ -123,7 +137,7 @@ export default async function ObservabilityPage({
         {data.tasks.map((task) => (
           <Link
             key={task.id}
-            href={`/${locale}/observability?task=${task.id}`}
+            href={`/${locale}/observability?view=details&task=${task.id}`}
             className={`border px-3 py-2 text-xs ${task.id === data.selectedTaskId ? "border-ink bg-stone-100" : "border-line"}`}
           >
             <span className="font-mono">{task.id.slice(0, 8)}</span> ·{" "}
@@ -142,7 +156,7 @@ export default async function ObservabilityPage({
             {t("导入", "Imported")} {number(current.summary?.importedRows)} ·{" "}
             {t("修复", "Repairs")} {number(current.summary?.repairs)} ·{" "}
             {t("计划修复", "Planned repairs")}{" "}
-            {number(current.summary?.plannedRepairs)} · unresolved{" "}
+            {number(current.summary?.plannedRepairs)} · {t("未解决项", "Unresolved")}{" "}
             {number(current.summary?.unresolved)}
           </p>
           {metrics && (
@@ -165,11 +179,11 @@ export default async function ObservabilityPage({
                   {t("成本与治理效果", "Cost and outcomes")}
                 </h2>
                 <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm md:grid-cols-4">
-                  <div><dt className="text-stone-500">LLM / 网络查询</dt><dd className="font-mono">{metric(metrics.llmCalls)} / {metric(metrics.networkCalls)}</dd></div>
-                  <div><dt className="text-stone-500">Tokens · input / output</dt><dd className="font-mono">{metric(metrics.inputTokens)} / {metric(metrics.outputTokens)}</dd></div>
+                  <div><dt className="text-stone-500">LLM / {t("网络查询", "Web searches")}</dt><dd className="font-mono">{metric(metrics.llmCalls)} / {metric(metrics.networkCalls)}</dd></div>
+                  <div><dt className="text-stone-500">{t("模型 tokens 输入 / 输出", "Tokens · input / output")}</dt><dd className="font-mono">{metric(metrics.inputTokens)} / {metric(metrics.outputTokens)}</dd></div>
                   <div><dt className="text-stone-500">{t("估算费用", "Estimated cost")}</dt><dd className="font-mono">{(metrics.estimatedCostUsd == null || (Number(metrics.llmCalls) > 0 && metrics.costKnown !== true && Number(metrics.estimatedCostUsd) === 0)) ? t("未知", "Unknown") : `$${Number(metrics.estimatedCostUsd).toFixed(6)}`}</dd></div>
                   <div><dt className="text-stone-500">{t("规则判断", "Rule decisions")}</dt><dd className="font-mono">{metric(metrics.ruleDecisions)}</dd></div>
-                  <div><dt className="text-stone-500">resolved / unresolved</dt><dd className="font-mono">{metric(metrics.resolved)} / {metric(metrics.unresolvedFindings)}</dd></div>
+                  <div><dt className="text-stone-500">{t("已解决 / 未解决", "Resolved / unresolved")}</dt><dd className="font-mono">{metric(metrics.resolved)} / {metric(metrics.unresolvedFindings)}</dd></div>
                   <div><dt className="text-stone-500">{t("每导入行成本", "Cost / imported row")}</dt><dd className="font-mono">{metrics.costPerImportedRowUsd == null ? "—" : `$${Number(metrics.costPerImportedRowUsd).toFixed(6)}`}</dd></div>
                   <div><dt className="text-stone-500">{t("每计划行成本", "Cost / planned row")}</dt><dd className="font-mono">{metrics.costPerPlannedRowUsd == null ? "—" : `$${Number(metrics.costPerPlannedRowUsd).toFixed(6)}`}</dd></div>
                 </dl>
@@ -177,7 +191,7 @@ export default async function ObservabilityPage({
                   <div className="mt-3 overflow-x-auto">
                     <table className="w-full text-left text-xs">
                       <thead className="border-b border-line text-stone-500">
-                        <tr><th className="py-2 pr-4">{t("模型", "Model")}</th><th className="py-2 pr-4">{t("调用", "Calls")}</th><th className="py-2 pr-4">Input tokens</th><th className="py-2">Output tokens</th></tr>
+                        <tr><th className="py-2 pr-4">{t("模型", "Model")}</th><th className="py-2 pr-4">{t("调用", "Calls")}</th><th className="py-2 pr-4">{t("输入 tokens", "Input tokens")}</th><th className="py-2">{t("输出 tokens", "Output tokens")}</th></tr>
                       </thead>
                       <tbody>
                         {modelUsage.map((item, index) => (
@@ -212,7 +226,7 @@ export default async function ObservabilityPage({
               {t("导入", "Imported")} {number(batch.summary?.importedRows)} ·{" "}
               {t("修复", "Repairs")} {number(batch.summary?.repairs)} ·{" "}
               {t("计划修复", "Planned repairs")}{" "}
-              {number(batch.summary?.plannedRepairs)} · unresolved{" "}
+              {number(batch.summary?.plannedRepairs)} · {t("未解决项", "Unresolved")}{" "}
               {number(batch.summary?.unresolved)}
             </p>
             <details>
@@ -229,7 +243,7 @@ export default async function ObservabilityPage({
                     >
                       <code>{a.agentKey}</code> · {a.status} · v{a.agentVersion}
                       <p className="mt-1 text-stone-500">
-                        LLM {number(a.metrics?.llmCalls)} · web{" "}
+                        LLM {number(a.metrics?.llmCalls)} · {t("网络", "web")}{" "}
                         {number(a.metrics?.networkCalls)} · tokens{" "}
                         {number(
                           Number(a.metrics?.inputTokens ?? 0) +
@@ -278,7 +292,7 @@ export default async function ObservabilityPage({
           </article>
         ))}
       </section>
-      <section className="space-y-4">
+      {signedIn && <section className="space-y-4">
         <h2 className="text-xl font-semibold">
           {t("治理问题与依据", "Findings and evidence")}
         </h2>
@@ -313,7 +327,7 @@ export default async function ObservabilityPage({
             {t("暂无治理问题记录。", "No findings recorded.")}
           </p>
         )}
-      </section>
+      </section>}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">{t("治理变更", "Changes")}</h2>
         {data.changes.map((c) => (
@@ -365,6 +379,7 @@ export default async function ObservabilityPage({
           "Latest 20 tasks; up to 300 batches and 100 executions / findings / changes for the selected task.",
         )}
       </p>
+      </>}
           </section>
         </div>
       </main>

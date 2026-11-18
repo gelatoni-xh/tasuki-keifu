@@ -59,9 +59,8 @@ export async function SiteHeader({ locale, path }: SiteHeaderProps) {
       href: "/support",
       label: staticPageCopy.labels.support,
     },
-    isSignedIn
-      ? { href: "/observability", label: dictionary.nav.observability }
-      : { href: `/login?next=/${locale}/observability`, label: dictionary.nav.login },
+    { href: "/observability", label: dictionary.nav.observability },
+    ...(!isSignedIn ? [{ href: `/login?next=/${locale}/observability`, label: dictionary.nav.login }] : []),
   ];
 
   return (
