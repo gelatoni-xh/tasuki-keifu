@@ -292,7 +292,8 @@ export default async function ObservabilityPage({
           </article>
         ))}
       </section>
-      {signedIn && <section className="space-y-4">
+      {signedIn && <>
+      <section className="space-y-4">
         <h2 className="text-xl font-semibold">
           {t("治理问题与依据", "Findings and evidence")}
         </h2>
@@ -327,7 +328,7 @@ export default async function ObservabilityPage({
             {t("暂无治理问题记录。", "No findings recorded.")}
           </p>
         )}
-      </section>}
+      </section>
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">{t("治理变更", "Changes")}</h2>
         {data.changes.map((c) => (
@@ -373,6 +374,7 @@ export default async function ObservabilityPage({
           </article>
         ))}
       </section>
+      </>}
       <p className="text-xs text-stone-500">
         {t(
           "最近 20 个任务；所选任务最多展示 300 个批次、100 条执行 / 问题 / 变更。",

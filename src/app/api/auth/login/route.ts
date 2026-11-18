@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { checkCredentials, createSessionToken, OBSERVABILITY_COOKIE } from "@/lib/observability-auth";
+import { checkCredentials, createSessionToken, OBSERVABILITY_COOKIE, publicSiteOrigin } from "@/lib/observability-auth";
 
 export async function POST(request: Request) {
   const form = await request.formData();
@@ -7,13 +7,11 @@ export async function POST(request: Request) {
   const password = String(form.get("password") ?? "");
   const requestedNext = String(form.get("next") ?? "/observability");
   const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/observability";
+  const origin = publicSiteOrigin(request);
   if (!checkCredentials(username, password)) {
-    return NextResponse.redirect(new URL(`/login?error=1&next=${encodeURIComponent(next)}`, request.url), 303);
+    return NextResponse.redirect(new URL(`/login?error=1&next=${encodeURIComponent(next)}`, origin), 303);
   }
-  // Build the redirect from the public site origin. Behind Nginx, request.url
-  // can contain the internal localhost origin used by the container.
-  const publicOrigin = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") || new URL(request.url).origin;
-  const response = NextResponse.redirect(new URL(next, publicOrigin), 303);
+  const response = NextResponse.redirect(new URL(next, origin), 303);
   response.cookies.set(OBSERVABILITY_COOKIE, createSessionToken(username), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
