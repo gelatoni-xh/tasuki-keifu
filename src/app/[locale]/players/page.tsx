@@ -11,7 +11,12 @@ import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import { JAPAN_PREFECTURES, isJapanPrefecture } from "@/lib/japan-prefectures";
 import { buildLocalizedUrl } from "@/lib/site";
 import { buildDirectoryMetadata, getDirectoryPage } from "@/lib/directory-metadata";
-import { getCurrentMembership, getHighSchoolMembership, getUniversityMembership } from "@/lib/membership";
+import {
+  getCurrentMembership,
+  getHighSchoolMembership,
+  getLatestRaceResultOrganization,
+  getUniversityMembership,
+} from "@/lib/membership";
 
 type PlayersPageProps = {
   params: Promise<{
@@ -121,9 +126,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
     ? await prisma.organization.findFirst({
         where: {
           slug: organizationSlug,
-          memberships: {
-            some: {},
-          },
+          OR: [{ memberships: { some: {} } }, { raceResults: { some: { organizationId: { not: null } } } }],
         },
       })
     : null;
@@ -147,9 +150,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
   const organizationOptions = await prisma.organization.findMany({
     where: {
       ...(organizationType ? { type: organizationType } : {}),
-      memberships: {
-        some: {},
-      },
+      OR: [{ memberships: { some: {} } }, { raceResults: { some: { organizationId: { not: null } } } }],
     },
     orderBy: [{ type: "asc" }, { nameJa: "asc" }],
   });
@@ -173,14 +174,29 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
       : {}),
     ...(organizationSlug || organizationType
       ? {
-          memberships: {
-            some: {
-              organization: {
-                ...(organizationSlug ? { slug: organizationSlug } : {}),
-                ...(organizationType ? { type: organizationType } : {}),
+          OR: [
+            {
+              memberships: {
+                some: {
+                  organization: {
+                    ...(organizationSlug ? { slug: organizationSlug } : {}),
+                    ...(organizationType ? { type: organizationType } : {}),
+                  },
+                },
               },
             },
-          },
+            {
+              raceResults: {
+                some: {
+                  organizationId: { not: null },
+                  organization: {
+                    ...(organizationSlug ? { slug: organizationSlug } : {}),
+                    ...(organizationType ? { type: organizationType } : {}),
+                  },
+                },
+              },
+            },
+          ],
         }
       : {}),
   };
@@ -207,6 +223,15 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
           organization: true,
         },
         orderBy: [{ endDate: "desc" }, { startDate: "desc" }, { createdAt: "desc" }],
+      },
+      raceResults: {
+        where: { organizationId: { not: null }, race: { startsAt: { not: null } } },
+        include: {
+          organization: true,
+          race: { select: { startsAt: true } },
+        },
+        orderBy: [{ race: { startsAt: "desc" } }, { createdAt: "desc" }],
+        take: 1,
       },
       personalBests: {
         where: {
@@ -340,6 +365,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
               <div className="divide-y divide-[#e7e1d8]">
                 {paginatedPlayers.map((player) => {
                   const currentMembership = getCurrentMembership(player.memberships);
+                  const displayedOrganization = currentMembership?.organization ?? getLatestRaceResultOrganization(player.raceResults);
                   const university = getUniversityMembership(player.memberships);
                   const highSchool = getHighSchoolMembership(player.memberships);
                   const pbSummary = player.personalBests
@@ -366,7 +392,7 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
                         <span className="mb-1 block text-xs font-medium text-[#8b938e] md:hidden">
                           {dictionary.players.currentAffiliation}
                         </span>
-                        {currentMembership?.organization.nameJa ?? dictionary.common.emptyDash}
+                        {displayedOrganization?.nameJa ?? dictionary.common.emptyDash}
                       </span>
                       <span className="text-sm text-[#59615c]">
                         <span className="mb-1 block text-xs font-medium text-[#8b938e] md:hidden">

@@ -1,9 +1,14 @@
-import type { Membership, MembershipRole, Organization, PersonType } from "@prisma/client";
+import type { Membership, MembershipRole, Organization, PersonType, Race, RaceResult } from "@prisma/client";
 import type { Locale } from "@/lib/i18n";
 import { getDictionary } from "@/lib/i18n";
 
 export type MembershipWithOrganization = Membership & {
   organization: Organization;
+};
+
+export type RaceResultWithOrganizationAndRace = RaceResult & {
+  organization: Organization | null;
+  race: Pick<Race, "startsAt">;
 };
 
 export type MembershipOverlap = "overlap" | "not_overlap" | "unknown";
@@ -21,6 +26,25 @@ export function getCurrentMembership(memberships: MembershipWithOrganization[], 
   return (
     getCurrentMemberships(memberships, now)
       .sort((left, right) => getMembershipRolePriority(right.role) - getMembershipRolePriority(left.role))[0] ?? null
+  );
+}
+
+/**
+ * Unknown membership periods are intentionally not treated as current. For
+ * directory views, use the latest dated race observation as a display fallback.
+ */
+export function getLatestRaceResultOrganization(
+  raceResults: RaceResultWithOrganizationAndRace[],
+) {
+  return (
+    [...raceResults]
+      .filter((result) => result.organization)
+      .sort((left, right) => {
+        const leftTime = left.race.startsAt?.getTime() ?? 0;
+        const rightTime = right.race.startsAt?.getTime() ?? 0;
+
+        return rightTime - leftTime || right.createdAt.getTime() - left.createdAt.getTime();
+      })[0]?.organization ?? null
   );
 }
 
