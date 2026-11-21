@@ -8,7 +8,6 @@ import { getScopeVersion } from "@/lib/cache-invalidation";
 import { createLogger } from "@/lib/logger";
 import { getCachedValue } from "@/lib/server-cache";
 import { prisma } from "@/lib/prisma";
-import { getRelationDisplayLabels } from "@/lib/player-relations/score-player-relations";
 import { formatDate, formatDiscipline, formatOrganizationType, formatPersonType, formatRaceMark, formatRaceResultNotes, formatRankWithNotes } from "@/lib/format";
 import { getDictionary, interpolate, isLocale } from "@/lib/i18n";
 import {
@@ -19,7 +18,6 @@ import {
   inferCurrentUniversityGrade,
   sortMembershipsByStartDate,
 } from "@/lib/membership";
-import { formatRelationLabel } from "@/lib/player-relations/format-relation-label";
 import { getPlayerRelations } from "@/lib/player-relations/get-player-relations";
 import { isPublicCompetitionType } from "@/lib/public-competitions";
 import { getPlayerSeoTier, shouldIndexPlayerPage } from "@/lib/seo";
@@ -37,6 +35,14 @@ const raceResultsPageSize = 30;
 const PLAYER_METADATA_CACHE_TTL_MS = 1000 * 60 * 5;
 const PLAYER_DETAIL_CACHE_TTL_MS = 1000 * 60 * 2;
 const pageLogger = createLogger("player-detail-page");
+
+const relationPreviewCopy = {
+  ja: { shared: "共通の所属先", rivals: "レースで競った選手", sharedHint: "同じ組織に所属した選手", rivalHint: "対戦回数が多い選手", all: "関係を詳しく見る" },
+  zh: { shared: "共同经历", rivals: "赛场交锋", sharedHint: "曾属于同一组织", rivalHint: "多次出现在同一赛场", all: "探索全部关系" },
+  "zh-Hant": { shared: "共同經歷", rivals: "賽場交鋒", sharedHint: "曾屬於同一組織", rivalHint: "多次出現在同一賽場", all: "探索全部關係" },
+  en: { shared: "Shared teams", rivals: "Race rivals", sharedHint: "Athletes with a shared organization", rivalHint: "Frequent head-to-head meetings", all: "Explore all connections" },
+  ko: { shared: "공통 소속", rivals: "경기 상대", sharedHint: "같은 조직에 소속된 선수", rivalHint: "여러 번 같은 경기에서 만난 선수", all: "모든 관계 보기" },
+} as const;
 
 function compactJaName(value: string) {
   const normalized = value.replace(/　/g, " ").replace(/\s+/g, " ").trim();
@@ -350,7 +356,19 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     ).values(),
   );
 
-  const relationPreviewEntries = relationPayload.topRelations.slice(0, 6);
+  const sharedRelationEntries = relationPayload.topRelations
+    .filter((entry) => entry.context.sharedTeamStages.length > 0)
+    .slice(0, 3);
+  const sharedRelationIds = new Set(sharedRelationEntries.map((entry) => entry.relatedPersonId));
+  const rivalRelationEntries = relationPayload.topRelations
+    .filter((entry) => !sharedRelationIds.has(entry.relatedPersonId))
+    .sort((left, right) => {
+      const leftSharedTeam = left.context.sharedTeamStages.length > 0 ? 1 : 0;
+      const rightSharedTeam = right.context.sharedTeamStages.length > 0 ? 1 : 0;
+      return leftSharedTeam - rightSharedTeam || right.matchupCount - left.matchupCount;
+    })
+    .slice(0, 3);
+  const relationPreviewEntries = [...sharedRelationEntries, ...rivalRelationEntries];
   const relatedPlayerIds = relationPreviewEntries.map((entry: PlayerRelationEntry) => entry.relatedPersonId);
   const relatedPlayers = relatedPlayerIds.length > 0
     ? await getCachedValue(`player:detail:${player.id}:related:${relatedPlayerIds.join(",")}`, PLAYER_DETAIL_CACHE_TTL_MS, async () =>
@@ -377,12 +395,13 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     return [{
         ...related,
         matchupCountLabel: interpolate(dictionary.players.matchupCount, { count: entry.matchupCount }),
-        relationshipTags: getRelationDisplayLabels(entry).slice(0, 3),
+        sharedTeamStage: entry.context.sharedTeamStages[0] ?? null,
         canViewHeadToHead: entry.hasHeadToHeadDetail,
-        latestCompetitionName: entry.latestCompetitionName,
-        relationScoreLabel: entry.displayScore.toFixed(1),
     }];
   });
+  const sharedPlayers = relatedPlayersWithTags.filter((related) => sharedRelationIds.has(related.id));
+  const rivalPlayers = relatedPlayersWithTags.filter((related) => !sharedRelationIds.has(related.id));
+  const previewCopy = relationPreviewCopy[locale];
   const hasPersonalBests = player.personalBests.length > 0;
   const hasRaceResults = sortedRaceResults.length > 0;
   const shouldShowPerformanceSections = player.type === "athlete" || hasPersonalBests || hasRaceResults;
@@ -830,62 +849,55 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold">{dictionary.players.relationNetwork}</h2>
-                  <p className="mt-1 text-sm text-[#59615c]">{dictionary.players.relationNetworkSubtitle}</p>
                 </div>
                 <Link
-                  className="inline-flex items-center border border-[#8a1f2d] px-3 py-1 text-sm font-medium text-[#8a1f2d] transition hover:bg-[#8a1f2d] hover:text-white"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-[#8a1f2d] hover:underline"
                   href={`/${locale}/players/${player.slug}/relations`}
                 >
-                  {dictionary.players.relationNetwork}
+                  {previewCopy.all}<ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {relatedPlayersWithTags.map((related) => (
-                  <div
-                    className="border border-[#e7e1d8] p-3 transition hover:border-[#8a1f2d]"
-                    key={related.id}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <Link
-                        className="group block min-w-0 flex-1 rounded-sm border border-[#e7e1d8] bg-[#fcfaf5] px-3 py-2 transition hover:border-[#d1b7a4] hover:bg-[#f7f1e7]"
-                        data-analytics-event="player_to_related_player_click"
-                        data-analytics-link-type="related_player"
-                        href={`/${locale}/players/${related.slug}`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span className="truncate text-lg font-semibold text-[#1f2421] transition group-hover:text-[#8a1f2d]">
-                            {related.displayNameJa}
-                          </span>
-                          <span
-                            aria-hidden="true"
-                            className="shrink-0 text-[#8a1f2d] transition group-hover:translate-x-0.5"
-                          >
-                            →
-                          </span>
-                        </span>
-                        <span className="mt-1 block text-sm text-[#59615c]">
-                          {related.memberships.map((membership: (typeof related.memberships)[number]) => membership.organization.nameJa).join(" / ")}
-                        </span>
-                      </Link>
+              <div className="mt-5 grid gap-8 lg:grid-cols-2">
+                {([
+                  { key: "shared", title: previewCopy.shared, hint: previewCopy.sharedHint, players: sharedPlayers },
+                  { key: "rivals", title: previewCopy.rivals, hint: previewCopy.rivalHint, players: rivalPlayers },
+                ] as const).filter((group) => group.players.length > 0).map((group) => (
+                  <div key={group.key}>
+                    <div className="border-b border-[#ded8cc] pb-2">
+                      <h3 className="text-sm font-semibold text-[#8a1f2d]">{group.title}</h3>
+                      <p className="mt-1 text-xs text-[#59615c]">{group.hint}</p>
                     </div>
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <p className="text-sm font-medium text-[#8a1f2d]">{related.matchupCountLabel}</p>
-                      {related.canViewHeadToHead ? (
-                        <Link
-                          className="inline-flex shrink-0 items-center border border-[#8a1f2d] px-3 py-1 text-sm font-medium text-[#8a1f2d] transition hover:bg-[#8a1f2d] hover:text-white"
-                          data-analytics-event="player_to_head_to_head_click"
-                          data-analytics-link-type="head_to_head"
-                          href={`/${locale}/players/${player.slug}/head-to-head/${related.slug}`}
-                        >
-                          {dictionary.players.viewHeadToHead}
-                        </Link>
-                      ) : null}
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {related.relationshipTags.map((tag: string) => (
-                        <span className="border border-[#ded8cc] px-2 py-1 text-xs text-[#8a1f2d]" key={tag}>
-                          {formatRelationLabel(locale, dictionary, tag)}
-                        </span>
+                    <div className="divide-y divide-[#ece7de]">
+                      {group.players.map((related) => (
+                        <div className="flex min-h-16 items-center justify-between gap-3 py-3" key={related.id}>
+                          <div className="min-w-0">
+                            <Link
+                              className="font-semibold text-[#1f2421] hover:text-[#8a1f2d]"
+                              data-analytics-event="player_to_related_player_click"
+                              data-analytics-link-type="related_player"
+                              href={`/${locale}/players/${related.slug}`}
+                            >
+                              {related.displayNameJa}
+                            </Link>
+                            <p className="mt-1 text-xs text-[#59615c]">
+                              {group.key === "shared" && related.sharedTeamStage
+                                ? dictionary.players.sharedTeamStages[related.sharedTeamStage]
+                                : related.matchupCountLabel}
+                            </p>
+                          </div>
+                          {group.key === "shared" ? (
+                            <span className="shrink-0 text-xs tabular-nums text-[#59615c]">{related.matchupCountLabel}</span>
+                          ) : related.canViewHeadToHead ? (
+                            <Link
+                              className="shrink-0 text-xs font-medium text-[#8a1f2d] hover:underline"
+                              data-analytics-event="player_to_head_to_head_click"
+                              data-analytics-link-type="head_to_head"
+                              href={`/${locale}/players/${player.slug}/head-to-head/${related.slug}`}
+                            >
+                              {dictionary.players.viewHeadToHead}
+                            </Link>
+                          ) : null}
+                        </div>
                       ))}
                     </div>
                   </div>
