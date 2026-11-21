@@ -65,6 +65,7 @@ export function HomeHighlights({ locale, discovery }: Props) {
           {card.links.length > 0 ? (
             <div className="mt-4">
               <p className="text-xs text-[#59615c]">{card.label}</p>
+              {card.key === "players" && latestEkiden ? <p className="mt-1 text-xs text-[#59615c]">{latestEkiden.officialName}</p> : null}
               <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm leading-6">
                 {card.links.map((link) => (
                   <li className={card.key === "competitions" ? "w-full min-w-0" : undefined} key={link.href}>
