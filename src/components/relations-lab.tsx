@@ -40,7 +40,6 @@ function RelationsExplorer({ locale, organizations, people, organizationMinimum,
   const [flowLimit, setFlowLimit] = useState(36);
   const [personA, setPersonA] = useState(people.find((p) => p.name.includes("吉居大和"))?.id ?? people[0]?.id ?? "");
   const [personB, setPersonB] = useState(people.find((p) => p.name.includes("田澤廉"))?.id ?? people.at(-1)?.id ?? "");
-  const [personQuery, setPersonQuery] = useState("");
   const orgMap = useMemo(() => new Map(organizations.map((org) => [org.id, org])), [organizations]);
   const personMap = useMemo(() => new Map(people.map((person) => [person.id, person])), [people]);
   const pairs = useMemo(() => {
@@ -98,8 +97,8 @@ function RelationsExplorer({ locale, organizations, people, organizationMinimum,
   const renderPeople = (list: Person[], orgIds?: string[]) => <div className="divide-y divide-zinc-200">{list.map((p) => <div key={p.id} className="py-3"><Link className="font-medium text-zinc-900 hover:text-rose-700" href={`/${locale}/players/${p.slug}`}>{p.name}<ArrowRight className="ml-2 inline h-3 w-3" /></Link><div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">{p.memberships.filter((m) => !orgIds || orgIds.includes(m.org)).map((m, index) => <span key={`${m.org}-${index}`}>{orgMap.get(m.org)?.name} · {period(m)}</span>)}</div></div>)}</div>;
   const orgSelect = (value: string, onChange: (value: string) => void) => <select aria-label={t.selectOrganization} className="min-w-0 flex-1 rounded border border-zinc-300 bg-white p-2 text-sm" value={value} onChange={(e) => onChange(e.target.value)}>{Object.keys(types).map((type) => <optgroup key={type} label={types[type]}>{organizations.filter((o) => o.type === type).map((o) => <option key={o.id} value={o.id}>{o.name} ({o.count})</option>)}</optgroup>)}</select>;
 
-  return <main className="min-h-screen bg-[#f8fafb] text-zinc-800">
-    <header className="border-b border-zinc-200 bg-white px-5 py-5"><div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-4"><div><h1 className="text-2xl font-semibold">{t.title}</h1><p className="mt-2 text-sm text-zinc-500">{t.description}</p></div><div className="text-xs leading-6 text-zinc-500 sm:text-right">{interpolate(t.summary, { people: people.length.toLocaleString(locale), organizations: organizations.length.toLocaleString(locale) })}<br />{t.relationshipNote}</div></div></header>
+  return <main className="min-h-screen text-[#1f2421]">
+    <header className="border-b border-[#ded8cc] px-5 py-5"><div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-4"><div><h1 className="text-2xl font-semibold">{t.title}</h1><p className="mt-2 text-sm text-zinc-500">{t.description}</p></div><div className="text-xs leading-6 text-zinc-500 sm:text-right">{interpolate(t.summary, { people: people.length.toLocaleString(locale), organizations: organizations.length.toLocaleString(locale) })}<br />{t.relationshipNote}</div></div></header>
     <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-500"><label className="flex items-center gap-2">{t.organizationMinimum}<select aria-label={t.organizationMinimum} value={organizationMinimum} onChange={(e) => setOrganizationMinimum(Number(e.target.value))} className="rounded border border-zinc-300 bg-white p-2 text-sm text-zinc-800">{[3, 5, 10, 20].map((n) => <option key={n} value={n}>{interpolate(t.atLeastPeople, { count: n })}</option>)}</select></label><span>{Object.entries(types).map(([type, name]) => `${name} ${organizations.filter((org) => org.type === type).length}`).join(" · ")}</span></div>
       <nav className="mb-6 flex overflow-x-auto border-b border-zinc-200" aria-label={t.views}><>{tabs.map(({ id, name, icon: Icon }) => <button key={id} aria-pressed={mode === id} onClick={() => { setMode(id); setSelected(null); }} className={`flex shrink-0 items-center gap-2 border-b-2 px-5 py-3 text-sm ${mode === id ? "border-rose-700 font-semibold text-rose-700" : "border-transparent text-zinc-500"}`}><Icon className="h-4 w-4" />{t.tabs[name]}</button>)}</></nav>
@@ -126,14 +125,24 @@ function RelationsExplorer({ locale, organizations, people, organizationMinimum,
         {selected && <section className="mt-6"><h2 className="font-semibold">{orgMap.get(selected)?.name} · {cohort === "all" ? t.allCohorts : interpolate(t.cohort, { year: cohort })}</h2>{renderPeople(flowPeople.filter((p) => p.memberships.some((m) => m.org === selected)))}</section>}
       </>}
       {mode === "path" && <>
-        <label className="mb-4 flex max-w-md items-center gap-2 rounded border border-zinc-300 bg-white px-3"><Search className="h-4 w-4 text-zinc-400" /><input value={personQuery} onChange={(e) => setPersonQuery(e.target.value)} aria-label={t.searchPeople} placeholder={t.searchPeople} className="w-full py-2 text-sm outline-none" /></label>
-        <div className="flex gap-3">{[personA, personB].map((id, index) => <select key={index} aria-label={index === 0 ? t.startPerson : t.endPerson} className="min-w-0 flex-1 rounded border border-zinc-300 bg-white p-2 text-sm" value={id} onChange={(e) => index === 0 ? setPersonA(e.target.value) : setPersonB(e.target.value)}>{people.filter((p) => p.id === id || !personQuery || p.name.includes(personQuery)).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select>)}</div>
+        <div className="grid gap-3 sm:grid-cols-2"><PersonSelect label={t.startPerson} searchLabel={t.searchPeople} people={people} value={personA} onChange={setPersonA} /><PersonSelect label={t.endPerson} searchLabel={t.searchPeople} people={people} value={personB} onChange={setPersonB} /></div>
         <div className="my-8 flex flex-wrap items-center gap-3 border-y border-zinc-200 py-10">{path.length ? path.map((id, index) => <div key={id} className="flex items-center gap-3">{index > 0 && <ArrowRight className="h-4 w-4 text-zinc-400" />}<div className={`border-b-2 px-4 py-3 ${orgMap.has(id) ? "border-teal-600 bg-teal-50" : "border-rose-600 bg-rose-50"}`}><div className="text-xs text-zinc-500">{orgMap.has(id) ? types[orgMap.get(id)!.type] : t.athlete}</div><div className="mt-1 text-sm font-medium">{orgMap.get(id)?.name ?? personMap.get(id)?.name}</div></div></div>) : <p className="text-zinc-500">{t.noPath}</p>}</div>
         <h2 className="font-semibold">{t.pathMemberships}</h2>{renderPeople(path.flatMap((id) => personMap.has(id) ? [personMap.get(id)!] : []), path.filter((id) => orgMap.has(id)))}<p className="mt-5 text-xs text-zinc-500">{t.pathNote}</p>
       </>}
       <footer className="mt-8 border-t border-zinc-200 pt-4 text-xs text-zinc-400">{interpolate(t.scope, { count: organizationMinimum })}</footer>
     </div>
   </main>;
+}
+
+function PersonSelect({ label, searchLabel, people, value, onChange }: { label: string; searchLabel: string; people: Person[]; value: string; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const selected = people.find((person) => person.id === value);
+  const options = people.filter((person) => person.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())).slice(0, 100);
+  return <div className="relative min-w-0" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}>
+    <button type="button" aria-label={label} aria-expanded={open} aria-haspopup="listbox" onClick={() => { setOpen(!open); setQuery(""); }} className="flex w-full items-center justify-between border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2 text-left text-sm"><span className="truncate">{selected?.name}</span><span aria-hidden="true">▾</span></button>
+    {open && <div className="absolute z-20 mt-1 w-full border border-[#cfc7b8] bg-white shadow-lg"><label className="flex items-center gap-2 border-b border-[#ded8cc] px-3"><Search className="h-4 w-4 text-zinc-400" /><input autoFocus aria-label={`${label}: ${searchLabel}`} placeholder={searchLabel} value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setOpen(false); if (event.key === "Enter" && options.length) { onChange(options[0].id); setOpen(false); } }} className="w-full py-2 text-sm outline-none" /></label><div role="listbox" aria-label={label} className="max-h-60 overflow-y-auto">{options.map((person) => <button type="button" role="option" aria-selected={person.id === value} key={person.id} onClick={() => { onChange(person.id); setOpen(false); }} className="block w-full px-3 py-2 text-left text-sm hover:bg-[#f2eee7] focus:bg-[#f2eee7]">{person.name}</button>)}</div></div>}
+  </div>;
 }
 
 function NetworkCanvas({ locale, graph, selected, select }: { locale: Locale; graph: { nodes: { id: string; name: string; count: number; color: string }[]; links: { source: string; target: string; count: number }[] }; selected: string | null; select: (id: string) => void }) {
