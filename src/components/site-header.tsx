@@ -53,6 +53,10 @@ export async function SiteHeader({ locale, path }: SiteHeaderProps) {
       href: "/organizations",
       label: dictionary.nav.organizations,
     },
+    {
+      href: "/relations-lab",
+      label: dictionary.relationsLab.title,
+    },
   ];
   const secondaryNavigationItems = [
     {
