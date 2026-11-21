@@ -47,6 +47,13 @@ export function HomeHighlights({ locale, discovery }: Props) {
         context: team.nameJa,
       })),
     },
+    {
+      key: "relations-lab",
+      title: getDictionary(locale).relationsLab.title,
+      description: getDictionary(locale).relationsLab.description,
+      label: "",
+      links: [],
+    },
   ];
 
   return (
@@ -71,7 +78,7 @@ export function HomeHighlights({ locale, discovery }: Props) {
           ) : null}
           <div className="mt-auto pt-5">
             <Link className="group inline-flex items-center gap-2 text-sm font-medium text-[#1f3b33] hover:underline" href={`/${locale}/${card.key}`}>
-              {home.openDirectory}
+              {card.key === "relations-lab" ? getDictionary(locale).relationsLab.open : home.openDirectory}
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" aria-hidden="true" />
             </Link>
           </div>
