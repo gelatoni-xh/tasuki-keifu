@@ -22,30 +22,50 @@ export const getHomeDiscovery = unstable_cache(async () => {
       take: 5,
       select: { slug: true, officialName: true, startsOn: true, competition: { select: { type: true } } },
     }),
-    prisma.competitionEdition.findFirst({
-      where: {
-        competition: { type: { in: ekidenTypes } },
-        startsOn: { lte: now },
-        races: { some: { leg: { gt: 0 }, raceResults: { some: { markMillis: { gt: 0 } } } } },
-      },
-      orderBy: [{ startsOn: "desc" }, { slug: "asc" }],
-      select: {
-        slug: true,
-        officialName: true,
-        races: {
-          where: { leg: { gt: 0 } },
-          orderBy: [{ leg: "asc" }, { slug: "asc" }],
+    (async () => {
+      let skip = 0;
+      while (true) {
+        const editions = await prisma.competitionEdition.findMany({
+          where: {
+            competition: { type: { in: ekidenTypes } },
+            startsOn: { lte: now },
+            races: { some: { leg: { gt: 0 }, raceResults: { some: {
+              markMillis: { gt: 0 }, status: { notIn: ["conflicting", "missing"] },
+              OR: [{ notes: { contains: "区間賞" } }, { notes: { contains: "区間新" } }],
+            } } } },
+          },
+          orderBy: [{ startsOn: "desc" }, { slug: "asc" }],
+          skip,
+          take: 10,
           select: {
-            slug: true, name: true,
-            raceResults: {
-              where: { markMillis: { gt: 0 }, status: { notIn: ["conflicting", "missing"] }, notes: { contains: "区間" } },
-              orderBy: [{ rank: "asc" }, { id: "asc" }],
-              select: { id: true, mark: true, notes: true, person: { select: { slug: true, displayNameJa: true } }, organization: { select: { slug: true, nameJa: true } } },
+            slug: true,
+            officialName: true,
+            races: {
+              where: { leg: { gt: 0 } },
+              orderBy: [{ leg: "asc" }, { slug: "asc" }],
+              select: {
+                slug: true, name: true,
+                raceResults: {
+                  where: { markMillis: { gt: 0 }, status: { notIn: ["conflicting", "missing"] }, notes: { contains: "区間" } },
+                  orderBy: [{ rank: "asc" }, { id: "asc" }],
+                  select: { id: true, mark: true, notes: true, person: { select: { slug: true, displayNameJa: true } }, organization: { select: { slug: true, nameJa: true } } },
+                },
+              },
             },
           },
-        },
-      },
-    }),
+        });
+        for (const edition of editions) {
+          const legs = edition.races.map((race) => ({
+            slug: race.slug,
+            name: race.name,
+            results: race.raceResults.map((result) => ({ ...result, awards: getEkidenAwards(result.notes) })).filter((result) => result.awards.length > 0),
+          })).filter((leg) => leg.results.length > 0);
+          if (legs.length) return { slug: edition.slug, officialName: edition.officialName, legs };
+        }
+        if (editions.length < 10) return null;
+        skip += editions.length;
+      }
+    })(),
     Promise.all((["university_ekiden"] as const).map(async (type) => {
       const editions = await prisma.competitionEdition.findMany({
         where: {
@@ -68,14 +88,6 @@ export const getHomeDiscovery = unstable_cache(async () => {
   return {
     recentCompetitions: recentCompetitions.map((edition) => ({ ...edition, startsOn: edition.startsOn?.toISOString() ?? null })),
     teamGroups: teamGroups.filter((group) => group.teams.length > 0),
-    latestEkiden: latestEkiden ? {
-      slug: latestEkiden.slug,
-      officialName: latestEkiden.officialName,
-      legs: latestEkiden.races.map((race) => ({
-        slug: race.slug,
-        name: race.name,
-        results: race.raceResults.map((result) => ({ ...result, awards: getEkidenAwards(result.notes) })).filter((result) => result.awards.length > 0),
-      })).filter((leg) => leg.results.length > 0),
-    } : null,
+    latestEkiden,
   };
 }, ["home-discovery-v2"], { revalidate: 3600, tags: ["home-discovery"] });
