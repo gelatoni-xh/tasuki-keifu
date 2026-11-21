@@ -42,6 +42,9 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
+      - name: Test environment selection
+        run: node --import tsx --test scripts/lib/load-env.test.ts
+
       - name: Lint
         run: pnpm lint
 

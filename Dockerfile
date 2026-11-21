@@ -25,6 +25,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/messages ./messages
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/scripts/lib/load-env.ts ./scripts/lib/load-env.ts
 
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/src/lib/prisma.ts /app/src/lib/logger.ts ./src/lib/
