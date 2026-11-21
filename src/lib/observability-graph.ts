@@ -92,6 +92,7 @@ const nodes: Node[] = [
   { id: "llm_person", label: ["LLM · 人物批量判断", "LLM · person batch", "LLM · 人物の一括判定"], kind: "llm", trigger: ["有人物候选；不联网。", "Person candidates exist; no web search.", "人物候補がある場合。ウェブ検索なし。"], checks: [
     ["逐个评价姓名关系和同人可能性，结合生日、所属时间与独立证据。", "Assess each name relation and identity likelihood using birth date, affiliation time and independent evidence.", "候補ごとに氏名関係と同一人物の可能性を、生年月日・所属期間・独立証拠から評価する。"],
     ["同名、同读音、同所属都不足以单独确认；生日冲突不可匹配。", "Name, reading or affiliation alone is insufficient; conflicting birth dates cannot match.", "同名・同音・同所属だけでは確定せず、生年月日が矛盾すれば一致としない。"],
+    ["同名同读音、同校且学年时间线相容的独立记录可综合支持同人，无需强制生日或注册号；核查实际矛盾与竞争候选。", "Independent records with matching name, reading and school and a compatible academic timeline can jointly support a match without a required birth date or registration number; check actual conflicts and competing candidates.", "同名・同じ読み・同じ学校で学年と時系列が整合する独立記録を総合して同一人物と判断でき、生年月日や登録番号は必須ではない。実際の矛盾と競合候補を確認する。"],
   ], outcomes: [["证据充分则匹配；均可排除则不同；否则未解决。", "Match with evidence, distinct if all are excluded, otherwise unresolved.", "証拠が十分なら一致、全候補を除外できれば別人、それ以外は未解決。"]] },
   { id: "llm_cross", label: ["LLM · 交叉核查", "LLM · cross-check", "LLM · 横断検証"], kind: "llm", trigger: ["有来源数据；不联网。", "Source data exists; no web search.", "出典データがある場合。ウェブ検索なし。"], checks: [
     ["找组织与人物判断中的实质矛盾、循环证据。", "Find substantive conflicts and circular evidence across organization and person decisions.", "組織と人物の判断にある実質的な矛盾や循環証拠を探す。"],
@@ -109,10 +110,13 @@ const nodes: Node[] = [
   { id: "web_org", label: ["Web Search", "Web Search", "Web Search"], kind: "web" },
   { id: "llm_reassess", label: ["LLM · 人物批量重评", "LLM · person reassessment", "LLM · 人物の一括再評価"], kind: "llm", trigger: ["组织判断影响人物；不联网。", "Organization decision affects people; no web search.", "組織の判断が人物に影響した場合。ウェブ検索なし。"], checks: [
     ["只重评受影响者；仍不能仅凭同名同所属确认。", "Reassess affected people only; name and affiliation alone remain insufficient.", "影響を受けた人物のみ再評価し、同名・同所属だけで確定しない。"],
+    ["结合独立赛事记录与相容的学年时间线判断，并核查实际矛盾和竞争候选。", "Combine independent race records with a compatible academic timeline, checking actual conflicts and competing candidates.", "独立した大会記録と整合する学年・時系列を総合し、実際の矛盾と競合候補を確認する。"],
   ], outcomes: [["匹配、可区分或未解决。", "Match, distinct or unresolved.", "一致・別人・未解決。"]] },
   { id: "llm_deep", label: ["LLM · 单人物深研", "LLM · deep person research", "LLM · 個別人物の詳細調査"], kind: "llm", trigger: ["疑难身份未解决且符合深研门槛；允许 Web Search。", "Unresolved identity meets the deep-research gate; web search is available.", "未解決の同定問題が詳細調査の条件を満たす場合。ウェブ検索を利用可能。"], checks: [
     ["核查生日冲突、交叉问题、同音异字或疑似误录。", "Investigate birth-date conflicts, cross-check issues, variant characters or suspected transcription errors.", "生年月日の矛盾、横断検証の問題、同音異字や入力誤りの疑いを調べる。"],
     ["轻量判断只是待验证假设，不是独立证据。", "Triage is a hypothesis, not independent evidence.", "一次判断は仮説であり、独立した証拠ではない。"],
+    ["综合独立记录与相容的学年时间线；生日或注册号并非必备，须核查实际矛盾和竞争候选。", "Consider independent records and compatible academic timelines together; birth dates and registration numbers are not mandatory, but actual conflicts and competing candidates must be checked.", "独立記録と整合する学年・時系列を総合する。生年月日や登録番号は必須ではないが、実際の矛盾と競合候補を確認する。"],
+    ["合并须明确保留及待合并档案，校验允许的 ID 和各档案间的同赛事成绩冲突；无效输出有限重试。", "A merge must identify the retained and duplicate profiles; validate allowed IDs and same-race conflicts across profiles, with bounded retries for invalid output.", "統合では保持する人物と重複人物を明示し、許可された ID と各人物間の同一大会の記録衝突を検証する。不正な出力は有限回再試行する。"],
   ], outcomes: [["匹配、可区分或未解决。", "Match, distinct or unresolved.", "一致・別人・未解決。"]] },
   { id: "web_person", label: ["Web Search", "Web Search", "Web Search"], kind: "web" },
   { id: "llm_membership", label: ["LLM · 按人履历冲突研究", "LLM · per-person affiliation research", "LLM · 人物単位の所属履歴調査"], kind: "llm", trigger: ["同一人物存在一个或多个实质履历冲突；每人一次研究，可使用 Web Search。", "A person has one or more substantive affiliation conflicts; one research request per person, with Web Search available.", "一人に一つ以上の実質的な所属履歴の矛盾がある場合、人物単位で一回調査し、Web Search を利用できる。"], checks: [
