@@ -1,41 +1,30 @@
 import { existsSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
 import path from "node:path";
+import { parseEnv } from "node:util";
 
-export function loadWorkspaceEnv() {
-  if (process.env.DATABASE_URL) {
-    return;
+export function loadWorkspaceEnv({
+  env = process.env,
+  cwd = process.cwd(),
+  home = homedir(),
+}: {
+  env?: NodeJS.ProcessEnv;
+  cwd?: string;
+  home?: string;
+} = {}) {
+  const environment = env.NODE_ENV ?? "development";
+  const files = [path.join(cwd, `.env.${environment}.local`)];
+  if (environment === "development") {
+    files.push(path.join(home, ".config/tasuki-keifu/development.env"));
   }
+  if (environment !== "test") files.push(path.join(cwd, ".env.local"));
+  files.push(path.join(cwd, `.env.${environment}`), path.join(cwd, ".env"));
 
-  const envPath = path.resolve(process.cwd(), ".env");
-  if (!existsSync(envPath)) {
-    return;
-  }
-
-  const envText = readFileSync(envPath, "utf8");
-  for (const rawLine of envText.split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith("#")) {
-      continue;
+  // Explicit process settings win; then load files from most to least specific.
+  for (const file of files) {
+    if (!existsSync(file)) continue;
+    for (const [key, value] of Object.entries(parseEnv(readFileSync(file, "utf8")))) {
+      if (env[key] === undefined) env[key] = value;
     }
-
-    const separatorIndex = line.indexOf("=");
-    if (separatorIndex === -1) {
-      continue;
-    }
-
-    const key = line.slice(0, separatorIndex).trim();
-    if (!key || process.env[key] !== undefined) {
-      continue;
-    }
-
-    let value = line.slice(separatorIndex + 1).trim();
-    if (
-      (value.startsWith("\"") && value.endsWith("\"")) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-
-    process.env[key] = value;
   }
 }
