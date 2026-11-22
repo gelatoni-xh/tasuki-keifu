@@ -75,9 +75,17 @@ const nodes: Node[] = [
   ] },
   { id: "member_result", label: ["拟议履历变更 / 未解决事项", "Proposed affiliation changes / unresolved", "所属変更案／未解決事項"], kind: "result" },
   { id: "verify_person_facts", label: ["个人事实核查", "Person fact check", "人物情報の確認"], kind: "child" },
+  { id: "fact_birth_date", label: ["规则 · 出生日期补空与冲突", "Rule · birth date fill and conflict", "ルール · 生年月日の補完と矛盾"], kind: "internal", checks: [
+    ["只核查来源明确提供的完整出生日期；不从年级或年龄推算。", "Check only a complete birth date stated by the source; do not infer it from grade or age.", "出典に明記された完全な生年月日のみを確認し、学年や年齢から推定しない。"],
+    ["来源可靠度至少为 3 时补空；已有日期不一致则保留原值并输出 unresolved。", "Fill an empty value only at reliability 3 or higher; preserve a conflicting existing date and report unresolved.", "信頼度 3 以上の出典で空欄を補完し、既存日付と異なる場合は上書きせず unresolved とする。"],
+  ] },
   { id: "fact_hometown", label: ["规则 · 可靠来源补空籍贯", "Rule · fill missing hometown", "ルール · 信頼できる出典で出身地を補完"], kind: "internal", checks: [
     ["跳过 DNS 和身份未解决的行。", "Skip DNS and unresolved identities.", "DNS と人物同定が未解決の行を除外する。"],
     ["只有原值为空且来源可靠度至少为 3 才补空。", "Fill only an empty value from a source with reliability at least 3.", "既存値が空で、出典の信頼度が 3 以上の場合だけ補完する。"],
+  ] },
+  { id: "fact_registered_prefecture", label: ["规则 · 登录陆协独立核查", "Rule · registered association check", "ルール · 登録陸協の個別確認"], kind: "internal", checks: [
+    ["登录陆协与出身地是独立事实，只采用来源明确给出的登录信息。", "Treat the registered association as independent from hometown and use only an explicit source value.", "登録陸協と出身地を別々の事実として扱い、出典に明記された値のみを使う。"],
+    ["原值为空且来源可靠度至少为 3 才补空；已有值冲突则保留原值并输出 unresolved。", "Fill an empty value only at reliability 3 or higher; preserve a conflict and report unresolved.", "信頼度 3 以上の出典で空欄を補完し、既存値との矛盾は上書きせず unresolved とする。"],
   ] },
   { id: "fact_pb", label: ["规则 · PB 项目 / 成绩 / 来源比较", "Rule · PB event / mark / source", "ルール · PB 種目／記録／出典の比較"], kind: "internal", checks: [
     ["跳过 DNS、未确定身份和不支持的项目。", "Skip DNS, unresolved identities and unsupported events.", "DNS、人物同定が未解決の行、対象外種目を除外する。"],
@@ -143,7 +151,7 @@ const summaries: Record<string, Text> = {
   membership_rules: ["严格去重后整合来源履历、确认组织的参赛观察、学校时间窗口与冲突规则。", "After strict deduplication, combine source history, confirmed team observations, school windows and conflict rules.", "厳密に重複整理した後、出典履歴・確認済み組織の大会観測・学校期間・矛盾ルールを統合する。"],
   membership_deep_research: ["每个冲突人物发起一次完整履历研究，模型可按需联网。", "Make one full-history research request for each person with conflicts; the model may search as needed.", "矛盾のある人物ごとに全履歴を一回調査し、必要に応じてウェブ検索できる。"],
   member_result: ["生成拟议履历新增、更新、严格重复删除和未解决事项，不直接写入业务数据库。", "Produce proposed affiliation creates, updates, strict duplicate deletions and unresolved issues without writing business data.", "所属履歴の新規・更新・厳密な重複削除案と未解決事項を作り、業務データベースへ直接書き込まない。"],
-  verify_person_facts: ["编译子 Graph 的单一节点；内部只运行规则。", "A compiled child Graph with one rule-only node.", "ルールのみを実行する単一ノードのコンパイル済みサブ Graph。"],
+  verify_person_facts: ["编译子 Graph 的单一规则节点，核查出生日期、出身地、登录陆协和 PB；冲突保留为 unresolved。", "A compiled child Graph with one rule-only node for birth date, hometown, registered association and PB; conflicts remain unresolved.", "生年月日・出身地・登録陸協・PB を確認する単一ルールノードのサブ Graph。矛盾は unresolved として残す。"],
   fact_result: ["生成拟议个人事实变更，没有 LLM 或 Web Search。", "Produce proposed person-fact changes without LLM or Web Search.", "LLM や Web Search を使わず、人物情報の変更案を作成する。"],
   aggregate_governance_result: ["合并各阶段结果，生成本批次治理计划。", "Combine stage results into the batch governance plan.", "各段階の結果を統合し、バッチのガバナンス計画を作成する。"],
   web_org: ["Responses API 内部可选工具，只有实际搜索时才产生调用。", "Optional Responses API tool; a call exists only when the model searches.", "Responses API 内の任意ツール。モデルが実際に検索した場合のみ呼び出しが発生する。"],
@@ -188,12 +196,12 @@ export function buildGraphSource(language: GraphLanguage) {
     "membership_rules -.-> member_dedup", "member_dedup -.-> member_source", "member_source -.-> member_window", "member_window -.-> member_conflict", "finalize_membership -.-> member_result");
   for (const [from, to, text] of auxiliary.slice(9)) lines.push(`${from} -. "${label(text, language)}" .-> ${declaration(to, language)}`);
   lines.push("end", `subgraph FACTS["${label(["03 · 个人事实治理", "03 · Person fact governance", "03 · 人物情報の管理"], language)}"]`, "direction TB", declaration("verify_person_facts", language));
-  for (const id of ["fact_hometown", "fact_pb", "fact_result"]) lines.push(declaration(id, language));
-  lines.push("verify_person_facts -.-> fact_hometown", "fact_hometown -.-> fact_pb", "fact_pb -.-> fact_result", "end");
+  for (const id of ["fact_birth_date", "fact_hometown", "fact_registered_prefecture", "fact_pb", "fact_result"]) lines.push(declaration(id, language));
+  lines.push("verify_person_facts -.-> fact_birth_date", "fact_birth_date -.-> fact_hometown", "fact_hometown -.-> fact_registered_prefecture", "fact_registered_prefecture -.-> fact_pb", "fact_pb -.-> fact_result", "end");
   lines.push(`finalize_normalization -. "${label(["有履历或关联组织", "Affiliation input", "所属情報あり"], language)}" .-> govern_membership`,
-    `finalize_normalization -. "${label(["仅有籍贯或 PB", "Facts only", "人物情報のみ"], language)}" .-> verify_person_facts`,
+    `finalize_normalization -. "${label(["出生日期 / 籍贯 / 登录陆协 / PB", "Birth date / hometown / association / PB", "生年月日／出身地／登録陸協／PB"], language)}" .-> verify_person_facts`,
     `finalize_normalization -. "${label(["无需下游治理", "No downstream work", "後続処理なし"], language)}" .-> ${declaration("aggregate_governance_result", language)}`,
-    `finalize_membership -. "${label(["还有籍贯或 PB", "Facts remain", "人物情報もあり"], language)}" .-> verify_person_facts`,
+    `finalize_membership -. "${label(["还有个人事实待核查", "Person facts remain", "人物情報の確認あり"], language)}" .-> verify_person_facts`,
     `finalize_membership -. "${label(["无需个人事实核查", "No fact check", "人物情報の確認なし"], language)}" .-> aggregate_governance_result`, "verify_person_facts --> aggregate_governance_result",
     `aggregate_governance_result --> END(("${label(["结束", "End", "終了"], language)}"))`);
   const classes: Record<Kind, string> = { graph: "fill:#e5f1f5,stroke:#5790a5,color:#244f60", child: "fill:#eee5ee,stroke:#967096,color:#63485f", internal: "fill:#fff8ed,stroke:#bd914b,color:#6d512b,stroke-dasharray:4 3", llm: "fill:#e5eef8,stroke:#427eae,color:#214b70,stroke-dasharray:4 3", web: "fill:#fff0e6,stroke:#cf8152,color:#7d472d,stroke-dasharray:4 3", result: "fill:#e7f0e3,stroke:#5b835e,color:#36523a" };
