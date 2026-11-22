@@ -52,7 +52,6 @@ type SeedPlayer = {
   displayNameRoman: string | null;
   birthDate: Date | null;
   hometown: string | null;
-  nationality: string | null;
   university: Organization;
   highSchool: Organization;
   currentTeam: Organization | null;
@@ -337,7 +336,6 @@ async function upsertSeedPerson(input: {
   displayNameRoman?: string | null;
   birthDate?: Date | null;
   hometown?: string | null;
-  nationality?: string | null;
   status?: DataStatus;
 }) {
   const existing = await prisma.person.findUnique({
@@ -355,7 +353,6 @@ async function upsertSeedPerson(input: {
         displayNameRoman: input.displayNameRoman ?? null,
         birthDate: input.birthDate ?? null,
         hometown: input.hometown ?? null,
-        nationality: input.nationality ?? null,
         type: "athlete",
         status: input.status ?? DataStatus.pending,
       },
@@ -372,7 +369,6 @@ async function upsertSeedPerson(input: {
   if (!existing.displayNameRoman && input.displayNameRoman) patch.displayNameRoman = input.displayNameRoman;
   if (!existing.birthDate && input.birthDate) patch.birthDate = input.birthDate;
   if (!existing.hometown && input.hometown) patch.hometown = input.hometown;
-  if (!existing.nationality && input.nationality) patch.nationality = input.nationality;
 
   if (Object.keys(patch).length === 0) {
     return existing;
@@ -1847,7 +1843,6 @@ async function main() {
       displayNameRoman: "Asahi Kuroda",
       birthDate: new Date("2004-03-10"),
       hometown: "岡山県",
-      nationality: "JPN",
       university: aogaku,
       highSchool: tamano,
       currentTeam: gmo,
@@ -1975,7 +1970,6 @@ async function main() {
       displayNameRoman: "Kiyoto Hirabayashi",
       birthDate: null,
       hometown: null,
-      nationality: null,
       university: kokugakuin,
       highSchool: mikata,
       currentTeam: null,
@@ -2002,7 +1996,6 @@ async function main() {
       displayNameRoman: "Shinsaku Kudo",
       birthDate: new Date("2004-11-10"),
       hometown: "千葉県",
-      nationality: null,
       university: waseda,
       highSchool: yachiyoShoin,
       currentTeam: null,
@@ -2170,7 +2163,6 @@ async function main() {
       displayNameRoman: "Shunkyo Yoshii",
       birthDate: null,
       hometown: null,
-      nationality: null,
       university: chuo,
       highSchool: sendaiIkuei,
       currentTeam: null,
@@ -2298,7 +2290,6 @@ async function main() {
       displayNameRoman: player.displayNameRoman,
       birthDate: player.birthDate,
       hometown: player.hometown,
-      nationality: player.nationality,
       status: player.profileStatus ?? DataStatus.pending,
     });
 
