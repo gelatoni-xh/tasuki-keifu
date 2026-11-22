@@ -76,25 +76,30 @@ const nodes: Node[] = [
   { id: "verify_person_facts", label: ["个人事实治理子 Graph", "Person facts child Graph", "人物情報管理のサブ Graph"], kind: "child" },
   { id: "compare_person_facts", label: ["比较个人事实与 PB", "Compare person facts and PBs", "人物情報と PB を比較"], kind: "graph", checks: [
     ["仅比较输入明确提供且身份已映射的事实。", "Compare only explicitly supplied facts for mapped identities.", "対応付け済みの人物について、明示された事実のみを比較する。"],
-    ["籍贯与登录陆协分开判断；只从可靠来源补空值。", "Evaluate hometown and registered association separately; fill blanks only from reliable sources.", "出身地と登録協会を別々に判定し、信頼できる出典で空欄のみ補完する。"],
+    ["籍贯与登录陆协分开判断；不覆盖不同的既有值，可靠度不足时记录 unresolved。", "Evaluate hometown and registered association separately; do not overwrite different existing values, and record unresolved when source reliability is insufficient.", "出身地と登録協会を別々に判定する。異なる既存値は上書きせず、出典の信頼度が不足する場合は unresolved とする。"],
   ] },
   { id: "fact_hometown", label: ["规则 · 可靠来源补空籍贯", "Rule · fill missing hometown", "ルール · 信頼できる出典で出身地を補完"], kind: "internal", checks: [
     ["跳过 DNS 和身份未解决的行。", "Skip DNS and unresolved identities.", "DNS と人物同定が未解決の行を除外する。"],
     ["只有原值为空且来源可靠度至少为 3 才补空。", "Fill only an empty value from a source with reliability at least 3.", "既存値が空で、出典の信頼度が 3 以上の場合だけ補完する。"],
+    ["已有不同出身地不自动覆盖，记录为 unresolved 冲突；可靠度不足的候选记录为 unresolved。", "Do not overwrite a different existing hometown; report it as unresolved. Report candidates from low-reliability sources as unresolved too.", "異なる既存の出身地は自動上書きせず unresolved とする。信頼度が低い出典の候補も unresolved として記録する。"],
   ] },
   { id: "fact_registration", label: ["规则 · 独立补空登录陆协", "Rule · fill registered association", "ルール · 登録協会を独立して補完"], kind: "internal", checks: [
     ["登录陆协不是籍贯，不从籍贯或代表队推断。", "Registered association is not hometown and is not inferred from hometown or team.", "登録協会は出身地とは別で、出身地やチームから推定しない。"],
     ["仅原值为空且来源可靠度至少为 3 时补空。", "Fill only an empty value from a source with reliability at least 3.", "既存値が空で、出典の信頼度が 3 以上の場合だけ補完する。"],
+    ["已有不同登录陆协不自动覆盖，记录为 unresolved 冲突；可靠度不足的候选记录为 unresolved。", "Do not overwrite a different existing association; report it as unresolved. Report candidates from low-reliability sources as unresolved too.", "異なる既存の登録協会は自動上書きせず unresolved とする。信頼度が低い出典の候補も unresolved として記録する。"],
   ] },
   { id: "fact_pb", label: ["规则 · PB 项目 / 成绩 / 来源比较", "Rule · PB event / mark / source", "ルール · PB 種目／記録／出典の比較"], kind: "internal", checks: [
     ["跳过 DNS、未确定身份和不支持的项目。", "Skip DNS, unresolved identities and unsupported events.", "DNS、人物同定が未解決の行、対象外種目を除外する。"],
     ["成绩可解析且来源可靠度至少为 3。", "Require a valid mark and source reliability of at least 3.", "解析可能な記録と 3 以上の出典信頼度を要する。"],
     ["原值为空时可新增；已有 PB 仅在新成绩更好且来源可靠度不低于原来源时更新。", "Create a missing PB; update an existing PB only when the mark is faster and the source is at least as reliable.", "未登録なら追加し、既存 PB は記録がより良く出典の信頼度が同等以上の場合のみ更新する。"],
+    ["来源缺失、成绩无法解析、现有成绩不可比较或更好成绩的来源可靠度较低时记录 unresolved；更慢或相同成绩只是正常跳过。", "Report unresolved when the source is missing, the mark cannot be parsed or compared, or a faster mark has a less reliable source. Slower or equal marks are routine skips.", "出典がない、記録を解析・比較できない、またはより良い記録の出典信頼度が低い場合は unresolved とする。遅い記録や同記録は通常のスキップとする。"],
   ] },
   { id: "collect_person_fact_conflicts", label: ["汇总个人事实冲突", "Collect person-fact conflicts", "人物情報の矛盾を集約"], kind: "graph", checks: [
-    ["收集规则比较产生的问题；当前版本不调用 LLM 裁决。", "Collect issues from rule comparisons; this version does not use an LLM for adjudication.", "ルール比較で検出した問題を集約する。このバージョンでは LLM 裁定を行わない。"],
+    ["收集个人事实冲突与证据不足项；不调用 LLM，未解决问题会进入最终治理计划。", "Collect person-fact conflicts and insufficient-evidence findings; no LLM is called, and unresolved findings flow into the final governance plan.", "人物情報の矛盾と証拠不足を集約する。LLM は呼び出さず、未解決項目は最終計画へ引き継ぐ。"],
   ] },
-  { id: "validate_person_fact_decisions", label: ["校验个人事实决定", "Validate person-fact decisions", "人物情報の判断を検証"], kind: "graph" },
+  { id: "validate_person_fact_decisions", label: ["校验个人事实决定", "Validate person-fact decisions", "人物情報の判断を検証"], kind: "graph", checks: [
+    ["有效变更继续进入计划；不能安全裁决的事实以 unresolved 呈现，不静默丢弃。", "Keep valid changes in the plan; surface facts that cannot be safely decided as unresolved instead of silently dropping them.", "有効な変更は計画に残し、安全に判断できない事実は黙って捨てず unresolved として表示する。"],
+  ] },
   { id: "fact_result", label: ["拟议个人事实变更", "Proposed fact changes", "人物情報の変更案"], kind: "result" },
   { id: "aggregate_governance_result", label: ["汇总治理计划", "Assemble governance plan", "ガバナンス計画の集約"], kind: "result" },
   { id: "business_writer", label: ["业务 Writer · 计划后写入", "Business Writer · persist after planning", "業務 Writer · 計画後に保存"], kind: "result", checks: [
@@ -157,7 +162,7 @@ const summaries: Record<string, Text> = {
   membership_rules: ["严格去重后整合来源履历、确认组织的参赛观察、学校时间窗口与冲突规则。", "After strict deduplication, combine source history, confirmed team observations, school windows and conflict rules.", "厳密に重複整理した後、出典履歴・確認済み組織の大会観測・学校期間・矛盾ルールを統合する。"],
   membership_deep_research: ["每个冲突人物发起一次完整履历研究，模型可按需联网。", "Make one full-history research request for each person with conflicts; the model may search as needed.", "矛盾のある人物ごとに全履歴を一回調査し、必要に応じてウェブ検索できる。"],
   member_result: ["生成拟议履历新增、更新、严格重复删除和未解决事项，不直接写入业务数据库。", "Produce proposed affiliation creates, updates, strict duplicate deletions and unresolved issues without writing business data.", "所属履歴の新規・更新・厳密な重複削除案と未解決事項を作り、業務データベースへ直接書き込まない。"],
-  verify_person_facts: ["个人事实子 Graph 由比较、冲突汇总、决定校验三个节点组成；当前不调用 LLM。", "The person-facts child Graph has compare, conflict-collection and decision-validation nodes; it does not call an LLM in this version.", "人物情報サブ Graph は比較・矛盾集約・判断検証の三ノードで構成され、このバージョンでは LLM を呼び出さない。"],
+  verify_person_facts: ["个人事实子 Graph 由比较、冲突汇总、决定校验三个节点组成；规则无法安全更新的候选会以 unresolved 呈现，不调用 LLM。", "The person-facts child Graph compares facts, collects conflicts and validates decisions. Candidates that cannot be safely applied appear as unresolved; no LLM is called.", "人物情報サブ Graph は比較・矛盾集約・判断検証の三ノードで構成され、安全に反映できない候補は unresolved として表示します。LLM は呼び出しません。"],
   fact_result: ["生成拟议个人事实变更，不直接写入业务数据库。", "Produce proposed person-fact changes without writing business data directly.", "人物情報の変更案を作成し、業務データベースへ直接書き込まない。"],
   aggregate_governance_result: ["在每个批次内合并归一化、履历与个人事实结果，生成治理计划。", "Combine normalization, affiliation and person-fact results into a per-batch governance plan.", "バッチごとに同定・所属履歴・人物情報の結果をまとめ、ガバナンス計画を作成する。"],
   business_writer: ["Runner 在计划保存后调用 Writer；只有 apply 会在版本校验后事务写入业务数据。", "The runner calls the Writer after saving the plan; only apply writes business data in a transaction after version checks.", "Runner は計画保存後に Writer を呼び出す。業務データへのトランザクション書き込みは、バージョン確認後の apply のみ。"],
