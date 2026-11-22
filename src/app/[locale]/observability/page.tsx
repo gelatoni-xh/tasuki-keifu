@@ -72,6 +72,7 @@ export default async function ObservabilityPage({
   }[value] ?? value);
   const findingCodeLabel = (value: string) => ({
     mapping_conflict: t("关联冲突", "Mapping conflict"),
+    person_fact_conflict: t("个人事实冲突", "Person fact conflict"),
     insufficient_evidence: t("证据不足", "Insufficient evidence"),
     identity_unresolved: t("身份未确定", "Identity unresolved"),
     research_budget_exhausted: t("研究预算耗尽", "Research budget exhausted"),
