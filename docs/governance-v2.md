@@ -22,6 +22,8 @@ npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/
 
 ## 业务模型语义
 
+- Person.hometown 为出身地，Person.registeredPrefecture 为登录陆协；两者是独立事实，不能互相推断或回填。登录陆协目前仅用于选手详情展示。
+- Person.nationality 已废弃，仅保留历史数据；主站不再维护或展示国籍。
 - unknown organization type 代表当前无法分类，不推断为 corporate_team。
 - Membership 日期依据为 unknown/source/inferred；既有日期在没有证据回填前保持 unknown。
 - endState 为 unknown/ongoing/ended，与 endDate 独立；预计日期不代表毕业或离队已核实。

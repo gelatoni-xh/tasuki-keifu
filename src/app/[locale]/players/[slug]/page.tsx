@@ -465,7 +465,6 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
     ].filter(Boolean),
     description: playerSummary,
     birthDate: player.birthDate?.toISOString(),
-    nationality: player.nationality ?? undefined,
     homeLocation: player.hometown
       ? {
           "@type": "Place",
@@ -652,12 +651,12 @@ export default async function PlayerDetailPage({ params }: PlayerDetailPageProps
                   <dd className="font-medium">{player.hometown ?? dictionary.common.emptyDash}</dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#59615c]">{dictionary.players.birthDate}</dt>
-                  <dd className="font-medium">{formatDate(player.birthDate) || dictionary.common.emptyDash}</dd>
+                  <dt className="text-[#59615c]">{dictionary.players.registeredPrefecture}</dt>
+                  <dd className="font-medium">{player.registeredPrefecture ?? dictionary.common.emptyDash}</dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-[#59615c]">{dictionary.players.nationality}</dt>
-                  <dd className="font-medium">{player.nationality ?? dictionary.common.emptyDash}</dd>
+                  <dt className="text-[#59615c]">{dictionary.players.birthDate}</dt>
+                  <dd className="font-medium">{formatDate(player.birthDate) || dictionary.common.emptyDash}</dd>
                 </div>
               </dl>
             </div>

@@ -190,10 +190,12 @@ model Person {
   displayNameEn        String?
   /// 出生日期
   birthDate            DateTime?
-  /// 出身地
+  /// 出身地；与登录陆协是独立事实，不得互相推断
   hometown             String?
-  /// 国籍
+  /// 已废弃：国籍，仅保留历史数据
   nationality          String?
+  /// 登录陆协；与出身地是独立事实，不得互相推断
+  registeredPrefecture String?
   /// 身高，单位 cm
   heightCm             Int?
   /// 体重，单位 kg
