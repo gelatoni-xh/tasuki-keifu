@@ -1,5 +1,4 @@
-// 公开图例是 Agent 待发布流程的三语快照；修改 Agent 编排或规则后需主动提醒用户评估同步。
-// 阶段性、未部署的改动可暂缓，更新前应核对 Agent 实际 diff 与发布状态。
+// 公开图例是 Agent 当前已部署流程的三语快照；修改 Agent 编排或规则后须再次确认是否同步。
 export type GraphLanguage = "zh" | "en" | "ja";
 type Text = readonly [string, string, string];
 type Kind = "graph" | "child" | "internal" | "llm" | "web" | "result";
@@ -74,18 +73,33 @@ const nodes: Node[] = [
     ["大学到实业团并非天然互斥；同队更名也不自动等于转会。", "University-to-corporate transition is not inherently exclusive; a team rename is not automatically a transfer.", "大学から実業団への移行は本来排他的ではなく、チームの改称を自動的に移籍とみなさない。"],
   ] },
   { id: "member_result", label: ["拟议履历变更 / 未解决事项", "Proposed affiliation changes / unresolved", "所属変更案／未解決事項"], kind: "result" },
-  { id: "verify_person_facts", label: ["个人事实核查", "Person fact check", "人物情報の確認"], kind: "child" },
+  { id: "verify_person_facts", label: ["个人事实治理子 Graph", "Person facts child Graph", "人物情報管理のサブ Graph"], kind: "child" },
+  { id: "compare_person_facts", label: ["比较个人事实与 PB", "Compare person facts and PBs", "人物情報と PB を比較"], kind: "graph", checks: [
+    ["仅比较输入明确提供且身份已映射的事实。", "Compare only explicitly supplied facts for mapped identities.", "対応付け済みの人物について、明示された事実のみを比較する。"],
+    ["籍贯与登录陆协分开判断；只从可靠来源补空值。", "Evaluate hometown and registered association separately; fill blanks only from reliable sources.", "出身地と登録協会を別々に判定し、信頼できる出典で空欄のみ補完する。"],
+  ] },
   { id: "fact_hometown", label: ["规则 · 可靠来源补空籍贯", "Rule · fill missing hometown", "ルール · 信頼できる出典で出身地を補完"], kind: "internal", checks: [
     ["跳过 DNS 和身份未解决的行。", "Skip DNS and unresolved identities.", "DNS と人物同定が未解決の行を除外する。"],
     ["只有原值为空且来源可靠度至少为 3 才补空。", "Fill only an empty value from a source with reliability at least 3.", "既存値が空で、出典の信頼度が 3 以上の場合だけ補完する。"],
   ] },
+  { id: "fact_registration", label: ["规则 · 独立补空登录陆协", "Rule · fill registered association", "ルール · 登録協会を独立して補完"], kind: "internal", checks: [
+    ["登录陆协不是籍贯，不从籍贯或代表队推断。", "Registered association is not hometown and is not inferred from hometown or team.", "登録協会は出身地とは別で、出身地やチームから推定しない。"],
+    ["仅原值为空且来源可靠度至少为 3 时补空。", "Fill only an empty value from a source with reliability at least 3.", "既存値が空で、出典の信頼度が 3 以上の場合だけ補完する。"],
+  ] },
   { id: "fact_pb", label: ["规则 · PB 项目 / 成绩 / 来源比较", "Rule · PB event / mark / source", "ルール · PB 種目／記録／出典の比較"], kind: "internal", checks: [
     ["跳过 DNS、未确定身份和不支持的项目。", "Skip DNS, unresolved identities and unsupported events.", "DNS、人物同定が未解決の行、対象外種目を除外する。"],
     ["成绩可解析且来源可靠度至少为 3。", "Require a valid mark and source reliability of at least 3.", "解析可能な記録と 3 以上の出典信頼度を要する。"],
-    ["更新既有 PB 须成绩更好且来源可靠度不低于原来源。", "An update must be faster and at least as reliable as the existing source.", "既存 PB の更新には、より良い記録と既存出典以上の信頼度が必要。"],
+    ["原值为空时可新增；已有 PB 仅在新成绩更好且来源可靠度不低于原来源时更新。", "Create a missing PB; update an existing PB only when the mark is faster and the source is at least as reliable.", "未登録なら追加し、既存 PB は記録がより良く出典の信頼度が同等以上の場合のみ更新する。"],
   ] },
+  { id: "collect_person_fact_conflicts", label: ["汇总个人事实冲突", "Collect person-fact conflicts", "人物情報の矛盾を集約"], kind: "graph", checks: [
+    ["收集规则比较产生的问题；当前版本不调用 LLM 裁决。", "Collect issues from rule comparisons; this version does not use an LLM for adjudication.", "ルール比較で検出した問題を集約する。このバージョンでは LLM 裁定を行わない。"],
+  ] },
+  { id: "validate_person_fact_decisions", label: ["校验个人事实决定", "Validate person-fact decisions", "人物情報の判断を検証"], kind: "graph" },
   { id: "fact_result", label: ["拟议个人事实变更", "Proposed fact changes", "人物情報の変更案"], kind: "result" },
   { id: "aggregate_governance_result", label: ["汇总治理计划", "Assemble governance plan", "ガバナンス計画の集約"], kind: "result" },
+  { id: "business_writer", label: ["业务 Writer · 计划后写入", "Business Writer · persist after planning", "業務 Writer · 計画後に保存"], kind: "result", checks: [
+    ["dry_run 仅保存计划；apply 在版本校验后通过事务写入。", "dry_run stores the plan only; apply writes in a transaction after version checks.", "dry_run は計画のみを保存し、apply はバージョン確認後にトランザクションで書き込む。"],
+  ] },
   { id: "llm_org", label: ["LLM · 组织批量判断", "LLM · organization batch", "LLM · 組織の一括判定"], kind: "llm", trigger: ["有未确定组织候选；不联网。", "Unresolved organization candidates; no web search.", "未確定の組織候補がある場合。ウェブ検索なし。"], checks: [
     ["判断普通简称或名称变体，不用人物结论反证组织。", "Assess common abbreviations and variants without using provisional person matches.", "略称・表記ゆれを判断し、暫定的な人物同定を組織の証拠にしない。"],
   ], outcomes: [["匹配、可区分或未解决。", "Match, distinct or unresolved.", "一致・別組織・未解決。"]] },
@@ -143,9 +157,10 @@ const summaries: Record<string, Text> = {
   membership_rules: ["严格去重后整合来源履历、确认组织的参赛观察、学校时间窗口与冲突规则。", "After strict deduplication, combine source history, confirmed team observations, school windows and conflict rules.", "厳密に重複整理した後、出典履歴・確認済み組織の大会観測・学校期間・矛盾ルールを統合する。"],
   membership_deep_research: ["每个冲突人物发起一次完整履历研究，模型可按需联网。", "Make one full-history research request for each person with conflicts; the model may search as needed.", "矛盾のある人物ごとに全履歴を一回調査し、必要に応じてウェブ検索できる。"],
   member_result: ["生成拟议履历新增、更新、严格重复删除和未解决事项，不直接写入业务数据库。", "Produce proposed affiliation creates, updates, strict duplicate deletions and unresolved issues without writing business data.", "所属履歴の新規・更新・厳密な重複削除案と未解決事項を作り、業務データベースへ直接書き込まない。"],
-  verify_person_facts: ["编译子 Graph 的单一节点；内部只运行规则。", "A compiled child Graph with one rule-only node.", "ルールのみを実行する単一ノードのコンパイル済みサブ Graph。"],
-  fact_result: ["生成拟议个人事实变更，没有 LLM 或 Web Search。", "Produce proposed person-fact changes without LLM or Web Search.", "LLM や Web Search を使わず、人物情報の変更案を作成する。"],
-  aggregate_governance_result: ["合并各阶段结果，生成本批次治理计划。", "Combine stage results into the batch governance plan.", "各段階の結果を統合し、バッチのガバナンス計画を作成する。"],
+  verify_person_facts: ["个人事实子 Graph 由比较、冲突汇总、决定校验三个节点组成；当前不调用 LLM。", "The person-facts child Graph has compare, conflict-collection and decision-validation nodes; it does not call an LLM in this version.", "人物情報サブ Graph は比較・矛盾集約・判断検証の三ノードで構成され、このバージョンでは LLM を呼び出さない。"],
+  fact_result: ["生成拟议个人事实变更，不直接写入业务数据库。", "Produce proposed person-fact changes without writing business data directly.", "人物情報の変更案を作成し、業務データベースへ直接書き込まない。"],
+  aggregate_governance_result: ["在每个批次内合并归一化、履历与个人事实结果，生成治理计划。", "Combine normalization, affiliation and person-fact results into a per-batch governance plan.", "バッチごとに同定・所属履歴・人物情報の結果をまとめ、ガバナンス計画を作成する。"],
+  business_writer: ["Runner 在计划保存后调用 Writer；只有 apply 会在版本校验后事务写入业务数据。", "The runner calls the Writer after saving the plan; only apply writes business data in a transaction after version checks.", "Runner は計画保存後に Writer を呼び出す。業務データへのトランザクション書き込みは、バージョン確認後の apply のみ。"],
   web_org: ["Responses API 内部可选工具，只有实际搜索时才产生调用。", "Optional Responses API tool; a call exists only when the model searches.", "Responses API 内の任意ツール。モデルが実際に検索した場合のみ呼び出しが発生する。"],
   web_person: ["Responses API 内部可选工具，只有实际搜索时才产生调用。", "Optional Responses API tool; a call exists only when the model searches.", "Responses API 内の任意ツール。モデルが実際に検索した場合のみ呼び出しが発生する。"],
   web_membership: ["Responses API 内部可选工具，只有实际搜索时才产生调用。", "Optional Responses API tool; a call exists only when the model searches.", "Responses API 内の任意ツール。モデルが実際に検索した場合のみ呼び出しが発生する。"],
@@ -188,14 +203,14 @@ export function buildGraphSource(language: GraphLanguage) {
     "membership_rules -.-> member_dedup", "member_dedup -.-> member_source", "member_source -.-> member_window", "member_window -.-> member_conflict", "finalize_membership -.-> member_result");
   for (const [from, to, text] of auxiliary.slice(9)) lines.push(`${from} -. "${label(text, language)}" .-> ${declaration(to, language)}`);
   lines.push("end", `subgraph FACTS["${label(["03 · 个人事实治理", "03 · Person fact governance", "03 · 人物情報の管理"], language)}"]`, "direction TB", declaration("verify_person_facts", language));
-  for (const id of ["fact_hometown", "fact_pb", "fact_result"]) lines.push(declaration(id, language));
-  lines.push("verify_person_facts -.-> fact_hometown", "fact_hometown -.-> fact_pb", "fact_pb -.-> fact_result", "end");
+  for (const id of ["compare_person_facts", "fact_hometown", "fact_registration", "fact_pb", "collect_person_fact_conflicts", "validate_person_fact_decisions", "fact_result"]) lines.push(declaration(id, language));
+  lines.push("verify_person_facts --> compare_person_facts", "compare_person_facts -.-> fact_hometown", "compare_person_facts -.-> fact_registration", "compare_person_facts -.-> fact_pb", "compare_person_facts --> collect_person_fact_conflicts", "collect_person_fact_conflicts --> validate_person_fact_decisions", "validate_person_fact_decisions --> fact_result", "end");
   lines.push(`finalize_normalization -. "${label(["有履历或关联组织", "Affiliation input", "所属情報あり"], language)}" .-> govern_membership`,
     `finalize_normalization -. "${label(["仅有籍贯或 PB", "Facts only", "人物情報のみ"], language)}" .-> verify_person_facts`,
     `finalize_normalization -. "${label(["无需下游治理", "No downstream work", "後続処理なし"], language)}" .-> ${declaration("aggregate_governance_result", language)}`,
     `finalize_membership -. "${label(["还有籍贯或 PB", "Facts remain", "人物情報もあり"], language)}" .-> verify_person_facts`,
     `finalize_membership -. "${label(["无需个人事实核查", "No fact check", "人物情報の確認なし"], language)}" .-> aggregate_governance_result`, "verify_person_facts --> aggregate_governance_result",
-    `aggregate_governance_result --> END(("${label(["结束", "End", "終了"], language)}"))`);
+    "aggregate_governance_result --> business_writer", `business_writer --> END(("${label(["结束", "End", "終了"], language)}"))`);
   const classes: Record<Kind, string> = { graph: "fill:#e5f1f5,stroke:#5790a5,color:#244f60", child: "fill:#eee5ee,stroke:#967096,color:#63485f", internal: "fill:#fff8ed,stroke:#bd914b,color:#6d512b,stroke-dasharray:4 3", llm: "fill:#e5eef8,stroke:#427eae,color:#214b70,stroke-dasharray:4 3", web: "fill:#fff0e6,stroke:#cf8152,color:#7d472d,stroke-dasharray:4 3", result: "fill:#e7f0e3,stroke:#5b835e,color:#36523a" };
   for (const [kind, style] of Object.entries(classes)) lines.push(`classDef ${kind === "graph" ? "graphNode" : kind} ${style},stroke-width:1.5px;`);
   for (const node of nodes) lines.push(`class ${node.id} ${node.kind === "graph" ? "graphNode" : node.kind};`);
