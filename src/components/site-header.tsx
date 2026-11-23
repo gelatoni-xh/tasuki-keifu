@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { MobileSiteNav } from "@/components/mobile-site-nav";
 import type { Locale } from "@/lib/i18n";
 import { getDictionary, locales } from "@/lib/i18n";
 import { getStaticPageCopy } from "@/lib/static-pages";
@@ -69,63 +70,15 @@ export async function SiteHeader({ locale, path }: SiteHeaderProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-[#ded8cc] bg-[#fbfaf7]/95 backdrop-blur lg:hidden">
-        <div className="px-5 py-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <Link href={`/${locale}`} className="block">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a1f2d]">
-                {dictionary.site.label}
-              </p>
-              <h1 className="text-xl font-semibold">{dictionary.site.name}</h1>
-            </Link>
-            <LocaleSwitcher
-              ariaLabel="Language"
-              className="w-full sm:w-auto sm:min-w-[13rem]"
-              currentLocale={locale}
-              options={localeOptions}
-              variant="inline"
-            />
-          </div>
-          <nav className="mt-4 grid grid-cols-2 gap-2 text-sm font-medium sm:flex sm:flex-wrap" aria-label="Primary">
-            {navigationItems.map((item) => {
-              const active = isActivePath(normalizedPath, item.href);
-
-              return (
-                <Link
-                  className={
-                    active
-                      ? "border border-[#b53b4d] bg-[#8a1f2d] px-3 py-2 text-center text-white"
-                      : "border border-[#ded8cc] bg-white px-3 py-2 text-center text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
-                  }
-                  href={`/${locale}${item.href}`}
-                  key={item.href}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-          <nav className="mt-3 grid gap-2 text-sm sm:flex sm:flex-wrap" aria-label="Secondary">
-            {secondaryNavigationItems.map((item) => {
-              const active = isActivePath(normalizedPath, item.href);
-
-              return (
-                <Link
-                  className={
-                    active
-                      ? "border border-[#8a1f2d] bg-[#8a1f2d] px-3 py-2 text-center text-white shadow-sm"
-                      : "border border-[#ded8cc] bg-white px-3 py-2 text-center text-[#59615c] transition hover:border-[#cfc7b8] hover:text-[#8a1f2d]"
-                  }
-                  href={`/${locale}${item.href}`}
-                  key={item.href}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      </header>
+      <MobileSiteNav
+        locale={locale}
+        siteLabel={dictionary.site.label}
+        siteName={dictionary.site.name}
+        currentPath={normalizedPath}
+        localeOptions={localeOptions}
+        primaryItems={navigationItems}
+        secondaryItems={secondaryNavigationItems}
+      />
 
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-72 border-r border-[#d9d1c3] bg-[linear-gradient(180deg,#f8f4eb_0%,#f2ede2_100%)] lg:flex">
         <div className="flex h-full w-full flex-col px-6 py-8">
