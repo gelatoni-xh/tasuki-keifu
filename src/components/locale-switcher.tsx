@@ -14,7 +14,7 @@ type LocaleSwitcherProps = {
     href: string;
   }>;
   className?: string;
-  variant?: "card" | "inline";
+  variant?: "card" | "inline" | "compact";
 };
 
 export function LocaleSwitcher({
@@ -31,8 +31,8 @@ export function LocaleSwitcher({
   const select = (
     <select
       aria-label={ariaLabel}
-      className="w-full appearance-none border border-[#cfc7b8] bg-[#fbfaf7] px-3 py-2.5 text-sm font-medium text-[#2d342f] outline-none transition focus:border-[#8a1f2d]"
-      defaultValue={currentLocale}
+      className={`appearance-none border border-[#cfc7b8] bg-[#fbfaf7] text-sm font-medium text-[#2d342f] outline-none transition focus:border-[#8a1f2d] ${variant === "compact" ? "h-11 w-[5.5rem] px-2 text-center" : "w-full px-3 py-2.5"}`}
+      value={currentLocale}
       id={id}
       onChange={(event) => {
         const nextHref = options.find((option) => option.value === event.target.value)?.href;
@@ -53,6 +53,10 @@ export function LocaleSwitcher({
       ))}
     </select>
   );
+
+  if (variant === "compact") {
+    return <div className={className}>{select}</div>;
+  }
 
   if (variant === "inline") {
     return (
