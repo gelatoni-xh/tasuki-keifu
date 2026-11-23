@@ -93,6 +93,12 @@ export async function getObservabilityOverview(
     const selected =
       taskId && /^[0-9a-f-]{36}$/i.test(taskId) ? taskId : tasks[0]?.id;
     if (!selected) return { ...empty, source: "configured", tasks };
+    // A linked historical task (for example a manually corrected dry run) may
+    // fall outside the recent list. Keep its summary visible with its batches.
+    if (!tasks.some(task => task.id === selected)) {
+      const historical = await db<GovernanceOverview["tasks"]>`SELECT id,mode,status,"createdAt","completedAt",summary FROM governance."EventImportTask" WHERE id=${selected}`;
+      tasks.push(...historical);
+    }
     const [batches, agents, findings, changes, notifications] =
       await Promise.all([
         db<
