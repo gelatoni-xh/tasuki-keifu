@@ -194,7 +194,7 @@ model Person {
   hometown             String?
   /// 已废弃：国籍，仅保留历史数据
   nationality          String?
-  /// 登录陆协；与出身地是独立事实，不得互相推断
+  /// 登录陆协；独立于出身地。省略都/府/県，保留北海道/学連；按来源赛事日本日期取最新值，证据存于 SourceReference.metadata.registeredAssociation
   registeredPrefecture String?
   /// 身高，单位 cm
   heightCm             Int?
