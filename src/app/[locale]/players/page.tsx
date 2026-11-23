@@ -374,34 +374,35 @@ export default async function PlayersPage({ params, searchParams }: PlayersPageP
 
                   return (
                     <Link
-                      className="grid gap-3 px-4 py-4 transition hover:bg-[#fbfaf7] md:grid-cols-[1.1fr_1fr_1fr_1.2fr]"
+                      className="grid grid-cols-2 gap-x-3 gap-y-2 px-3 py-2.5 text-[0.82rem] leading-snug transition hover:bg-[#fbfaf7] md:grid-cols-[1.1fr_1fr_1fr_1.2fr] md:gap-3 md:px-4 md:py-4 md:text-base md:leading-normal"
                       href={`/${locale}/players/${player.slug}`}
                       key={player.id}
                       data-analytics-event="player_profile_view"
                       data-analytics-link-type="players_list"
                     >
-                      <span>
-                        <strong className="block font-semibold">{player.displayNameJa}</strong>
-                        <span className="text-sm text-[#59615c]">{player.displayNameRoman}</span>
-                        <span className="mt-1 inline-flex border border-[#ded8cc] px-2 py-0.5 text-xs text-[#8a1f2d]">
+                      <span className="col-span-2 md:col-span-1">
+                        <strong className="mr-2 inline font-semibold md:mr-0 md:block">{player.displayNameJa}</strong>
+                        <span className="hidden text-sm text-[#59615c] md:inline">{player.displayNameRoman}</span>
+                        <span className="inline-flex border border-[#ded8cc] px-1.5 py-0.5 text-[0.65rem] text-[#8a1f2d] md:ml-0 md:mt-1 md:px-2 md:text-xs">
                           {formatPersonType(player.type, locale)}
                         </span>
                       </span>
-                      <span>
-                        <span className="mb-1 block text-xs font-medium text-[#8b938e] md:hidden">
+                      <span className="min-w-0">
+                        <span className="mr-1 text-[0.68rem] font-medium text-[#8b938e] md:mb-1 md:mr-0 md:block md:text-xs">
                           {dictionary.players.currentAffiliation}
                         </span>
                         {displayedOrganization?.nameJa ?? dictionary.common.emptyDash}
                       </span>
-                      <span className="text-sm text-[#59615c]">
-                        <span className="mb-1 block text-xs font-medium text-[#8b938e] md:hidden">
+                      <span className="col-span-2 min-w-0 text-[0.76rem] text-[#59615c] md:col-span-1 md:text-sm">
+                        <span className="mr-1 text-[0.68rem] font-medium text-[#8b938e] md:mb-1 md:mr-0 md:block md:text-xs">
                           {dictionary.players.schoolHistory}
                         </span>
-                        <span className="block">{university?.organization.nameJa ?? dictionary.common.emptyDash}</span>
-                        <span className="block">{highSchool?.organization.nameJa ?? dictionary.common.emptyDash}</span>
+                        <span className="md:block">{university?.organization.nameJa ?? dictionary.common.emptyDash}</span>
+                        <span className="mx-1 text-[#b7b1a7] md:hidden">/</span>
+                        <span className="md:block">{highSchool?.organization.nameJa ?? dictionary.common.emptyDash}</span>
                       </span>
-                      <span className="text-sm text-[#59615c]">
-                        <span className="mb-1 block text-xs font-medium text-[#8b938e] md:hidden">
+                      <span className="min-w-0 text-[0.76rem] text-[#59615c] md:text-sm">
+                        <span className="mr-1 text-[0.68rem] font-medium text-[#8b938e] md:mb-1 md:mr-0 md:block md:text-xs">
                           {dictionary.players.personalBest}
                         </span>
                         {pbSummary || dictionary.common.emptyDash}

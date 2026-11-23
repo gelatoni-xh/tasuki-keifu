@@ -43,10 +43,10 @@ export function MobileSiteNav({
         <div className="flex shrink-0 items-center gap-2">
           <LocaleSwitcher
             ariaLabel="Language"
-            className="w-28"
+            className="w-[5.5rem]"
             currentLocale={locale}
             options={localeOptions}
-            variant="inline"
+            variant="compact"
           />
           <button
             type="button"
