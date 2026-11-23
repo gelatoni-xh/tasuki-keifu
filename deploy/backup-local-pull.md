@@ -164,3 +164,9 @@ development databases can be removed separately after their users release them.
 Keep dumps/env files/logs private. They include the full business and governance
 schemas, including audit, feedback and checkpoint data. No production restore was
 performed; disaster recovery to production requires a separate planned operation.
+
+Registered association evidence uses the existing JSON field
+`SourceReference.metadata.registeredAssociation` (`value`, `asOf`, `dateBasis`).
+Full `pg_dump` backups already preserve this field; no additional backup column
+or export is required. Preserve the complete metadata when restoring or exporting
+source references, since an undated conflicting value cannot be ordered safely.

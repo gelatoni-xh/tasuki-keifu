@@ -78,7 +78,7 @@ const nodes: Node[] = [
   { id: "verify_person_facts", label: ["个人事实治理子 Graph", "Person facts child Graph", "人物情報管理のサブ Graph"], kind: "child" },
   { id: "compare_person_facts", label: ["比较个人事实与 PB", "Compare person facts and PBs", "人物情報と PB を比較"], kind: "graph", checks: [
     ["仅比较输入明确提供且身份已映射的事实。", "Compare only explicitly supplied facts for mapped identities.", "対応付け済みの人物について、明示された事実のみを比較する。"],
-    ["出生日期、籍贯与登录陆协分别判断；不覆盖不同的既有值，可靠度不足时记录 unresolved。", "Evaluate birth date, hometown and registered association separately; preserve conflicting existing values and report unresolved when source reliability is insufficient.", "生年月日・出身地・登録陸協を個別に判定する。異なる既存値は上書きせず、出典の信頼度が不足する場合は unresolved とする。"],
+    ["出生日期、籍贯分别补空；登录陆协统一格式后按资料日期取最新值。可靠度不足时记录 unresolved。", "Fill birth date and hometown independently; canonicalize registered association and retain the latest source-dated value. Insufficient source reliability is unresolved.", "生年月日と出身地を個別に補完する。登録陸協は表記を統一し、資料日付が最新の値を採用する。出典の信頼度が不足する場合は unresolved とする。"],
   ] },
   { id: "fact_birth_date", label: ["规则 · 出生日期补空与冲突", "Rule · birth date fill and conflict", "ルール · 生年月日の補完と矛盾"], kind: "internal", checks: [
     ["只核查来源明确提供的完整出生日期；不从年级或年龄推算。", "Check only a complete birth date stated by the source; do not infer it from grade or age.", "出典に明記された完全な生年月日のみを確認し、学年や年齢から推定しない。"],
@@ -89,10 +89,11 @@ const nodes: Node[] = [
     ["只有原值为空且来源可靠度至少为 3 才补空。", "Fill only an empty value from a source with reliability at least 3.", "既存値が空で、出典の信頼度が 3 以上の場合だけ補完する。"],
     ["已有不同出身地不自动覆盖，记录为 unresolved 冲突；可靠度不足的候选记录为 unresolved。", "Do not overwrite a different existing hometown; report it as unresolved. Report candidates from low-reliability sources as unresolved too.", "異なる既存の出身地は自動上書きせず unresolved とする。信頼度が低い出典の候補も unresolved として記録する。"],
   ] },
-  { id: "fact_registration", label: ["规则 · 独立补空登录陆协", "Rule · fill registered association", "ルール · 登録協会を独立して補完"], kind: "internal", checks: [
+  { id: "fact_registration", label: ["规则 · 登录陆协按资料日期更新", "Rule · association by source date", "ルール · 資料日付で登録陸協を更新"], kind: "internal", checks: [
     ["登录陆协不是籍贯，不从籍贯或代表队推断。", "Registered association is not hometown and is not inferred from hometown or team.", "登録協会は出身地とは別で、出身地やチームから推定しない。"],
-    ["仅原值为空且来源可靠度至少为 3 时补空。", "Fill only an empty value from a source with reliability at least 3.", "既存値が空で、出典の信頼度が 3 以上の場合だけ補完する。"],
-    ["已有不同登录陆协不自动覆盖，记录为 unresolved 冲突；可靠度不足的候选记录为 unresolved。", "Do not overwrite a different existing association; report it as unresolved. Report candidates from low-reliability sources as unresolved too.", "異なる既存の登録協会は自動上書きせず unresolved とする。信頼度が低い出典の候補も unresolved として記録する。"],
+    ["强制去除都／府／県后缀，保留北海道、学連；未知标签记录 unresolved，不猜测转换。", "Remove 都/府/県 suffixes; retain 北海道 and 学連. Unknown labels are unresolved, never guessed.", "都・府・県の接尾辞を除き、北海道・学連は保持する。未知の表記は推測せず unresolved とする。"],
+    ["可靠度至少为 3，使用资料对应赛事的日本日期，禁止使用导入或档案更新时间；空值可补，较新资料可更新，较旧资料正常跳过。", "Require reliability at least 3 and the source race date in Japan, never ingestion or profile update time. Fill missing values, accept newer evidence and skip older evidence.", "信頼度 3 以上と資料に対応する大会の日本日付を使い、取込日時や更新日時は使わない。空欄を補い、新しい資料で更新し、古い資料はスキップする。"],
+    ["同值的新资料也推进证据日期；缺少日期、同日不同值、同批同人不同值均记录 unresolved。写入事务再次核验新旧，避免旧计划覆盖新值。", "Advance evidence dates even for unchanged values. Missing dates, same-day conflicts and conflicting rows for one person are unresolved. Recheck recency in the write transaction to reject stale plans.", "同じ値でも新しい資料の日付を記録する。日付不足、同日の異なる値、同一バッチ内の同人の矛盾は unresolved とする。書込時にも日付を再検証し、古い計画の上書きを防ぐ。"],
   ] },
   { id: "fact_pb", label: ["规则 · PB 项目 / 成绩 / 来源比较", "Rule · PB event / mark / source", "ルール · PB 種目／記録／出典の比較"], kind: "internal", checks: [
     ["跳过 DNS、未确定身份和不支持的项目。", "Skip DNS, unresolved identities and unsupported events.", "DNS、人物同定が未解決の行、対象外種目を除外する。"],
