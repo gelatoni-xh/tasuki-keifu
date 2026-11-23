@@ -79,6 +79,7 @@ export default async function ObservabilityPage({
   }[value] ?? value);
   const data = detailView ? await getObservabilityOverview(query.task, signedIn) : null;
   const current = data?.tasks.find((task) => task.id === data.selectedTaskId);
+  const manualCorrection = current?.summary?.manualCorrection as Record<string, unknown> | undefined;
   const metrics = current?.summary?.observability as
     | Record<string, unknown>
     | undefined;
@@ -153,6 +154,7 @@ export default async function ObservabilityPage({
             <Badge>{modeLabel(current.mode)}</Badge>
           </div>
           <p className="break-all font-mono text-xs">{current.id}</p>
+          {current.mode === "dry_run" && <p className="text-sm text-stone-600">{t("试运行只生成计划，不写入业务数据；下方统计保留该次运行的历史结果。", "A dry run produces plans without writing business data. The figures below preserve that run's historical results.")}</p>}
           <p>
             {t("导入", "Imported")} {number(current.summary?.importedRows)} ·{" "}
             {t("修复", "Repairs")} {number(current.summary?.repairs)} ·{" "}
@@ -160,6 +162,13 @@ export default async function ObservabilityPage({
             {number(current.summary?.plannedRepairs)} · {t("未解决项", "Unresolved")}{" "}
             {number(current.summary?.unresolved)}
           </p>
+          {manualCorrection && <section className="space-y-2 border-t border-line pt-3 text-sm">
+            <h2 className="font-semibold">{t("后续人工修复（独立于 Graph 运行）", "Subsequent manual correction (separate from Graph execution)")}</h2>
+            <p>{t("人工核验行数", "Manually reviewed rows")} {number(manualCorrection.reviewedRows)} · {t("新增学校履历", "School affiliations added")} {number(manualCorrection.membershipsAdded)} · {t("补充或恢复时间的履历", "Affiliations with dates filled or restored")} {number(manualCorrection.membershipDatesUpdated)} · {t("其中恢复被清空的推算日期", "Including restored inferred dates")} {number(manualCorrection.restoredInferredDates)}</p>
+            <p>{t("人工处理后剩余学校冲突", "School conflicts remaining after manual review")} {number(manualCorrection.remainingSchoolConflicts)} · {String(manualCorrection.performedAt ?? "")}</p>
+            <p className="text-stone-600">{t("未重新执行 Agent；原运行状态、计划数量、LLM 调用和成本保持原记录，人工修复不计入 Graph 自动修复。", "The Agent was not rerun. Original status, plans, LLM calls and costs remain unchanged; manual corrections are not counted as Graph repairs.")}</p>
+            {signedIn && <p className="break-all font-mono text-xs">{String(manualCorrection.auditBatchId ?? "")}</p>}
+          </section>}
           {metrics && (
             <div className="space-y-4 border-t border-line pt-4">
               <div>

@@ -65,6 +65,8 @@ const nodes: Node[] = [
   { id: "member_window", label: ["规则 · 学制与相邻阶段补空", "Rule · academic and adjacent windows", "ルール · 学年と隣接期から期間補完"], kind: "internal", checks: [
     ["按组织类型、学年、赛事日期推算时间窗口。", "Infer a window from organization type, grade and race date.", "組織種別・学年・大会日から期間を推定する。"],
     ["可用相邻学校阶段补空；推算值不覆盖来源日期。", "Adjacent school stages may fill gaps; inferred dates never overwrite sourced dates.", "隣接する学校段階で空欄を補うが、推定日付は出典の日付を上書きしない。"],
+    ["出身校也补学制推算起止时间，并保留 inferred 标记和依据；不能因材料只写校名就删除推算值。", "Alumni schools also receive inferred academic dates with evidence and inferred basis retained; a school-only source does not erase estimates.", "出身校も学制に基づく開始・終了の推定日を補い、inferred と根拠を保持する。校名のみの資料でも推定値は削除しない。"],
+    ["旧日期依据为 unknown 时，仅在原年级与赛事日期重新验证一致后恢复 inferred；无依据日期不得作相邻学段锚点。", "For legacy dates marked unknown, restore inferred basis only when the original grade and race date reproduce them; unsupported dates cannot anchor adjacent stages.", "旧日付の根拠が unknown の場合、元の学年・大会日から再検証できるときだけ inferred に戻す。根拠のない日付を隣接学段の基準にしない。"],
     ["只知道年份就保留年份和空具体日期，不造 1 月或 4 月的入离队日。", "Year-only evidence keeps the year with no exact date; it does not invent a January or April joining date.", "年だけ分かる場合は年のみ記録し、1 月や 4 月の加入・離脱日を作らない。"],
   ] },
   { id: "member_conflict", label: ["规则 · 日期 / 年份 / 互斥冲突", "Rule · dates / years / exclusions", "ルール · 日付／年／排他の矛盾"], kind: "internal", checks: [
